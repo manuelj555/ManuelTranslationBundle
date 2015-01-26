@@ -62,7 +62,15 @@ class TranslationRepository extends EntityRepository
             ->andWhere('translation.localEditions > 0')
             ->andWhere('translation.conflicts = false')
             ->getQuery()
-            ->getArrayResult();
+            ->getResult();
+    }
+
+    public function getAllWithoutConflicts()
+    {
+        return $this->getAllQueryBuilder(null, null, null)
+            ->andWhere('translation.conflicts = false')
+            ->getQuery()
+            ->getResult();
     }
 
     public function getAllEntities($search = null, $domain = null, $onlyNews = null)
