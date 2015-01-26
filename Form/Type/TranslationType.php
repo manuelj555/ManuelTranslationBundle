@@ -10,6 +10,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Form\Type;
 
+use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
@@ -24,13 +25,23 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class TranslationType extends AbstractType
 {
     /**
+     * @var TranslationRepository
+     */
+    protected $translationRepository;
+
+    function __construct($translationRepository)
+    {
+        $this->translationRepository = $translationRepository;
+    }
+
+    /**
      * Returns the name of this type.
      *
      * @return string The name of this type
      */
     public function getName()
     {
-        return 'translation';
+        return 'manuel_translation';
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -75,6 +86,19 @@ class TranslationType extends AbstractType
             'disabled' => $disabled,
             'label' => 'label.domain',
         ));
+
+        $domains['messages'] = 'messages';
+        $domains = $this->translationRepository->getExistentDomains();
+
+        $form->add('existent_domains', 'choice', array(
+            'label' => false,
+            'choices' => $domains,
+            'expanded' => true,
+            'multiple' => false,
+            'required' => false,
+            'mapped' => false,
+            'placeholder' => false,
+        ));
     }
 
     public function validateLocalEditions(FormEvent $event)
@@ -84,7 +108,7 @@ class TranslationType extends AbstractType
 
         dump($data, $form['localEditions']->getData());
 
-        if($data['localEditions'] < $form['localEditions']->getData()){
+        if ($data['localEditions'] < $form['localEditions']->getData()) {
             //si es menor, significa que otra persona ha hecho cambios
             $form->addError(new FormError("Please Refresh Page"));
         }

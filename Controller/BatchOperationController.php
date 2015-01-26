@@ -15,6 +15,7 @@ use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\MessageCatalogue;
 
 /**
@@ -30,17 +31,29 @@ class BatchOperationController extends Controller
     public function transferFilesToBdAction()
     {
         $locales = $this->container->getParameter('manuel_translation.locales');
-        $dirs = $this->container->getParameter('manuel_translation.resources_dirs');
+        $locale = current($locales);
+        $extractDirs = $this->container->getParameter('manuel_translation.extract_dirs');
+        $transFilesDirs = $this->container->getParameter('manuel_translation.translations_files_dirs');
+        $extractor = $this->get('translation.extractor');
+
+        $usedMessages = new MessageCatalogue($locale);
+
+        foreach ($extractDirs as $dir) {
+            $extractor->extract($dir, $usedMessages);
+        }
 
         foreach ($locales as $locale) {
             $catalogue = new MessageCatalogue($locale);
+            $used = new MessageCatalogue($locale, $usedMessages->all());
 
-            foreach ($dirs as $dir) {
-                $this->get('manuel_translation.translation_loader')
-                    ->loadMessages($dir, $catalogue);
+            foreach ($transFilesDirs as $dir) {
+                $this->get('manuel_translation.translation_loader')->loadMessages($dir, $catalogue);
             }
 
-            $this->get('manuel_translation.translations_doctrine_dumper')->dump($catalogue);
+            $operation = new MergeOperation($catalogue, $used);
+            $merge = $operation->getResult();
+
+            $this->get('manuel_translation.translations_doctrine_dumper')->dump($merge);
         }
 
         $this->addFlash('success', 'Database Loaded!!!');
@@ -107,5 +120,48 @@ class BatchOperationController extends Controller
 //        $this->addFlash('success', 'Synchronization Complete!!!');
 
         return $this->redirectToRoute('manuel_translation_list');
+    }
+
+    /**
+     * @Route("/remove-unused-translations")
+     */
+    public function removeUnusedTranslationsAction()
+    {
+        $locale = current($this->container->getParameter('manuel_translation.locales'));
+        $dirs = $this->container->getParameter('manuel_translation.extract_dirs');
+
+        $extractor = $this->get('translation.extractor');
+
+        $usedMessages = new MessageCatalogue($locale);
+
+        foreach ($dirs as $dir) {
+            dump($dir);
+            $extractor->extract($dir, $usedMessages);
+        }
+
+        $locales = $this->container->getParameter('manuel_translation.locales');
+        $dirs = $this->container->getParameter('manuel_translation.translations_files_dirs');
+
+        foreach ($locales as $locale) {
+            $catalogue = new MessageCatalogue($locale);
+            $used = new MessageCatalogue($locale, $usedMessages->all());
+
+            foreach ($dirs as $dir) {
+                $this->get('manuel_translation.translation_loader')->loadMessages($dir, $catalogue);
+            }
+
+            $op = new MergeOperation($catalogue, $used);
+
+            $merge = $op->getResult();
+
+            dump($merge);
+            $this->get('manuel_translation.translations_doctrine_dumper')->dump($merge);
+        }
+
+        $this->addFlash('success', 'Database Loaded!!!');
+
+//        dump($messages->all());
+
+        die;
     }
 }

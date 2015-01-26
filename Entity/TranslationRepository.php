@@ -22,8 +22,8 @@ class TranslationRepository extends EntityRepository
 
         if (null !== $search) {
             $part = $query->expr()->orX()
-                ->add('translation.code LIKE :search')
-                ->add('values.value LIKE :search');
+                ->add('translation.code LIKE :search');
+//                ->add('values.value LIKE :search');
 
             $query->andWhere($part)
                 ->setParameter('search', "%$search%");

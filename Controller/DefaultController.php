@@ -42,7 +42,7 @@ class DefaultController extends Controller
             ->getRepository('ManuelTranslationBundle:Translation')
             ->getAll($filters['search'], $filters['domains'], null, $filters['conflicts'], $filters['changed']);
 
-        $form = $this->createForm(new TranslationType(), $this->getNewTranslationInstance());
+        $form = $this->createForm('manuel_translation', $this->getNewTranslationInstance());
 
         return $this->render('@ManuelTranslation/Default/index.html.twig', array(
             'translations' => $translations,
@@ -71,7 +71,7 @@ class DefaultController extends Controller
      */
     public function saveTranslationAction(Translation $translation, Request $request)
     {
-        $form = $this->createForm(new TranslationType(), $translation)
+        $form = $this->createForm('manuel_translation', $translation)
             ->handleRequest($request);
 
         if ($form->isSubmitted() and $form->isValid()) {

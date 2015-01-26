@@ -83,6 +83,14 @@
                 <source>label.filter_status</source>
                 <target>Status</target>
             </trans-unit>
+            <trans-unit id="label.with_conflicts">
+                <source>label.with_conflicts</source>
+                <target>With Conflicts</target>
+            </trans-unit>
+            <trans-unit id="label.with_changes">
+                <source>label.with_changes</source>
+                <target>With Changes</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

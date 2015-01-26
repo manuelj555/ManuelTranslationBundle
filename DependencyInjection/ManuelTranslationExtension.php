@@ -4,6 +4,7 @@ namespace ManuelAguirre\Bundle\TranslationBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
@@ -34,44 +35,46 @@ class ManuelTranslationExtension extends Extension
         $container->setParameter('manuel_translation.filename_template',
             $container->getParameter('kernel.root_dir') . '/Resources/translations/messages.%s.doctrine');
 
-        $this->registerTranslatorResources($container, $locales);
+        $this->registerTranslatorResources($container, $config);
     }
 
-    private function registerTranslatorResources(ContainerBuilder $container, $locales)
+    private function registerTranslatorResources(ContainerBuilder $container, $config)
     {
         // Discover translation directories
-        $dirs = array();
-//        if (class_exists('Symfony\Component\Validator\Validator')) {
-//            $r = new \ReflectionClass('Symfony\Component\Validator\Validator');
-//
-//            $dirs[] = dirname($r->getFilename()) . '/Resources/translations';
-//        }
-//        if (class_exists('Symfony\Component\Form\Form')) {
-//            $r = new \ReflectionClass('Symfony\Component\Form\Form');
-//
-//            $dirs[] = dirname($r->getFilename()) . '/Resources/translations';
-//        }
-//        if (class_exists('Symfony\Component\Security\Core\Exception\AuthenticationException')) {
-//            $r = new \ReflectionClass('Symfony\Component\Security\Core\Exception\AuthenticationException');
-//
-//            $dirs[] = dirname($r->getFilename()) . '/../Resources/translations';
-//        }
-        $overridePath = $container->getParameter('kernel.root_dir') . '/Resources/%s/translations';
-//        foreach ($container->getParameter('kernel.bundles') as $bundle => $class) {
-//            $reflection = new \ReflectionClass($class);
-//            if (is_dir($dir = dirname($reflection->getFilename()) . '/Resources/translations')) {
-//                $dirs[] = $dir;
-//            }
-//            if (is_dir($dir = sprintf($overridePath, $bundle))) {
-//                $dirs[] = $dir;
-//            }
-//        }
-        if (is_dir($dir = $container->getParameter('kernel.root_dir') . '/Resources/translations')) {
-            $dirs[] = $dir;
+        $extractDirs = array($container->getParameter('kernel.root_dir') . '/Resources/views');
+        $translationFilesDirs = array($container->getParameter('kernel.root_dir') . '/Resources/translations');
+
+        $overrideViewsPath = $container->getParameter('kernel.root_dir') . '/Resources/%s/views';
+        $overrideTransPath = $container->getParameter('kernel.root_dir') . '/Resources/%s/translations';
+
+        $bundles = $container->getParameter('kernel.bundles');
+
+        foreach ($config['bundles'] as $bundle) {
+            if (!isset($bundles[$bundle])) {
+                throw new InvalidArgumentException(sprintf('Bundle "%s" Not exists or is not Enabled', $bundle));
+            }
+
+            $reflection = new \ReflectionClass($bundles[$bundle]);
+            $extractDirs[] = dirname($reflection->getFileName());
+
+            if (is_dir($bundleDir = sprintf($overrideViewsPath, $bundle))) {
+                $extractDirs[] = sprintf($overrideViewsPath, $bundle);
+            }
+
+            if (is_dir($d = $bundleDir . 'Resources/translations/')) {
+                $translationFilesDirs[] = $d;
+            }
+
+            if (is_dir($d = sprintf($overrideViewsPath, $bundle))) {
+                $extractDirs[] = $d;
+            }
+
+            if (is_dir($d = sprintf($overrideTransPath, $bundle))) {
+                $translationFilesDirs[] = $d;
+            }
         }
 
-//        echo "<pre>";var_dump($dirs);die;
-
-        $container->setParameter('manuel_translation.resources_dirs', $dirs);
+        $container->setParameter('manuel_translation.extract_dirs', $extractDirs);
+        $container->setParameter('manuel_translation.translations_files_dirs', $extractDirs);
     }
 }

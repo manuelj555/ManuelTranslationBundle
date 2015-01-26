@@ -56,7 +56,8 @@
                         <small class="text-{{ item.conflicts ? 'danger' : item.localEditions ? 'success' : 'muted' }}">{{ item.domain }}</small>
                     </td>
                     <td>
-                        <small  data-toggle="tooltip" data-placement="top" title="{{ item.conflicts ? 'label.sync_conflict'|trans : (item.localEditions ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans) }}">
+                        <small data-toggle="tooltip" data-placement="top"
+                               title="{{ item.conflicts ? 'label.sync_conflict'|trans : (item.localEditions ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans) }}">
                             <strong class="code-text">{{ item.code }}</strong>
                         </small>
                     </td>
@@ -73,46 +74,12 @@
         </tbody>
     </table>
 
-    {{ block('translation_modal') }}
-{% endblock %}
-
-{% block translation_modal %}
-
-    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
-
-    <div class="modal fade" id="translation-form-modal">
-        <div class="modal-dialog {#modal-lg#}">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">{{ 'label.translation_form'|trans }}</h4>
-                </div>
-                {{ form_start(form) }}
-                <div class="modal-body">
-                    <div id="form-errors"></div>
-                    {{ form_row(form.code) }}
-                    {{ form_row(form.domain) }}
-                    {% for locale, value in form.values %}
-                        {{ form_row(value.value, {label:locale|title}) }}
-                    {% endfor %}
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
-                            data-dismiss="modal">{{ 'label.close'|trans }}</button>
-                    <button type="submit" class="btn btn-primary">{{ 'label.save_changes'|trans }}</button>
-                </div>
-                {{ form_end(form) }}
-            </div>
-            <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+    {{ include('@ManuelTranslation/Default/translation_form.html.twig') }}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script>
+    <script type="text/javascript">
         $(function () {
                     var $modal = $('#translation-form-modal');
                     var $form = $modal.find('form');
@@ -153,6 +120,7 @@
                     $modal.on('show.bs.modal', function () {
 //                        updateFormFromList($currentItem);
                         $formErrorsContainer.html('');
+                        $(".existen-domains :radio").attr('checked', false);
                     });
 
                     $('.translation-list').on('click', '.edit-translation', function (e) {
@@ -195,9 +163,9 @@
                     function updateForm(data) {
 
                         if (!_.isUndefined(data.code)) {
-                            $("#{{ form.code.vars.id }}, #{{ form.domain.vars.id }}").attr('disabled', 'desabled');
+                            $(".disable-edit").attr('disabled', 'desabled');
                         } else {
-                            $("#{{ form.code.vars.id }}, #{{ form.domain.vars.id }}").attr('disabled', false);
+                            $(".disable-edit").attr('disabled', false);
                         }
 
                         $("#{{ form.code.vars.id }}").val(_.isUndefined(data.code) ? null : data.code);
@@ -211,8 +179,11 @@
                         }
                         {% endfor %}
                     }
+
+                    $(".existen-domains :radio").on('click', function(e){
+                        $("#{{ form.domain.vars.id }}").val($(this).val());
+                    });
                 }
-        )
-        ;
+        );
     </script>
 {% endblock %}
