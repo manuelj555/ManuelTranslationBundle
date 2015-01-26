@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+    <file date="2015-01-22T17:32:09Z" source-language="en" target-language="en" datatype="plaintext"
+          original="not.available">
+        <body>
+            <trans-unit id="label.translation_list">
+                <source>label.translation_list</source>
+                <target>Translation List</target>
+            </trans-unit>
+            <trans-unit id="label.add">
+                <source>label.add</source>
+                <target>Add</target>
+            </trans-unit>
+            <trans-unit id="label.apply">
+                <source>label.apply</source>
+                <target>Apply</target>
+            </trans-unit>
+            <trans-unit id="label.clear">
+                <source>label.clear</source>
+                <target>Clear</target>
+            </trans-unit>
+            <trans-unit id="label.search">
+                <source>label.search</source>
+                <target>Search</target>
+            </trans-unit>
+            <trans-unit id="label.domains">
+                <source>label.domains</source>
+                <target>Domains</target>
+            </trans-unit>
+            <trans-unit id="label.domain">
+                <source>label.domain</source>
+                <target>Domain</target>
+            </trans-unit>
+            <trans-unit id="label.code">
+                <source>label.code</source>
+                <target>Code</target>
+            </trans-unit>
+            <trans-unit id="label.actions">
+                <source>label.actions</source>
+                <target>Actions</target>
+            </trans-unit>
+            <trans-unit id="label.translation_form">
+                <source>label.translation_form</source>
+                <target>Translation Form</target>
+            </trans-unit>
+            <trans-unit id="label.save_changes">
+                <source>label.save_changes</source>
+                <target>Save Changes</target>
+            </trans-unit>
+            <trans-unit id="label.close">
+                <source>label.close</source>
+                <target>Close</target>
+            </trans-unit>
+            <trans-unit id="label.sync_conflict">
+                <source>label.sync_conflict</source>
+                <target>Synchronization Conflict</target>
+            </trans-unit>
+            <trans-unit id="label.changes_for_upload">
+                <source>label.changes_for_upload</source>
+                <target>Changes for upload</target>
+            </trans-unit>
+            <trans-unit id="label.no_changes_for_upload">
+                <source>label.no_changes_for_upload</source>
+                <target>No changes for upload</target>
+            </trans-unit>
+            <trans-unit id="label.upload_translations">
+                <source>label.upload_translations</source>
+                <target>Upload Translations</target>
+            </trans-unit>
+            <trans-unit id="label.download_translations">
+                <source>label.download_translations</source>
+                <target>Download Translations</target>
+            </trans-unit>
+            <trans-unit id="label.load_trans_in_bd">
+                <source>label.load_trans_in_bd</source>
+                <target>Load Translations in Database</target>
+            </trans-unit>
+            <trans-unit id="flash.sync_complete">
+                <source>label.sync_complete</source>
+                <target>Synchronization Comeplete, "%updated%" updated items!</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

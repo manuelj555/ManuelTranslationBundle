@@ -1,0 +1,37 @@
+services:
+    manuel_translation.translations_doctrine_dumper:
+        class: ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\DoctrineDumper
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @manuel_translation.translations_repository
+            - %manuel_translation.locales%
+        tags:
+            - { name: translation.dumper, alias: doctrine }
+
+    manuel_translation.translation_form_filter_type:
+        class: ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationFilterType
+        arguments: [@manuel_translation.translations_repository]
+        tags:
+            - { name: form.type, alias: translation_filter }
+
+    manuel_translation.translation_loader:
+        class: Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader
+
+
+    manuel_translation.synchronizator:
+        class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @manuel_translation.translations_repository
+            - @manuel_translation.server_sync
+
+    manuel_translation.server_sync:
+        class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\ServerSync
+        arguments:
+            - @manuel_translation.guzzle_client
+
+    manuel_translation.guzzle_client:
+        class: GuzzleHttp\Client
+        arguments:
+            -
+                base_url: "http://localhost/optime/bundles/traducciones/web/app_dev.php/api/translations/"

@@ -1,0 +1,218 @@
+{% extends '@ManuelTranslation/base.html.twig' %}
+
+{% trans_default_domain "ManuelTranslationBundle" %}
+
+{% block page_header %}{{ 'label.translation_list'|trans }}{% endblock %}
+
+{% block page_header_rigth %}
+    <button type="button" class="btn btn-primary" id="add-translation">
+        <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
+    </button>
+    <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <span aria-hidden="true" class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu">
+            <li>
+                <a href="{{ path('manuel_translation_synchronize_up') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-upload"></span>
+                    {{ 'label.upload_translations'|trans }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('manuel_translation_synchronize_down') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-download"></span>
+                    {{ 'label.download_translations'|trans }}
+                </a>
+            </li>
+            <li class="divider"></li>
+            <li><a href="{{ path('manuel_translation_transfer_files_to_bd') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
+                    {{ 'label.load_trans_in_bd'|trans }}
+                </a></li>
+        </ul>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    {{ include('@ManuelTranslation/translations_filter.html.twig') }}
+
+    <table class="table table-striped table-bordered table-hover translation-list">
+        <thead>
+            <tr>
+                <th>{{ 'label.domain'|trans }}</th>
+                <th>{{ 'label.code'|trans }}</th>
+                {% for locale in locales %}
+                    <th>{{ locale }}</th>
+                {% endfor %}
+                <th class="col-sm-1">{{ 'label.actions'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in translations %}
+                <tr data-id="{{ item.id }}" data-domain="{{ item.domain }}" data-local-edit="{{ item.localEditions }}">
+                    <td>
+                        <small class="text-{{ item.conflicts ? 'danger' : item.localEditions ? 'success' : 'muted' }}">{{ item.domain }}</small>
+                    </td>
+                    <td>
+                        <small  data-toggle="tooltip" data-placement="top" title="{{ item.conflicts ? 'label.sync_conflict'|trans : (item.localEditions ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans) }}">
+                            <strong class="code-text">{{ item.code }}</strong>
+                        </small>
+                    </td>
+                    {% for locale in locales %}
+                        <td class="value-content data-{{ locale }}">{{ item.values[locale].value|default }}</td>
+                    {% endfor %}
+                    <td class="text-center" style="vertical-align: middle">
+                        <a href="#" class="edit-translation btn btn-default btn-xs">
+                            <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {{ block('translation_modal') }}
+{% endblock %}
+
+{% block translation_modal %}
+
+    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+
+    <div class="modal fade" id="translation-form-modal">
+        <div class="modal-dialog {#modal-lg#}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">{{ 'label.translation_form'|trans }}</h4>
+                </div>
+                {{ form_start(form) }}
+                <div class="modal-body">
+                    <div id="form-errors"></div>
+                    {{ form_row(form.code) }}
+                    {{ form_row(form.domain) }}
+                    {% for locale, value in form.values %}
+                        {{ form_row(value.value, {label:locale|title}) }}
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                            data-dismiss="modal">{{ 'label.close'|trans }}</button>
+                    <button type="submit" class="btn btn-primary">{{ 'label.save_changes'|trans }}</button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(function () {
+                    var $modal = $('#translation-form-modal');
+                    var $form = $modal.find('form');
+                    var save_path_new = '{{ path('manuel_translation_save_translation_new') }}';
+                    var save_path_update = '{{ path('manuel_translation_save_translation', {id: '_ID_'}) }}';
+                    var $currentItem = null;
+                    var $formErrorsContainer = $("#form-errors");
+
+                    var $buttonAdd = $("#add-translation");
+
+                    $buttonAdd.on('click', function (e) {
+                        e.preventDefault();
+                        $modal.modal('show');
+                        $currentItem = null;
+                        updateForm({});
+                    });
+
+                    $form.on('submit', function (e) {
+                        e.preventDefault();
+                        var path = $currentItem ?
+                                save_path_update.replace(/_ID_/, $currentItem.data('id')) :
+                                save_path_new;
+                        $.post(path, $form.serializeArray(), function (res) {
+                            if (res === 'Ok') {
+                                if (!$currentItem) {
+                                    window.location.reload();
+                                }
+                                $currentItem.data('local-edit', $currentItem.data('local-edit') + 1);
+                                updateListFromForm($currentItem);
+                                $modal.modal('hide');
+                            } else {
+                                //errores en el formulario
+                                $formErrorsContainer.html(res);
+                            }
+                        });
+                    });
+
+                    $modal.on('show.bs.modal', function () {
+//                        updateFormFromList($currentItem);
+                        $formErrorsContainer.html('');
+                    });
+
+                    $('.translation-list').on('click', '.edit-translation', function (e) {
+                        e.preventDefault();
+                        updateFormFromList($currentItem = $(this).closest('tr'));
+                        $modal.modal('show');
+                    });
+
+                    function getValuesFromList($tr) {
+                        return {
+                            new: false,
+                            code: $tr.find('.code-text').html().trim(),
+                            domain: $tr.data('domain').trim(),
+                            localEdit: $tr.data('local-edit'),
+                            values: {
+                                {% for locale, item in form.values -%}
+                                '{{ locale }}': $tr.find('.value-content.data-{{ locale }}').html().trim(),
+                                {% endfor %}
+                            }
+                        };
+                    }
+
+                    function updateListFromForm($tr) {
+                        if ($tr) {
+                            {#$("#{{ form.code.vars.id }}").val($("#{{ form.code.vars.id }}").val());#}
+                            {#$tr.data('domain', $("#{{ form.domain.vars.id }}").val());#}
+                            {% for locale, item in form.values -%}
+                            $tr.find(".value-content.data-{{ locale }}").html($("#{{ item.value.vars.id }}").val());
+                            {% endfor %}
+                        }
+                    }
+
+                    function updateFormFromList($tr) {
+                        if ($tr) {
+                            var data = getValuesFromList($tr);
+                            updateForm(data);
+                        }
+                    }
+
+                    function updateForm(data) {
+
+                        if (!_.isUndefined(data.code)) {
+                            $("#{{ form.code.vars.id }}, #{{ form.domain.vars.id }}").attr('disabled', 'desabled');
+                        } else {
+                            $("#{{ form.code.vars.id }}, #{{ form.domain.vars.id }}").attr('disabled', false);
+                        }
+
+                        $("#{{ form.code.vars.id }}").val(_.isUndefined(data.code) ? null : data.code);
+                        $("#{{ form.domain.vars.id }}").val(_.isUndefined(data.domain) ? 'messages' : data.domain);
+                        $("#{{ form.localEditions.vars.id }}").val(_.isUndefined(data.localEdit) ? 0 : data.localEdit);
+                        {% for locale, item in form.values -%}
+                        if (!_.isUndefined(data.values) && !_.isUndefined(data.values['{{ locale}}'])) {
+                            $("#{{ item.value.vars.id }}").val(data.values['{{ locale}}']);
+                        } else {
+                            $("#{{ item.value.vars.id }}").val('');
+                        }
+                        {% endfor %}
+                    }
+                }
+        )
+        ;
+    </script>
+{% endblock %}

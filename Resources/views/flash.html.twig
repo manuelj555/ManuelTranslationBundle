@@ -1,0 +1,14 @@
+{% if app.session.flashbag.peekAll|length > 0 %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% for type, messages in app.session.flashbag %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        {{ message|raw }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

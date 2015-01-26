@@ -1,0 +1,35 @@
+{% form_theme form_filter 'bootstrap_3_layout.html.twig' %}
+{% form_theme form_filter.search 'bootstrap_3_horizontal_layout.html.twig' %}
+{% trans_default_domain "ManuelTranslationBundle" %}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        {{ form_start(form_filter) }}
+        <div class="row">
+            <div class="col-sm-8 col-md-9">
+                <div class="form-horizontal">
+                    {{ form_row(form_filter.search) }}
+                </div>
+                <div class="form-inline">
+                    <div class="col-sm-2 text-right">{{ 'label.domains'|trans }}</div>
+                    <div class="col-sm-10">
+                        {% for item in form_filter.domains %}
+                            {{ form_row(item) }}
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 col-md-3 text-right">
+                <button type="submit" class="btn btn-info">
+                    <span aria-hidden="true" class="glyphicon glyphicon-repeat"></span> {{ 'label.apply'|trans }}
+                </button>
+                <a class="btn btn-default" href="{{ path('manuel_translation_remove_filters') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-repeat"></span>
+                    {{ 'label.clear'|trans }}
+                </a>
+            </div>
+        </div>
+        {{ form_end(form_filter) }}
+    </div>
+</div>

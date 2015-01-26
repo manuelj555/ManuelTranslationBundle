@@ -1,0 +1,11 @@
+services:
+    manuel_translation.translations_repository:
+        class: ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository
+        factory: [@doctrine.orm.entity_manager, getRepository]
+        arguments: ['ManuelTranslationBundle:Translation']
+
+    manuel_translation.translations_doctrine_loader:
+        class: ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader
+        arguments: [@manuel_translation.translations_repository, %manuel_translation.filename_template%]
+        tags:
+            - { name: translation.loader, alias: doctrine }
