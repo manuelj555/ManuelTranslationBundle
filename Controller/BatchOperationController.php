@@ -15,6 +15,7 @@ use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Translation\Catalogue\DiffOperation;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
 use Symfony\Component\Translation\MessageCatalogue;
 
@@ -123,45 +124,36 @@ class BatchOperationController extends Controller
     }
 
     /**
-     * @Route("/remove-unused-translations")
+     * @Route("/inactive-unused-translations")
      */
-    public function removeUnusedTranslationsAction()
+    public function inactiveUnusedTranslationsAction()
     {
-        $locale = current($this->container->getParameter('manuel_translation.locales'));
-        $dirs = $this->container->getParameter('manuel_translation.extract_dirs');
-
+        $locales = $this->container->getParameter('manuel_translation.locales');
+        $locale = current($locales);
+        $extractDirs = $this->container->getParameter('manuel_translation.extract_dirs');
+        $transFilesDirs = $this->container->getParameter('manuel_translation.translations_files_dirs');
         $extractor = $this->get('translation.extractor');
+        $transRepository = $this->get('manuel_translation.translations_repository');
 
         $usedMessages = new MessageCatalogue($locale);
 
-        foreach ($dirs as $dir) {
-            dump($dir);
+        foreach ($extractDirs as $dir) {
             $extractor->extract($dir, $usedMessages);
         }
 
-        $locales = $this->container->getParameter('manuel_translation.locales');
-        $dirs = $this->container->getParameter('manuel_translation.translations_files_dirs');
+        $bdMessages = $this->get('manuel_translation.translations_doctrine_loader')->load(null, 'en');
 
-        foreach ($locales as $locale) {
-            $catalogue = new MessageCatalogue($locale);
-            $used = new MessageCatalogue($locale, $usedMessages->all());
+        $operation = new DiffOperation($bdMessages, $usedMessages);
 
-            foreach ($dirs as $dir) {
-                $this->get('manuel_translation.translation_loader')->loadMessages($dir, $catalogue);
+        foreach ($bdMessages->all() as $domain => $items) {
+            if ($obsoletes = $operation->getObsoleteMessages($domain)) {
+                $transRepository->inactiveByDomainAndCodes($domain, array_values($obsoletes));
             }
-
-            $op = new MergeOperation($catalogue, $used);
-
-            $merge = $op->getResult();
-
-            dump($merge);
-            $this->get('manuel_translation.translations_doctrine_dumper')->dump($merge);
         }
 
-        $this->addFlash('success', 'Database Loaded!!!');
+        $this->addFlash('success', 'Database Purged!!!');
 
-//        dump($messages->all());
+        return $this->redirectToRoute('manuel_translation_list');
 
-        die;
     }
 }

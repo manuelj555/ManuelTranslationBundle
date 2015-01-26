@@ -53,7 +53,7 @@
             {% for item in translations %}
                 <tr data-id="{{ item.id }}" data-domain="{{ item.domain }}" data-local-edit="{{ item.localEditions }}">
                     <td>
-                        <small class="text-{{ item.conflicts ? 'danger' : item.localEditions ? 'success' : 'muted' }}">{{ item.domain }}</small>
+                        <small class="text-{{ item.active ? (item.conflicts ? 'danger' : item.localEditions ? 'success' : 'muted') : 'warning' }}">{{ item.domain }}</small>
                     </td>
                     <td>
                         <small data-toggle="tooltip" data-placement="top"

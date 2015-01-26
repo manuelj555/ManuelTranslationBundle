@@ -163,4 +163,17 @@ class TranslationRepository extends EntityRepository
 //            ->set('t.', time())
 //            ;
 //    }
+
+    public function inactiveByDomainAndCodes($domain, $codes)
+    {
+        return $this->createQueryBuilder('t')
+            ->update('ManuelTranslationBundle:Translation', 't')
+            ->set('t.active', 'false')
+            ->where('t.domain = :domain')
+            ->andWhere('t.code IN (:codes)')
+            ->setParameter('domain', $domain)
+            ->setParameter('codes', (array) $codes)
+            ->getQuery()
+            ->execute();
+    }
 }
