@@ -79,6 +79,10 @@
                 <source>flash.sync_complete</source>
                 <target>Sincronización Completa, "%updated%" elementos actualizados!</target>
             </trans-unit>
+            <trans-unit id="label.filter_status">
+                <source>label.filter_status</source>
+                <target>Estado</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

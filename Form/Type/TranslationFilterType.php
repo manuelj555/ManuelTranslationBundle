@@ -60,6 +60,9 @@ class TranslationFilterType extends AbstractType
             'multiple' => true,
             'required' => false,
         ));
+
+        $builder->add('conflicts', 'checkbox', array('required' => false));
+        $builder->add('changed', 'checkbox', array('required' => false));
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

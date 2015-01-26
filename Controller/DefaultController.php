@@ -24,6 +24,8 @@ class DefaultController extends Controller
         $session = $this->get('session');
         $filters = $session->get('manuel_translations.trans_filter', array(
             'search' => null,
+            'conflicts' => null,
+            'changed' => null,
             'domains' => array('messages'),
         ));
 
@@ -38,7 +40,7 @@ class DefaultController extends Controller
 
         $translations = $this->getDoctrine()
             ->getRepository('ManuelTranslationBundle:Translation')
-            ->getAll($filters['search'], $filters['domains']);
+            ->getAll($filters['search'], $filters['domains'], null, $filters['conflicts'], $filters['changed']);
 
         $form = $this->createForm(new TranslationType(), $this->getNewTranslationInstance());
 

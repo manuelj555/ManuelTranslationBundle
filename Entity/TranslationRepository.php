@@ -12,7 +12,8 @@ use Doctrine\ORM\EntityRepository;
  */
 class TranslationRepository extends EntityRepository
 {
-    public function getAllQueryBuilder($search = null, $domain = null, $onlyNews = null)
+    public function getAllQueryBuilder($search = null, $domain = null, $onlyNews = null,
+        $onlyConflicted = null, $onlyChanged = null)
     {
         $query = $this->createQueryBuilder('translation')
             ->select('translation, values')
@@ -33,17 +34,25 @@ class TranslationRepository extends EntityRepository
                 ->setParameter('domain', $domain);
         }
 
-        if (null !== $onlyNews) {
-            $query->andWhere('translation.new = :only_news')
-                ->setParameter('only_news', $onlyNews);
+        if (null != $onlyNews) {
+            $query->andWhere('translation.new = true');
+        }
+
+        if (null != $onlyConflicted) {
+            $query->andWhere('translation.conflicts = true');
+        }
+
+        if (null != $onlyChanged) {
+            $query->andWhere('translation.localEditions > 0');
         }
 
         return $query;
     }
 
-    public function getAll($search = null, $domain = null, $onlyNews = null)
+    public function getAll($search = null, $domain = null, $onlyNews = null,
+        $onlyConflicted = null, $onlyChanged = null)
     {
-        return $this->getAllQueryBuilder($search, $domain, $onlyNews)
+        return $this->getAllQueryBuilder($search, $domain, $onlyNews, $onlyConflicted, $onlyChanged)
             ->getQuery()
             ->getArrayResult();
     }

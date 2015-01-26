@@ -79,6 +79,10 @@
                 <source>label.sync_complete</source>
                 <target>Synchronization Comeplete, "%updated%" updated items!</target>
             </trans-unit>
+            <trans-unit id="label.filter_status">
+                <source>label.filter_status</source>
+                <target>Status</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
