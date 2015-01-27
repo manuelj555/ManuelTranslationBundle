@@ -21,9 +21,15 @@ class TranslationRepository extends EntityRepository
             ->orderBy('translation.domain,translation.code');
 
         if (null !== $search) {
+            $sub = $this->getEntityManager()
+                ->getRepository('ManuelTranslationBundle:TranslationValue')
+                ->createQueryBuilder('tv_sub')
+                ->where('tv_sub.value LIKE :search')
+                ->andWhere('tv_sub.translation = translation');
+
             $part = $query->expr()->orX()
-                ->add('translation.code LIKE :search');
-//                ->add('values.value LIKE :search');
+                ->add('translation.code LIKE :search')
+                ->add($query->expr()->exists($sub));
 
             $query->andWhere($part)
                 ->setParameter('search', "%$search%");

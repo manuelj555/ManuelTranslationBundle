@@ -12,6 +12,7 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Translation;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader;
+use Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Translation\Catalogue\DiffOperation;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
@@ -29,9 +30,13 @@ class TranslationManager
      */
     private $extractor;
     /**
-     * @var DoctrineLoader
+     * @var TranslationLoader
      */
     private $translationLoader;
+    /**
+     * @var DoctrineLoader
+     */
+    private $doctrineLoader;
     /**
      * @var DumperInterface
      */
@@ -46,7 +51,7 @@ class TranslationManager
     private $backupDir;
     private $backupDumper;
 
-    function __construct($extractor, $translationLoader, $translationDumper, $translationRepository, $locales, $extractDirs, $translationFilesDirs)
+    function __construct($extractor, $translationLoader, $doctrineLoader, $translationDumper, $translationRepository, $locales, $extractDirs, $translationFilesDirs)
     {
         $this->extractor = $extractor;
         $this->translationLoader = $translationLoader;
@@ -55,6 +60,7 @@ class TranslationManager
         $this->extractDirs = $extractDirs;
         $this->translationFilesDirs = $translationFilesDirs;
         $this->translationRepository = $translationRepository;
+        $this->doctrineLoader = $doctrineLoader;
     }
 
     /**
@@ -85,7 +91,7 @@ class TranslationManager
         return $usedMessages;
     }
 
-    protected function loadMessages($locale)
+    protected function loadFileMessages($locale)
     {
         $catalogue = new MessageCatalogue($locale);
 
@@ -98,16 +104,21 @@ class TranslationManager
 
     public function extractToDatabase()
     {
-        $usedMessages = $this->getUsedMessages();
+        $usedMessages = $this->getUsedMessages()->all();
 
         foreach ($this->locales as $locale) {
-            $used = new MessageCatalogue($locale, $usedMessages->all());
-            $catalogue = $this->loadMessages($locale);
+            $fileMessages = $this->loadFileMessages($locale);
+            $forDump = new MessageCatalogue($locale, $usedMessages);
 
-            $operation = new MergeOperation($catalogue, $used);
-            $merge = $operation->getResult();
+            foreach ($usedMessages as $domain => $items) {
+                foreach ($items as $usedCode => $usedValue) {
+                    if ($fileMessages->has($usedCode, $domain)) {
+                        $forDump->set($usedCode, $fileMessages->get($usedCode, $domain), $domain);
+                    }
+                }
+            }
 
-            $this->translationDumper->dump($merge);
+            $this->translationDumper->dump($forDump);
         }
     }
 
@@ -115,7 +126,7 @@ class TranslationManager
     {
         $usedMessages = $this->getUsedMessages();
 
-        $bdMessages = $this->translationLoader->load(null, 'en');
+        $bdMessages = $this->doctrineLoader->load(null, 'en');
 
         $operation = new DiffOperation($bdMessages, $usedMessages);
 

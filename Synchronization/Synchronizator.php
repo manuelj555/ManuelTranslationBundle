@@ -53,6 +53,7 @@ class Synchronizator
 
         /* @var $local Translation */
         foreach ($localTranslations as $local) {
+            set_time_limit(10);
             if (!$this->existsInServer($serverTranslations, $local)) {
                 //si no existe, lo creamos en el server.
                 $this->createInServer($local);
@@ -89,6 +90,7 @@ class Synchronizator
 
         foreach ($serverTranslations as $domain => $items) {
             foreach ($items as $code => $server) {
+                set_time_limit(10);
                 if ($this->existsInLocal($localTranslations, $server)) {
                     /* @var $local Translation */
                     $local = $localTranslations[$server['domain']][$server['code']];

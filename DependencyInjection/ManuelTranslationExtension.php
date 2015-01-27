@@ -76,6 +76,6 @@ class ManuelTranslationExtension extends Extension
         }
 
         $container->setParameter('manuel_translation.extract_dirs', $extractDirs);
-        $container->setParameter('manuel_translation.translations_files_dirs', $extractDirs);
+        $container->setParameter('manuel_translation.translations_files_dirs', $translationFilesDirs);
     }
 }

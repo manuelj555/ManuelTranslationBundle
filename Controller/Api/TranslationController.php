@@ -142,4 +142,16 @@ class TranslationController extends Controller
 
         return new Response($entity->getSynchronizations());
     }
+
+    /**
+     * @Route("/generate-backup")
+     * @Method({"POST", "PUT"})
+     * @return JsonResponse
+     */
+    public function generateBackupAction()
+    {
+        $this->get('manuel_translation.translation_manager')->generateBackup();
+
+        return new Response('Ok');
+    }
 }

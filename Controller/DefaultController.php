@@ -17,9 +17,9 @@ use Symfony\Component\Translation\MessageCatalogue;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/", name="manuel_translation_list")
+     * @Route("/list/{page}", name="manuel_translation_list", defaults={"page" = 1})
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $page = 1)
     {
         $session = $this->get('session');
         $filters = $session->get('manuel_translations.trans_filter', array(
@@ -38,11 +38,13 @@ class DefaultController extends Controller
             $session->set('manuel_translations.trans_filter', $filters);
         }
 
-        $translations = $this->getDoctrine()
+        $query = $this->getDoctrine()
             ->getRepository('ManuelTranslationBundle:Translation')
-            ->getAll($filters['search'], $filters['domains'], null, $filters['conflicts'], $filters['changed']);
+            ->getAllQueryBuilder($filters['search'], $filters['domains'], null, $filters['conflicts'], $filters['changed']);
 
         $form = $this->createForm('manuel_translation', $this->getNewTranslationInstance());
+
+        $translations = $this->get('knp_paginator')->paginate($query, $page, 50);
 
         return $this->render('@ManuelTranslation/Default/index.html.twig', array(
             'translations' => $translations,

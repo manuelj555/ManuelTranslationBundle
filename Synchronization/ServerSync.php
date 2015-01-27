@@ -63,7 +63,7 @@ class ServerSync
         } catch (ClientException $e) {
             if ($e->getResponse()->getStatusCode() == SfResponse::HTTP_BAD_REQUEST
             ) {
-                $translation->setConflicts(true);
+                //$translation->setConflicts(true);
             }
         }
     }
