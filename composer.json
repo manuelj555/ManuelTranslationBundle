@@ -1,6 +1,9 @@
 {
     "name": "manuelj555/manuel-translation-bundle",
     "require": {
-        
+        "symfony/framework-bundle": "~2.5"  
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "~5.0"
     }
 }
