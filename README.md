@@ -48,12 +48,12 @@ manuel_translation_api:
 
 Por ultimo se debe crear la base de datos (si no se ha hecho aun) y agregar a la bd las tablas competentes al bundle, por lo que se deben ejecutar los siguientes comandos de consola:
 
-    app\console doctrine:database:create
-    console doctrine:schema:update --force
+    php app/console doctrine:database:create
+    php app/console doctrine:schema:update --force
 
-Además ejecutar el comando 
+Además ejecutar el comando:
     
-    app/console assets:install
+    php app/console assets:install
 
 Con esto ya se ha instalado correctamente el bundle.
 
