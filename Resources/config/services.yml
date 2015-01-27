@@ -15,3 +15,17 @@ services:
         arguments: [@manuel_translation.translations_repository]
         tags:
             - { name: form.type , alias: manuel_translation }
+
+    manuel_translation.translation_manager:
+        class: ManuelAguirre\Bundle\TranslationBundle\Translation\TranslationManager
+        arguments:
+            - @translation.extractor
+            - @manuel_translation.translations_doctrine_loader
+            - @manuel_translation.translations_doctrine_dumper
+            - @manuel_translation.translations_repository
+            - %manuel_translation.locales%
+            - %manuel_translation.extract_dirs%
+            - %manuel_translation.translations_files_dirs%
+        calls:
+            - ['setBackupDumper', [@translation.dumper.php]]
+            - ['setBackupDir', [%manuel_translation.translations_backup_dir%]]

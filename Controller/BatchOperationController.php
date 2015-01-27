@@ -31,31 +31,7 @@ class BatchOperationController extends Controller
      */
     public function transferFilesToBdAction()
     {
-        $locales = $this->container->getParameter('manuel_translation.locales');
-        $locale = current($locales);
-        $extractDirs = $this->container->getParameter('manuel_translation.extract_dirs');
-        $transFilesDirs = $this->container->getParameter('manuel_translation.translations_files_dirs');
-        $extractor = $this->get('translation.extractor');
-
-        $usedMessages = new MessageCatalogue($locale);
-
-        foreach ($extractDirs as $dir) {
-            $extractor->extract($dir, $usedMessages);
-        }
-
-        foreach ($locales as $locale) {
-            $catalogue = new MessageCatalogue($locale);
-            $used = new MessageCatalogue($locale, $usedMessages->all());
-
-            foreach ($transFilesDirs as $dir) {
-                $this->get('manuel_translation.translation_loader')->loadMessages($dir, $catalogue);
-            }
-
-            $operation = new MergeOperation($catalogue, $used);
-            $merge = $operation->getResult();
-
-            $this->get('manuel_translation.translations_doctrine_dumper')->dump($merge);
-        }
+        $this->get('manuel_translation.translation_manager')->extractToDatabase();
 
         $this->addFlash('success', 'Database Loaded!!!');
 
@@ -67,15 +43,7 @@ class BatchOperationController extends Controller
      */
     public function synchronizeUpAction()
     {
-        $response = $this->forward('ManuelTranslationBundle:Api/Translation:getAll');
-
-        $serverTranslations = json_decode($response->getContent(), true);
-
-        $sync = $this->get('manuel_translation.synchronizator');
-
-        $sync->serverItems = $serverTranslations;
-
-        $result = $sync->up($updated);
+        $result = $this->get('manuel_translation.synchronizator')->up($updated);
 
 //        if ($result == Synchronizator::STATUS_CONFLICT) {
 //            return $this->redirectToRoute('manuel_translation_show_conflicts');
@@ -92,15 +60,7 @@ class BatchOperationController extends Controller
      */
     public function synchronizeDownAction()
     {
-        $response = $this->forward('ManuelTranslationBundle:Api/Translation:getAll');
-
-        $serverTranslations = json_decode($response->getContent(), true);
-
-        $sync = $this->get('manuel_translation.synchronizator');
-
-        $sync->serverItems = $serverTranslations;
-
-        $result = $sync->down($updated);
+        $result = $this->get('manuel_translation.synchronizator')->down($updated);
 
 //        if ($result == Synchronizator::STATUS_CONFLICT) {
 //            return $this->redirectToRoute('manuel_translation_show_conflicts');
@@ -128,32 +88,22 @@ class BatchOperationController extends Controller
      */
     public function inactiveUnusedTranslationsAction()
     {
-        $locales = $this->container->getParameter('manuel_translation.locales');
-        $locale = current($locales);
-        $extractDirs = $this->container->getParameter('manuel_translation.extract_dirs');
-        $transFilesDirs = $this->container->getParameter('manuel_translation.translations_files_dirs');
-        $extractor = $this->get('translation.extractor');
-        $transRepository = $this->get('manuel_translation.translations_repository');
-
-        $usedMessages = new MessageCatalogue($locale);
-
-        foreach ($extractDirs as $dir) {
-            $extractor->extract($dir, $usedMessages);
-        }
-
-        $bdMessages = $this->get('manuel_translation.translations_doctrine_loader')->load(null, 'en');
-
-        $operation = new DiffOperation($bdMessages, $usedMessages);
-
-        foreach ($bdMessages->all() as $domain => $items) {
-            if ($obsoletes = $operation->getObsoleteMessages($domain)) {
-                $transRepository->inactiveByDomainAndCodes($domain, array_values($obsoletes));
-            }
-        }
+        $this->get('manuel_translation.translation_manager')->inactiveUnused();
 
         $this->addFlash('success', 'Database Purged!!!');
 
         return $this->redirectToRoute('manuel_translation_list');
+    }
 
+    /**
+     * @Route("/generate-backup", name="manuel_translation_generate_backup")
+     */
+    public function generateBackupAction()
+    {
+        $this->get('manuel_translation.translation_manager')->generateBackup();
+
+        $this->addFlash('success', 'Database backup Complete!!!');
+
+        return $this->redirectToRoute('manuel_translation_list');
     }
 }

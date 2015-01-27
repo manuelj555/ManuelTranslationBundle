@@ -91,6 +91,10 @@
                 <source>label.with_changes</source>
                 <target>With Changes</target>
             </trans-unit>
+            <trans-unit id="label.inactive_unused_trans">
+                <source>label.inactive_unused_trans</source>
+                <target>Invactive Unused Traductions</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

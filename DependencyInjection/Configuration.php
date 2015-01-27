@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('backup_dir')->defaultValue('%kernel.root_dir%/trans-backup/')->end()
                 ->arrayNode('bundles')
                     ->prototype('scalar')
                 ->end()
