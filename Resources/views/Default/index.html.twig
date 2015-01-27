@@ -30,6 +30,10 @@
                     <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
                     {{ 'label.load_trans_in_bd'|trans }}
                 </a></li>
+            <li><a href="{{ path('manuel_translation_inactive_unused') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
+                    {{ 'label.inactive_unused_trans'|trans }}
+                </a></li>
         </ul>
     </div>
 {% endblock %}
@@ -51,13 +55,14 @@
         </thead>
         <tbody>
             {% for item in translations %}
-                <tr data-id="{{ item.id }}" data-domain="{{ item.domain }}" data-local-edit="{{ item.localEditions }}">
+                <tr data-id="{{ item.id }}" data-domain="{{ item.domain }}" data-local-edit="{{ item.localEditions }}"
+                        {%- if not item.active %}class="text-muted"{% endif %}>
                     <td>
-                        <small class="text-{{ item.active ? (item.conflicts ? 'danger' : item.localEditions ? 'success' : 'muted') : 'warning' }}">{{ item.domain }}</small>
+                        <small class="text-{{ item.active ? (item.conflicts ? 'danger' : item.localEditions ? 'success' : 'muted') : 'muted' }}">{{ item.domain }}</small>
                     </td>
                     <td>
                         <small data-toggle="tooltip" data-placement="top"
-                               title="{{ item.conflicts ? 'label.sync_conflict'|trans : (item.localEditions ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans) }}">
+                               title="{{ item.active ? (item.conflicts ? 'label.sync_conflict'|trans : (item.localEditions ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans)) : 'label.status_unused'|trans }}">
                             <strong class="code-text">{{ item.code }}</strong>
                         </small>
                     </td>
@@ -65,9 +70,11 @@
                         <td class="value-content data-{{ locale }}">{{ item.values[locale].value|default }}</td>
                     {% endfor %}
                     <td class="text-center" style="vertical-align: middle">
-                        <a href="#" class="edit-translation btn btn-default btn-xs">
-                            <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
-                        </a>
+                        {% if item.active %}
+                            <a href="#" class="edit-translation btn btn-default btn-xs">
+                                <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
+                            </a>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -180,7 +187,7 @@
                         {% endfor %}
                     }
 
-                    $(".existen-domains :radio").on('click', function(e){
+                    $(".existen-domains :radio").on('click', function (e) {
                         $("#{{ form.domain.vars.id }}").val($(this).val());
                     });
                 }

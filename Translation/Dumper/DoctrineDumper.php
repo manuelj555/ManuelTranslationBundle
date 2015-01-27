@@ -70,6 +70,9 @@ class DoctrineDumper implements DumperInterface
                         $translations[$domain][$code]->setValue($locale, $value);
                     }
 
+                    //si se está usando, lo activamos
+                    $translations[$domain][$code]->setActive(true);
+
                 } else {
                     $t = $this->existentTranslations[$domain][$code] = new Translation($code);
 

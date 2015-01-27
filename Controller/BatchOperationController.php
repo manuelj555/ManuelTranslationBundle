@@ -124,7 +124,7 @@ class BatchOperationController extends Controller
     }
 
     /**
-     * @Route("/inactive-unused-translations")
+     * @Route("/inactive-unused-translations", name="manuel_translation_inactive_unused")
      */
     public function inactiveUnusedTranslationsAction()
     {

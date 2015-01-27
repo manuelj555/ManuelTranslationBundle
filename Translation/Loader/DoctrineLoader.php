@@ -51,15 +51,7 @@ class DoctrineLoader implements LoaderInterface
      */
     public function load($resource, $locale, $domain = 'messages')
     {
-//        if($this->translationRepository->isFresh()){
-//            return;
-//        }
-
-        //La idea es leer de la base de datos, por el locale, y el dominio
-
-        // @todo: verificar porque por el domino es importante
-
-        $translations = $this->translationRepository->getTranslationsByLocale($locale);
+        $translations = $this->translationRepository->getActiveTranslationsByLocale($locale);
 
         $catalogue = new MessageCatalogue($locale);
 
