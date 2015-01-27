@@ -7,7 +7,7 @@ Agregar al composer.json:
 
 ```json
 "require" : {
-    "manuelj555/upload-data-bundle": "dev-master"
+    "manuelj555/manuel-translation-bundle": "dev-master"
 }
 ```
 
