@@ -45,9 +45,11 @@ class BatchOperationController extends Controller
     {
         $result = $this->get('manuel_translation.synchronizator')->up($updated);
 
-//        if ($result == Synchronizator::STATUS_CONFLICT) {
-//            return $this->redirectToRoute('manuel_translation_show_conflicts');
-//        }
+        if ($result == Synchronizator::STATUS_CONFLICT OR
+            $this->get('manuel_translation.translations_repository')->hasConflicts()
+        ) {
+            return $this->redirectToRoute('manuel_translation_show_conflicts');
+        }
 
         $this->addFlash('success', $this->get('translator')
             ->trans('flash.sync_complete', array('%updated%' => $updated), 'ManuelTranslationBundle'));
@@ -62,9 +64,11 @@ class BatchOperationController extends Controller
     {
         $result = $this->get('manuel_translation.synchronizator')->down($updated);
 
-//        if ($result == Synchronizator::STATUS_CONFLICT) {
-//            return $this->redirectToRoute('manuel_translation_show_conflicts');
-//        }
+        if ($result == Synchronizator::STATUS_CONFLICT OR
+            $this->get('manuel_translation.translations_repository')->hasConflicts()
+        ) {
+            return $this->redirectToRoute('manuel_translation_show_conflicts');
+        }
 
         $this->addFlash('success', $this->get('translator')
             ->trans('flash.sync_complete', array('%updated%' => $updated), 'ManuelTranslationBundle'));
@@ -77,10 +81,22 @@ class BatchOperationController extends Controller
      */
     public function editConflictsAction()
     {
+        $translations = $this->get('manuel_translation.translations_repository')
+            ->getAllWithConflicts();
 
-//        $this->addFlash('success', 'Synchronization Complete!!!');
+        if (!count($translations)) {
+            $this->addFlash('info', $this->get('translator')
+                ->trans('flash.no_conflicts', array(), 'ManuelTranslationBundle'));
 
-        return $this->redirectToRoute('manuel_translation_list');
+            return $this->redirectToRoute('manuel_translation_list');
+        }
+
+        $serverTranslations = $this->get('manuel_translation.server_sync')->findAll();
+
+        return $this->render('@ManuelTranslation/Default/edit_conflicts.html.twig', array(
+            'translations' => $translations,
+            'server_translations' => $serverTranslations,
+        ));
     }
 
     /**
@@ -105,5 +121,22 @@ class BatchOperationController extends Controller
         $this->addFlash('success', 'Database backup Complete!!!');
 
         return $this->redirectToRoute('manuel_translation_list');
+    }
+
+    /**
+     * @Route("/resolve-conflict/{id}-{use}",
+     *  name="manuel_translation_resolve_conflict",
+     *  requirements={"use" = "local|server"}
+     * )
+     */
+    public function resolveConflictAction(Translation $translation, $use)
+    {
+        if ($use === 'local') {
+            $this->get('manuel_translation.synchronizator')->resolveConflictUsingLocal($translation);
+        } else {
+            $this->get('manuel_translation.synchronizator')->resolveConflictUsingServer($translation);
+        }
+
+        return new Response('Ok');
     }
 }

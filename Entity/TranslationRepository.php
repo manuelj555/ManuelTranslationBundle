@@ -3,6 +3,7 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 
 /**
  * TranslationRepository
@@ -84,6 +85,14 @@ class TranslationRepository extends EntityRepository
     {
         return $this->getAllQueryBuilder(null, null, null)
             ->andWhere('translation.conflicts = false')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getAllWithConflicts()
+    {
+        return $this->getAllQueryBuilder(null, null, null)
+            ->andWhere('translation.conflicts = true')
             ->getQuery()
             ->getResult();
     }
@@ -185,5 +194,28 @@ class TranslationRepository extends EntityRepository
             ->setParameter('codes', (array) $codes)
             ->getQuery()
             ->execute();
+    }
+
+    public function hasConflicts()
+    {
+        return $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.conflicts = true')
+            ->getQuery()
+            ->getSingleScalarResult() > 0;
+    }
+
+    public function getOneArrayByCodeAndDomain($code, $domain)
+    {
+        return $this->createQueryBuilder('t')
+            ->select('t, values')
+            ->join('t.values', 'values')
+            ->where('t.domain = :domain')
+            ->andWhere('t.code = :code')
+//            ->groupBy('t.id')
+            ->setParameter('domain', $domain)
+            ->setParameter('code', $code)
+            ->getQuery()
+            ->getOneOrNullResult(Query::HYDRATE_ARRAY);
     }
 }

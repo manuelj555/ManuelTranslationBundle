@@ -33,14 +33,15 @@ class ServerSync
 
     public function add(Translation $translation)
     {
-        return $this->update($translation->getCode(), $translation->getDomain(), $translation);
+        return $this->update($translation);
     }
 
-    public function update($code, $domain, Translation $translation)
+    public function update(Translation $translation, $force = false)
     {
         $postData = array(
-            'domain' => $domain,
-            'code' => $code,
+            'force' => $force,
+            'domain' => $translation->getDomain(),
+            'code' => $translation->getCode(),
             'synchronizations' => $translation->getSynchronizations(),
             'new' => $translation->getNew(),
             'active' => $translation->getActive(),
@@ -52,7 +53,6 @@ class ServerSync
             $postData['values'][$locale] = $value->getValue();
         }
 
-
         try {
             $response = $this->guzzle->post('save', array(
                 'body' => $postData,
@@ -60,6 +60,7 @@ class ServerSync
 
             $translation->setSynchronizations((string) $response->getBody());
             $translation->setLocalEditions(0);
+            $translation->setConflicts(false);
         } catch (ClientException $e) {
             if ($e->getResponse()->getStatusCode() == SfResponse::HTTP_BAD_REQUEST
             ) {
@@ -70,7 +71,14 @@ class ServerSync
 
     public function find($code, $domain)
     {
-        dump($code, $domain);
+        $response = $this->guzzle->get('find', array(
+            'query' => array(
+                'code' => $code,
+                'domain' => $domain,
+            )
+        ));
+
+        return $response->json();
     }
 
     public function findAll()

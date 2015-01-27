@@ -21,9 +21,9 @@ class Translation
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="string", length=255)
+     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -433,13 +433,5 @@ class Translation
     public function getConflicts()
     {
         return $this->conflicts;
-    }
-
-    /**
-     * @ORM\PrePersist()
-     */
-    public function setIdValue()
-    {
-        $this->id = sha1($this->getCode() . $this->getDomain());
     }
 }

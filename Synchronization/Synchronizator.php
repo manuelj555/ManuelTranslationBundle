@@ -62,7 +62,7 @@ class Synchronizator
                 $server = $serverTranslations[$local->getDomain()][$local->getCode()];
 
                 if (!$this->isServerChanged($server, $local)) {
-                    $this->updateServer($server, $local);
+                    $this->updateServer($local);
                     ++$updatedItems;
                 } else {
                     //conflict
@@ -161,9 +161,9 @@ class Synchronizator
         }
     }
 
-    public function updateServer($server, Translation $translation)
+    public function updateServer(Translation $translation, $force = false)
     {
-        $this->serverSync->update($server['code'], $server['domain'], $translation);
+        $this->serverSync->update($translation, $force);
     }
 
     public function createInServer(Translation $translation)
@@ -189,5 +189,21 @@ class Synchronizator
     public function markUpdated($server)
     {
         $this->serverSync->markUpdated($server['code'], $server['domain']);
+    }
+
+    public function resolveConflictUsingLocal(Translation $translation)
+    {
+        $this->updateServer($translation, true);
+
+        $this->em->flush();
+    }
+
+    public function resolveConflictUsingServer(Translation $translation)
+    {
+        $data = $this->serverSync->find($translation->getCode(), $translation->getDomain());
+dump($data);
+        $this->updateLocal($translation, $data);
+
+        $this->em->flush();
     }
 }

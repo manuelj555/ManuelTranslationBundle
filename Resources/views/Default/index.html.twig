@@ -44,6 +44,13 @@
                 </a>
             </li>
             <li class="divider"></li>
+            <li>
+                <a href="{{ path('manuel_translation_show_conflicts') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-eye-open"></span>
+                    {{ 'label.show_conflicts'|trans }}
+                </a>
+            </li>
+            <li class="divider"></li>
             <li><a href="{{ path('manuel_translation_transfer_files_to_bd') }}">
                     <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
                     {{ 'label.load_trans_in_bd'|trans }}
@@ -67,7 +74,7 @@
     {{ include('@ManuelTranslation/translations_filter.html.twig') }}
     {{ pagination_content }}
 
-    <table class="table table-striped table-bordered table-hover translation-list">
+    <table class="table table-bordered table-condensed translation-list">
         <thead>
             <tr>
                 {#<th class="col-sm-1"></th>#}
@@ -92,8 +99,8 @@
                         </div>
                         <div>
                             <small class="text-{{ item.active ? (item.conflicts ? 'danger' : item.localEditions ? 'success' : 'muted') : 'muted' }}">{{ item.domain }}</small>
-                        {#</div>#}
-                        {#<div>#}
+                            {#</div>#}
+                            {#<div>#}
                             {% if item.active %}
                                 <a href="#" class="edit-translation btn btn-default btn-xs">
                                     <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
@@ -102,16 +109,20 @@
                         </div>
                     </td>
                     <td>
-                        <table class="table table-condensed">
-                            {% for locale in locales %}
-                                <tr>
-                                    <th style="width: 10%">{{ locale }}</th>
-                                    <td>
-                                        <pre class="value-content data-{{ locale }}">{{ item.values[locale].value|default }}</pre>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </table>
+                        {#<table class="table table-condensed table-bordered">#}
+                        {#{% for locale in locales %}#}
+                        {#<tr>#}
+                        {#<td class="value-content data-{{ locale }}">{{ item.values[locale].value|default }}</td>#}
+                        {#</tr>#}
+                        {#{% endfor %}#}
+                        {#</table>#}
+                        {#<div class="panel panel-default">#}
+                        {#<div class="panel-body">#}
+                        {% for locale in locales %}
+                            <pre class="value-content data-{{ locale }}">{{ item.values[locale].value|default }}</pre>
+                        {% endfor %}
+                        {#</div>#}
+                        {#</div>#}
                     </td>
                 </tr>
             {% endfor %}
