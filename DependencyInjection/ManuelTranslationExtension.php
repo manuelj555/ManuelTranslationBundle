@@ -36,10 +36,31 @@ class ManuelTranslationExtension extends Extension
             $container->getParameter('kernel.root_dir') . '/Resources/translations/messages.%s.doctrine');
         $container->setParameter('manuel_translation.translations_backup_dir', $config['backup_dir']);
 
-        $this->registerTranslatorResources($container, $config);
+        $this->registerTranslatorResources($config, $container);
+        $this->registerClientConfig($config['client'], $container);
+        $this->registerServerConfig($config['server'], $container);
     }
 
-    private function registerTranslatorResources(ContainerBuilder $container, $config)
+    private function registerServerConfig($config, ContainerBuilder $container)
+    {
+        if (!$this->isConfigEnabled($container, $config)) {
+            return;
+        }
+
+        $container->setParameter('manuel_translation.server.api_key', $config['api_key']);
+    }
+
+    private function registerClientConfig($config, ContainerBuilder $container)
+    {
+        if (!$this->isConfigEnabled($container, $config)) {
+            return;
+        }
+
+        $container->setParameter('manuel_translation.client.api_key', $config['api_key']);
+        $container->setParameter('manuel_translation.client.server_url', $config['server_url']);
+    }
+
+    private function registerTranslatorResources($config, ContainerBuilder $container)
     {
         // Discover translation directories
         $extractDirs = array($container->getParameter('kernel.root_dir') . '/Resources/views');

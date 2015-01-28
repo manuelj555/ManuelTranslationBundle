@@ -156,7 +156,7 @@ class TranslationController extends Controller
     {
         $code = $request->get('code');
         $domain = $request->get('domain');
-        
+
         $data = $this->get('manuel_translation.translations_repository')
             ->getOneArrayByCodeAndDomain($code, $domain);
 

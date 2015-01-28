@@ -51,6 +51,7 @@ class DefaultController extends Controller
             'form' => $form->createView(),
             'locales' => $this->container->getParameter('manuel_translation.locales'),
             'form_filter' => $formFilter->createView(),
+            'enable_sync' => $this->container->hasParameter('manuel_translation.client.api_key'),
         ));
     }
 
