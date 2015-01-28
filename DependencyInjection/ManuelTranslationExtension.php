@@ -31,9 +31,7 @@ class ManuelTranslationExtension extends Extension
             $loader->load('sync_services.yml');
         }
 
-        if ($this->isConfigEnabled($container, $config['client'])
-            OR $this->isConfigEnabled($container, $config['server'])
-        ) {
+        if ($this->isConfigEnabled($container, $config['client'])) {
             $loader->load('services_dev.yml');
         }
 
