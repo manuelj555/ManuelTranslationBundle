@@ -31,10 +31,7 @@ class TranslationController extends Controller
      */
     public function getAllAction()
     {
-        $items = $this->getDoctrine()
-            ->getManager('server')
-            ->getRepository('ManuelTranslationBundle:Translation')
-            ->getAll();
+        $items = $this->get('manuel_translation.translations_repository')->getAll();
 
         $result = array();
 
@@ -52,10 +49,7 @@ class TranslationController extends Controller
      */
     public function getAllChangedAction()
     {
-        $items = $this->getDoctrine()
-            ->getManager('server')
-            ->getRepository('ManuelTranslationBundle:Translation')
-            ->getAllChanged();
+        $items = $this->get('manuel_translation.translations_repository')->getAllChanged();
 
         $result = array();
 
@@ -76,10 +70,9 @@ class TranslationController extends Controller
         $post = $request->request->all();
 
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $this->getDoctrine()->getManager('server');
+        $em = $this->getDoctrine()->getManager();
 
-        /* @var $repository TranslationRepository */
-        $repository = $em->getRepository('ManuelTranslationBundle:Translation');
+        $repository = $this->get('manuel_translation.translations_repository');
 
         $entity = $repository->findOneBy(array(
             'domain' => $post['domain'],
@@ -119,12 +112,11 @@ class TranslationController extends Controller
     public function markUpdatedAction(Request $request)
     {
         $post = $request->request->all();
-        // @todo: usar el repositorio default luego
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $this->getDoctrine()->getManager('server');
+        $em = $this->getDoctrine()->getManager();
 
         /* @var $repository TranslationRepository */
-        $repository = $em->getRepository('ManuelTranslationBundle:Translation');
+        $repository = $this->get('manuel_translation.translations_repository');
 
         $entity = $repository->findOneBy(array(
             'domain' => $post['domain'],
@@ -164,14 +156,9 @@ class TranslationController extends Controller
     {
         $code = $request->get('code');
         $domain = $request->get('domain');
-
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $this->getDoctrine()->getManager('server');
-
-        /* @var $repository TranslationRepository */
-        $repository = $em->getRepository('ManuelTranslationBundle:Translation');
-
-        $data = $repository->getOneArrayByCodeAndDomain($code, $domain);
+        
+        $data = $this->get('manuel_translation.translations_repository')
+            ->getOneArrayByCodeAndDomain($code, $domain);
 
         if (!$data) {
             throw $this->createNotFoundException();
