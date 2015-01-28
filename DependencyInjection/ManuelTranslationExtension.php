@@ -28,11 +28,11 @@ class ManuelTranslationExtension extends Extension
         $loader->load('services.yml');
 
         if ($container->getParameter('kernel.environment') !== 'prod') {
-            $loader->load('sync_services.yml');
+            $loader->load('services_dev.yml');
         }
 
         if ($this->isConfigEnabled($container, $config['client'])) {
-            $loader->load('services_dev.yml');
+            $loader->load('sync_services.yml');
         }
 
         $container->setParameter('manuel_translation.locales', $locales = array('en', 'es', 'pt'));
