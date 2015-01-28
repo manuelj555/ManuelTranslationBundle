@@ -62,10 +62,13 @@ class Synchronizator
             } elseif ($this->isLocalChanged($local)) {
                 $server = $serverTranslations[$local->getDomain()][$local->getCode()];
 
-                if (!$this->isServerChanged($server, $local)) {
+                $equals = $this->isEqual($local, $server);
+                $serverChanged = $this->isServerChanged($server, $local);
+
+                if (!$serverChanged and !$equals) {
                     $this->updateServer($local);
                     ++$updatedItems;
-                } elseif (!$this->isEqual($local, $server)) {
+                } elseif (!$equals) {
                     //conflict
                     $status = self::STATUS_CONFLICT;
                     $local->setConflicts(true);
@@ -204,6 +207,7 @@ class Synchronizator
         $translation->setConflicts(0);
         $translation->setVersion($data['version']);
         $translation->setServerEditions($data['serverEditions']);
+        $translation->setIsChanged(false);
         foreach ($data['values'] as $locale => $transValue) {
             //por cada traduccion creamos una en local.
             $translation->setValue($locale, $transValue['value']);
@@ -235,22 +239,21 @@ class Synchronizator
         return $return;
     }
 
-    public function markUpdated($server)
-    {
-        $this->serverSync->markUpdated($server['code'], $server['domain']);
-    }
-
-//    public function resolveConflictUsingLocal(Translation $translation)
+//    public function markUpdated($server)
 //    {
-//        $this->updateServer($translation, true);
-//
-//        $this->em->flush();
+//        $this->serverSync->markUpdated($server['code'], $server['domain']);
 //    }
+
+    public function resolveConflictUsingLocal(Translation $translation)
+    {
+        $this->updateServer($translation, true);
+
+        $this->em->flush();
+    }
 
     public function resolveConflictUsingServer(Translation $translation)
     {
         $data = $this->serverSync->find($translation->getCode(), $translation->getDomain());
-        dump($data);
         $this->updateLocal($translation, $data);
 
         $this->em->flush();

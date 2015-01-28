@@ -115,6 +115,7 @@ class TranslationController extends Controller
         $entity->setVersion($post['version'] + 1);
         $entity->setLocalEditions(0);
         $entity->setServerEditions(0);
+        $entity->setIsChanged(false);
 
         $em->persist($entity);
         $em->flush();
