@@ -95,12 +95,12 @@
                     <td>
                         <div>
                             <small data-toggle="tooltip" data-placement="top"
-                                   title="{{ item.active ? (item.conflicts ? 'label.sync_conflict'|trans : (item.localEditions ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans)) : 'label.status_unused'|trans }}">
+                                   title="{{ item.active ? (item.conflicts ? 'label.sync_conflict'|trans : (item.isChanged ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans)) : 'label.status_unused'|trans }}">
                                 <strong class="code-text">{{ item.code }}</strong>
                             </small>
                         </div>
                         <div>
-                            <small class="text-{{ item.active ? (item.conflicts ? 'danger' : item.localEditions ? 'success' : 'muted') : 'muted' }}">{{ item.domain }}</small>
+                            <small class="text-{{ item.active ? (item.conflicts ? 'danger' : item.isChanged ? 'success' : 'muted') : 'muted' }}">{{ item.domain }}</small>
                             {#</div>#}
                             {#<div>#}
                             {% if item.active %}

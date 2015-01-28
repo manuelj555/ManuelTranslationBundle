@@ -50,7 +50,7 @@ class TranslationRepository extends EntityRepository
         }
 
         if (null != $onlyChanged) {
-            $query->andWhere('translation.localEditions > 0');
+            $query->andWhere('translation.isChanged = true');
         }
 
         return $query;
@@ -67,7 +67,7 @@ class TranslationRepository extends EntityRepository
     public function getAllChanged()
     {
         return $this->getAllQueryBuilder(null, null, null)
-            ->andWhere('translation.localEditions > 0')
+            ->andWhere('translation.isChanged = true')
             ->getQuery()
             ->getArrayResult();
     }
@@ -75,7 +75,7 @@ class TranslationRepository extends EntityRepository
     public function getAllChangedWithoutConflicts()
     {
         return $this->getAllQueryBuilder(null, null, null)
-            ->andWhere('translation.localEditions > 0')
+            ->andWhere('translation.isChanged = true')
             ->andWhere('translation.conflicts = false')
             ->getQuery()
             ->getResult();
@@ -141,8 +141,8 @@ class TranslationRepository extends EntityRepository
 
     public function saveTranslation(Translation $entity, $flush = true)
     {
-        $entity->setTimestamp(time());
         $entity->setLocalEditions($entity->getLocalEditions() + 1);
+        $entity->setIsChanged(true);
 
         $this->getEntityManager()->persist($entity);
 
@@ -166,19 +166,6 @@ class TranslationRepository extends EntityRepository
         }
 
         return $domains;
-    }
-
-    /**
-     * Determina que el archivo de traducciones .doctrine sea aun más nuevo que la ultima edición en la base de datos.
-     */
-    public function isFresh($timestamp)
-    {
-        return $this->createQueryBuilder('t')
-            ->select('COUNT(t.id)')
-            ->where('t.timestamp > :file_time')
-            ->setParameter('file_time', $timestamp)
-            ->getQuery()
-            ->getSingleScalarResult() == 0;
     }
 
     public function inactiveByDomainAndCodes($domain, $codes)
@@ -212,7 +199,6 @@ class TranslationRepository extends EntityRepository
             ->join('t.values', 'values')
             ->where('t.domain = :domain')
             ->andWhere('t.code = :code')
-//            ->groupBy('t.id')
             ->setParameter('domain', $domain)
             ->setParameter('code', $code)
             ->getQuery()

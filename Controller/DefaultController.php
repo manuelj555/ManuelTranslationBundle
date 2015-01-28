@@ -9,6 +9,7 @@ use ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,24 @@ use Symfony\Component\Translation\MessageCatalogue;
 
 class DefaultController extends Controller
 {
+
+    protected $isServer = false;
+    protected $hasServer = false;
+
+    public function setContainer(ContainerInterface $container = null)
+    {
+        parent::setContainer($container);
+
+        if ($container->hasParameter('manuel_translation.server.api_key')) {
+            $this->isServer = true;
+        }
+
+        if ($container->has('manuel_translation.server_sync')) {
+            $this->hasServer = true;
+        }
+    }
+
+
     /**
      * @Route("/list/{page}", name="manuel_translation_list", defaults={"page" = 1})
      */
@@ -51,7 +70,7 @@ class DefaultController extends Controller
             'form' => $form->createView(),
             'locales' => $this->container->getParameter('manuel_translation.locales'),
             'form_filter' => $formFilter->createView(),
-            'enable_sync' => $this->container->hasParameter('manuel_translation.client.api_key'),
+            'enable_sync' => $this->hasServer,
         ));
     }
 
@@ -79,6 +98,11 @@ class DefaultController extends Controller
 
         if ($form->isSubmitted() and $form->isValid()) {
 
+            if ($this->isServer) {
+                //cuando somos un servidor, cada cambio debe notarse para los clientes.
+                $translation->setServerEditions($translation->getServerEditions() + 1);
+            }
+
             $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
 
             $filesystem = new Filesystem();
@@ -86,7 +110,7 @@ class DefaultController extends Controller
 
             foreach ($translation->getValues() as $value) {
                 $filename = sprintf($filenameTemplate, $value->getLocale());
-                $filesystem->dumpFile($filename, $translation->getTimestamp());
+                $filesystem->dumpFile($filename, time());
             }
         } else {
             return $this->render('@ManuelTranslation/form_errors.html.twig', array(
@@ -126,24 +150,4 @@ class DefaultController extends Controller
         return $translation;
     }
 
-    /**
-     * @Route("/test")
-     */
-    public function testAction()
-    {
-        $dir = $this->container->getParameter('kernel.root_dir') . '/Resources/translations';
-        dump($dir);
-        $catalogue = new MessageCatalogue('en');
-
-        $this->get('translation.loader')->loadMessages($dir, $catalogue);
-
-        dump($catalogue);
-
-        $this->get('manuel_translation.translations_doctrine_dumper')->dump($catalogue, array(
-            'path' => $dir . '/test/',
-        ));
-        die;
-
-        return new Response('Ok mmm');
-    }
 }

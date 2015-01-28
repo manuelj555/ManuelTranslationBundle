@@ -44,9 +44,9 @@ class Translation
     /**
      * @var string
      *
-     * @ORM\Column(name="timestamp", type="string", length=255)
+     * @ORM\Column(name="server_editions", type="integer")
      */
-    private $timestamp;
+    private $serverEditions = 0;
 
     /**
      * @var string
@@ -58,9 +58,9 @@ class Translation
     /**
      * @var string
      *
-     * @ORM\Column(name="synchronizations", type="integer")
+     * @ORM\Column(name="version", type="integer")
      */
-    private $synchronizations = 0;
+    private $version = 0;
 
     /**
      * @var boolean
@@ -84,11 +84,11 @@ class Translation
     private $active;
 
     /**
-     * @var \DateTime
+     * @var boolean
      *
-     * @ORM\Column(name="updated", type="datetime", nullable=true)
+     * @ORM\Column(name="is_changed", type="boolean")
      */
-    private $updated;
+    private $isChanged = false;
 
     /**
      * @ORM\OneToMany(
@@ -113,30 +113,6 @@ class Translation
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set timestamp
-     *
-     * @param string $timestamp
-     *
-     * @return Translation
-     */
-    public function setTimestamp($timestamp)
-    {
-        $this->timestamp = $timestamp;
-
-        return $this;
-    }
-
-    /**
-     * Get timestamp
-     *
-     * @return string
-     */
-    public function getTimestamp()
-    {
-        return $this->timestamp;
     }
 
     /**
@@ -185,30 +161,6 @@ class Translation
     public function getCode()
     {
         return $this->code;
-    }
-
-    /**
-     * Set updated
-     *
-     * @param \DateTime $updated
-     *
-     * @return Translation
-     */
-    public function setUpdated($updated)
-    {
-        $this->updated = $updated;
-
-        return $this;
-    }
-
-    /**
-     * Get updated
-     *
-     * @return \DateTime
-     */
-    public function getUpdated()
-    {
-        return $this->updated;
     }
 
     /**
@@ -305,23 +257,6 @@ class Translation
         return $this->values;
     }
 
-    /**
-     * @ORM\PrePersist()
-     */
-    public function setPersistValues()
-    {
-        $this->setTimestamp(time());
-    }
-
-    /**
-     * @ORM\PreUpdate()
-     */
-    public function setUpdateValues()
-    {
-        $this->setTimestamp(time());
-        $this->setUpdated(new \DateTime());
-    }
-
     public function setTranslationValue($locale, TranslationValue $value)
     {
         $this->values[$locale] = $value;
@@ -362,59 +297,11 @@ class Translation
         return $this->domain;
     }
 
-
-    /**
-     * Set localEditions
-     *
-     * @param integer $localEditions
-     *
-     * @return Translation
-     */
-    public function setLocalEditions($localEditions)
-    {
-        $this->localEditions = $localEditions;
-
-        return $this;
-    }
-
-    /**
-     * Get localEditions
-     *
-     * @return integer
-     */
-    public function getLocalEditions()
-    {
-        return $this->localEditions;
-    }
-
-    /**
-     * Set synchronizations
-     *
-     * @param integer $synchronizations
-     *
-     * @return Translation
-     */
-    public function setSynchronizations($synchronizations)
-    {
-        $this->synchronizations = $synchronizations;
-
-        return $this;
-    }
-
-    /**
-     * Get synchronizations
-     *
-     * @return integer
-     */
-    public function getSynchronizations()
-    {
-        return $this->synchronizations;
-    }
-
     /**
      * Set conflicts
      *
      * @param boolean $conflicts
+     *
      * @return Translation
      */
     public function setConflicts($conflicts)
@@ -427,10 +314,102 @@ class Translation
     /**
      * Get conflicts
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getConflicts()
     {
         return $this->conflicts;
+    }
+
+    /**
+     * Set serverEditions
+     *
+     * @param integer $serverEditions
+     * @return Translation
+     */
+    public function setServerEditions($serverEditions)
+    {
+        $this->serverEditions = $serverEditions;
+
+        return $this;
+    }
+
+    /**
+     * Get serverEditions
+     *
+     * @return integer 
+     */
+    public function getServerEditions()
+    {
+        return $this->serverEditions;
+    }
+
+    /**
+     * Set version
+     *
+     * @param integer $version
+     * @return Translation
+     */
+    public function setVersion($version)
+    {
+        $this->version = $version;
+
+        return $this;
+    }
+
+    /**
+     * Get version
+     *
+     * @return integer 
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
+
+    /**
+     * Set isChanged
+     *
+     * @param boolean $isChanged
+     * @return Translation
+     */
+    public function setIsChanged($isChanged)
+    {
+        $this->isChanged = $isChanged;
+
+        return $this;
+    }
+
+    /**
+     * Get isChanged
+     *
+     * @return boolean 
+     */
+    public function getIsChanged()
+    {
+        return $this->isChanged;
+    }
+
+    /**
+     * Set localEditions
+     *
+     * @param integer $localEditions
+     * @return Translation
+     */
+    public function setLocalEditions($localEditions)
+    {
+        $this->localEditions = $localEditions;
+
+        return $this;
+    }
+
+    /**
+     * Get localEditions
+     *
+     * @return integer 
+     */
+    public function getLocalEditions()
+    {
+        return $this->localEditions;
     }
 }
