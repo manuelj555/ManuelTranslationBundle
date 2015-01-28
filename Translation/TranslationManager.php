@@ -51,7 +51,8 @@ class TranslationManager
     private $backupDir;
     private $backupDumper;
 
-    function __construct($extractor, $translationLoader, $doctrineLoader, $translationDumper, $translationRepository, $locales, $extractDirs, $translationFilesDirs)
+    function __construct($extractor, $translationLoader, $doctrineLoader, $translationDumper,
+        $translationRepository, $locales, $extractDirs, $translationFilesDirs)
     {
         $this->extractor = $extractor;
         $this->translationLoader = $translationLoader;
