@@ -29,9 +29,10 @@ services:
         class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\ServerSync
         arguments:
             - @manuel_translation.guzzle_client
+            - %manuel_translation.client.api_key%
 
     manuel_translation.guzzle_client:
         class: GuzzleHttp\Client
         arguments:
             -
-                base_url: "http://localhost/optime/bundles/traducciones_server/web/app_dev.php/api/translations/"
+                base_url: %manuel_translation.client.server_url%

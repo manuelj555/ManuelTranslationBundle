@@ -25,10 +25,15 @@ class ServerSync
      * @var Client
      */
     protected $guzzle;
+    protected $apiKey;
+    protected $config;
 
-    function __construct($guzzle)
+    function __construct($guzzle, $apiKey)
     {
         $this->guzzle = $guzzle;
+        $this->apiKey = $apiKey;
+
+        $this->config = array('headers' => array('Api-Key' => $apiKey));
     }
 
     public function add(Translation $translation)
@@ -55,8 +60,8 @@ class ServerSync
 
         try {
             $response = $this->guzzle->post('save', array(
-                'body' => $postData,
-            ));
+                    'body' => $postData,
+                ) + $this->config);
 
             $translation->setSynchronizations((string) $response->getBody());
             $translation->setLocalEditions(0);
@@ -72,25 +77,25 @@ class ServerSync
     public function find($code, $domain)
     {
         $response = $this->guzzle->get('find', array(
-            'query' => array(
-                'code' => $code,
-                'domain' => $domain,
-            )
-        ));
+                'query' => array(
+                    'code' => $code,
+                    'domain' => $domain,
+                )
+            ) + $this->config);
 
         return $response->json();
     }
 
     public function findAll()
     {
-        $response = $this->guzzle->get('get-all');
+        $response = $this->guzzle->get('get-all', $this->config);
 
         return $response->json();
     }
 
     public function findAllChanged()
     {
-        $response = $this->guzzle->get('get-all-changed');
+        $response = $this->guzzle->get('get-all-changed', $this->config);
 
         return $response->json();
     }
@@ -99,11 +104,11 @@ class ServerSync
     public function markUpdated($code, $domain)
     {
         $response = $this->guzzle->post('mark-updated', array(
-            'body' => array(
-                'code' => $code,
-                'domain' => $domain,
-            ),
-        ));
+                'body' => array(
+                    'code' => $code,
+                    'domain' => $domain,
+                ),
+            ) + $this->config);
 
         return (string) $response->getBody();
     }

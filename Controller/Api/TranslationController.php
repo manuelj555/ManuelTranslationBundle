@@ -15,6 +15,7 @@ use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +25,23 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TranslationController extends Controller
 {
+    public function setContainer(ContainerInterface $container = null)
+    {
+        parent::setContainer($container);
+
+        $request = $container->get('request_stack')->getCurrentRequest();
+
+        if (!$request->headers->has('api-key')) {
+            throw $this->createAccessDeniedException('Api Key not Found');
+        }
+
+        $apiKey = $container->getParameter('manuel_translation.server.api_key');
+
+        if($request->headers->get('api-key') != $apiKey){
+            throw $this->createAccessDeniedException('Invalid Credentials!');
+        }
+    }
+
     /**
      * @Route("/get-all")
      * @Method("GET")
