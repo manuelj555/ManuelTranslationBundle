@@ -5,5 +5,8 @@
     "symfony/framework-bundle": "~2.5",
     "guzzlehttp/guzzle": "~5.0",
     "knplabs/knp-paginator-bundle": "~2.4"
+  },
+  "autoload": {
+    "psr-4": { "ManuelAguirre\\Bundle\\TranslationBundle\\": "" }
   }
 }

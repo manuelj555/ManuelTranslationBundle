@@ -132,7 +132,7 @@ class TranslationManager
 
         foreach ($bdMessages->all() as $domain => $items) {
             if ($obsoletes = $operation->getObsoleteMessages($domain)) {
-                $this->translationRepository->inactiveByDomainAndCodes($domain, array_values($obsoletes));
+                $this->translationRepository->inactiveByDomainAndCodes($domain, array_keys($obsoletes));
             }
         }
     }
