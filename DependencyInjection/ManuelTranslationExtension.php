@@ -28,6 +28,12 @@ class ManuelTranslationExtension extends Extension
         $loader->load('services.yml');
 
         if ($container->getParameter('kernel.environment') !== 'prod') {
+            $loader->load('sync_services.yml');
+        }
+
+        if ($this->isConfigEnabled($container, $config['client'])
+            OR $this->isConfigEnabled($container, $config['server'])
+        ) {
             $loader->load('services_dev.yml');
         }
 

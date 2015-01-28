@@ -16,23 +16,3 @@ services:
 
     manuel_translation.translation_loader:
         class: Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader
-
-
-    manuel_translation.synchronizator:
-        class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator
-        arguments:
-            - @doctrine.orm.entity_manager
-            - @manuel_translation.translations_repository
-            - @manuel_translation.server_sync
-
-    manuel_translation.server_sync:
-        class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\ServerSync
-        arguments:
-            - @manuel_translation.guzzle_client
-            - %manuel_translation.client.api_key%
-
-    manuel_translation.guzzle_client:
-        class: GuzzleHttp\Client
-        arguments:
-            -
-                base_url: %manuel_translation.client.server_url%
