@@ -16,3 +16,19 @@ services:
 
     manuel_translation.translation_loader:
         class: Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader
+
+    manuel_translation.debug_translator:
+        class: ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator
+        arguments: [@manuel_translation.debug_translator.inner]
+        decorates: translator
+
+    manuel_translation.translations_data_collector:
+        class: ManuelAguirre\Bundle\TranslationBundle\DataCollector\TranslationDataCollector
+        arguments:
+            - @manuel_translation.debug_translator
+            - %manuel_translation.locales%
+        tags:
+            -
+                name: data_collector
+                template: @ManuelTranslation/DataCollector/translations.html.twig
+                id: manuel_translations
