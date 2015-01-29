@@ -7,16 +7,13 @@ Bundle que permite la creación y edición de etiquetas de traducción desde la 
 
 ---------------
 
-**Puedes crear y Modificar etiquetas de manera simple y sin tocar archivo xml, yml, php...**
-
-* Establecer el dominio y el nombre de la etiqueta
-* Establecer las traducciones en base a los locales que estes implementando
+**Puedes Crear y Modificar traducciones de etiquetas de manera simple y sin tocar archivos xml, yml, php...**
 
 <img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/form.png" alt="ManuelTranslation Form" title="ManuelTranslation" width="70%" align="middle" />
 
 -------------
 
-**Y además crear facilmente desde el Profiler las traducciónes que no se han creado aun:**
+**Y además crear facilmente desde el Profiler las sin traducir aun:**
 
 <img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/profiler.png" alt="ManuelTranslation Profiler" title="ManuelTranslation" width="80%" align="middle"  />
 
