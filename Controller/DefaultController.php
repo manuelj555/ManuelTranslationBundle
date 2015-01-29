@@ -110,8 +110,8 @@ class DefaultController extends Controller
             $filesystem = new Filesystem();
             $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
 
-            foreach ($translation->getValues() as $value) {
-                $filename = sprintf($filenameTemplate, $value->getLocale());
+            foreach ($translation->getValues() as $locale => $value) {
+                $filename = sprintf($filenameTemplate, $locale);
                 $filesystem->dumpFile($filename, time());
             }
         } else {
@@ -146,7 +146,7 @@ class DefaultController extends Controller
         $translation->setActive(true);
 
         foreach ($this->container->getParameter('manuel_translation.locales') as $locale) {
-            $translation->setTranslationValue($locale, new TranslationValue($locale));
+            $translation->setValue($locale, null);
         }
 
         return $translation;

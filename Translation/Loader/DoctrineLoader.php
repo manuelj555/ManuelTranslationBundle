@@ -51,12 +51,14 @@ class DoctrineLoader implements LoaderInterface
      */
     public function load($resource, $locale, $domain = 'messages')
     {
-        $translations = $this->translationRepository->getActiveTranslationsByLocale($locale);
+        $translations = $this->translationRepository->getActiveTranslations();
 
         $catalogue = new MessageCatalogue($locale);
 
-        foreach($translations as $translation){
-            $catalogue->set($translation['code'], $translation['value'], $translation['domain']);
+        foreach ($translations as $translation) {
+            if (array_key_exists($locale, $translation['values'])) {
+                $catalogue->set($translation['code'], $translation['values'][$locale], $translation['domain']);
+            }
         }
 
         $catalogue->addResource(new FileResource($resource));

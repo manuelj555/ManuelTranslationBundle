@@ -46,13 +46,8 @@ class TranslationType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-//        $builder->add('code', null, array('error_bubbling' => true));
-//        $builder->add('domain', null, array('error_bubbling' => true));
         $builder->add('values', 'collection', array(
-            'type' => new TranslationValueType(),
-            'allow_add' => true,
-            'allow_delete' => true,
-            'by_reference' => false,
+            'type' => 'textarea',
             'error_bubbling' => true,
         ));
         $builder->add('localEditions', 'hidden', array('error_bubbling' => true));
@@ -105,8 +100,6 @@ class TranslationType extends AbstractType
     {
         $form = $event->getForm();
         $data = $event->getData();
-
-        dump($data, $form['localEditions']->getData());
 
         if ($data['localEditions'] < $form['localEditions']->getData()) {
             //si es menor, significa que otra persona ha hecho cambios

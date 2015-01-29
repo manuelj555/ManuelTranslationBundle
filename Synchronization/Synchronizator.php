@@ -190,14 +190,8 @@ class Synchronizator
             return false;
         }
 
-        if (count($translation->getValues()) !== count($server['values'])) {
+        if ($translation->getValues() !== $server['values']) {
             return false;
-        }
-
-        foreach ($translation->getValues() as $locale => $tVal) {
-            if ($tVal->getValue() !== $server['values'][$locale]['value']) {
-                return false;
-            }
         }
 
         if ($translation->getFiles() !== $server['files']) {
@@ -215,10 +209,7 @@ class Synchronizator
         $translation->setServerEditions($data['serverEditions']);
         $translation->setIsChanged(false);
         $translation->setFiles($data['files']);
-        foreach ($data['values'] as $locale => $transValue) {
-            //por cada traduccion creamos una en local.
-            $translation->setValue($locale, $transValue['value']);
-        }
+        $translation->setValues($data['values']);
     }
 
     public function updateServer(Translation $translation, $force = false)

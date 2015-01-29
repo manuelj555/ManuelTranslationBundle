@@ -108,15 +108,12 @@ class TranslationController extends Controller
             return new Response(sprintf('"%s" in "%s" Out of Date', $post['code'], $post['domain']), Response::HTTP_BAD_REQUEST);
         }
 
-        foreach ($post['values'] as $locale => $value) {
-            $entity->setValue($locale, $value);
-        }
-
+        $entity->setValues(isset($post['values']) ? $post['values']: array());
         $entity->setVersion($post['version'] + 1);
         $entity->setLocalEditions(0);
         $entity->setServerEditions(0);
         $entity->setIsChanged(false);
-        $entity->setFiles($post['files']);
+        $entity->setFiles(isset($post['files']) ? $post['files']: array());
 
         $em->persist($entity);
         $em->flush();

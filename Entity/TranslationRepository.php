@@ -17,8 +17,6 @@ class TranslationRepository extends EntityRepository
         $onlyConflicted = null, $onlyChanged = null, $showInactives = true)
     {
         $query = $this->createQueryBuilder('translation')
-            ->select('translation, values')
-            ->leftJoin('translation.values', 'values')
             ->orderBy('translation.domain,translation.code');
 
         if (!$showInactives) {
@@ -26,16 +24,10 @@ class TranslationRepository extends EntityRepository
         }
 
         if (null !== $search) {
-            $sub = $this->getEntityManager()
-                ->getRepository('ManuelTranslationBundle:TranslationValue')
-                ->createQueryBuilder('tv_sub')
-                ->where('tv_sub.value LIKE :search')
-                ->andWhere('tv_sub.translation = translation');
-
             $part = $query->expr()->orX()
                 ->add('translation.code LIKE :search')
                 ->add('translation.files LIKE :search')
-                ->add($query->expr()->exists($sub));
+                ->add('translation.values LIKE :search');
 
             $query->andWhere($part)
                 ->setParameter('search', "%$search%");
@@ -105,27 +97,12 @@ class TranslationRepository extends EntityRepository
             ->getResult();
     }
 
-    public function getTranslationsByLocale($locale)
+    public function getActiveTranslations()
     {
         return $this->createQueryBuilder('translation')
-            ->select('translation.code, translation.domain, values.value')
-            ->join('translation.values', 'values')
+            ->select('translation.code, translation.domain, translation.values')
             ->orderBy('translation.code')
-            ->where('values.locale = :locale')
-            ->setParameter('locale', $locale)
-            ->getQuery()
-            ->getArrayResult();
-    }
-
-    public function getActiveTranslationsByLocale($locale)
-    {
-        return $this->createQueryBuilder('translation')
-            ->select('translation.code, translation.domain, values.value')
-            ->join('translation.values', 'values')
-            ->orderBy('translation.code')
-            ->where('values.locale = :locale')
             ->andWhere('translation.active = true')
-            ->setParameter('locale', $locale)
             ->getQuery()
             ->getArrayResult();
     }
@@ -196,8 +173,7 @@ class TranslationRepository extends EntityRepository
     public function getOneArrayByCodeAndDomain($code, $domain)
     {
         return $this->createQueryBuilder('t')
-            ->select('t, values')
-            ->join('t.values', 'values')
+            ->select('t')
             ->where('t.domain = :domain')
             ->andWhere('t.code = :code')
             ->setParameter('domain', $domain)

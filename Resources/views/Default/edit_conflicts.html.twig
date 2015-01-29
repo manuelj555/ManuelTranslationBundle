@@ -50,12 +50,12 @@
                             <tr>
                                 <td colspan="5">
                                     {% for locale, value in item.values %}
-                                        <pre>{{ value.value }}</pre>
+                                        <pre>{{ value }}</pre>
                                     {% endfor %}
                                 </td>
                                 <td colspan="5">
                                     {% for locale, value in server_item.values %}
-                                        <pre class="value-content data-{{ locale }}">{{ value.value }}</pre>
+                                        <pre class="value-content data-{{ locale }}">{{ value }}</pre>
                                     {% endfor %}
                                 </td>
                             </tr>

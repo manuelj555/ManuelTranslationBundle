@@ -121,7 +121,7 @@
                     </td>
                     <td>
                         {% for locale in locales %}
-                            <pre class="value-content data-{{ locale }}">{{ item.values[locale].value|default }}</pre>
+                            <pre class="value-content data-{{ locale }}">{{ item.values[locale]|default }}</pre>
                         {% endfor %}
                         <table class="table table-condensed table-bordered" style="margin-bottom: 0px">
                             <tr>
@@ -219,7 +219,7 @@
                     {#$("#{{ form.code.vars.id }}").val($("#{{ form.code.vars.id }}").val());#}
                     {#$tr.data('domain', $("#{{ form.domain.vars.id }}").val());#}
                     {% for locale, item in form.values -%}
-                    $tr.find(".value-content.data-{{ locale }}").html($("#{{ item.value.vars.id }}").val());
+                    $tr.find(".value-content.data-{{ locale }}").html($("#{{ item.vars.id }}").val());
                     {% endfor %}
                 }
             }
@@ -244,9 +244,9 @@
                 $("#{{ form.localEditions.vars.id }}").val(_.isUndefined(data.localEdit) ? 0 : data.localEdit);
                 {% for locale, item in form.values -%}
                 if (!_.isUndefined(data.values) && !_.isUndefined(data.values['{{ locale}}'])) {
-                    $("#{{ item.value.vars.id }}").val(data.values['{{ locale}}']);
+                    $("#{{ item.vars.id }}").val(data.values['{{ locale}}']);
                 } else {
-                    $("#{{ item.value.vars.id }}").val('');
+                    $("#{{ item.vars.id }}").val('');
                 }
                 {% endfor %}
             }
