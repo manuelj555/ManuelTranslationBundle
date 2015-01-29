@@ -87,7 +87,7 @@ class DoctrineDumper implements DumperInterface
 
         foreach ($this->existentTranslations as $domain => $items) {
             foreach ($items as $t) {
-                $this->translationRepository->saveTranslation($t, false);
+                $this->em->persist($t);
             }
         }
 

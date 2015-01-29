@@ -39,7 +39,8 @@ class BatchOperationController extends Controller
         $em->flush();
         $em->commit();
 
-        $this->addFlash('success', 'Database Loaded!!!');
+        $this->addFlash('success', $this->get('translator')
+            ->trans('flash.database_loaded', array(), 'ManuelTranslationBundle'));
 
         return $this->redirectToRoute('manuel_translation_list');
     }
@@ -60,6 +61,12 @@ class BatchOperationController extends Controller
         if ($result == Synchronizator::STATUS_CONFLICT OR
             $this->get('manuel_translation.translations_repository')->hasConflicts()
         ) {
+            $this->addFlash('warning', $this->get('translator')
+                ->trans('flash.have_conflicts', array(), 'ManuelTranslationBundle'));
+
+            $this->addFlash('info', $this->get('translator')
+                ->trans('flash.num_elements_updated', array('%updated%' => $updated), 'ManuelTranslationBundle'));
+
             return $this->redirectToRoute('manuel_translation_show_conflicts');
         }
 
@@ -85,6 +92,12 @@ class BatchOperationController extends Controller
         if ($result == Synchronizator::STATUS_CONFLICT OR
             $this->get('manuel_translation.translations_repository')->hasConflicts()
         ) {
+            $this->addFlash('warning', $this->get('translator')
+                ->trans('flash.have_conflicts', array(), 'ManuelTranslationBundle'));
+
+            $this->addFlash('info', $this->get('translator')
+                ->trans('flash.num_elements_updated', array('%updated%' => $updated), 'ManuelTranslationBundle'));
+
             return $this->redirectToRoute('manuel_translation_show_conflicts');
         }
 
@@ -130,7 +143,8 @@ class BatchOperationController extends Controller
         $em->flush();
         $em->commit();
 
-        $this->addFlash('success', 'Database Purged!!!');
+        $this->addFlash('success', $this->get('translator')
+            ->trans('flash.database_purged_complete', array(), 'ManuelTranslationBundle'));
 
         return $this->redirectToRoute('manuel_translation_list');
     }
@@ -142,7 +156,8 @@ class BatchOperationController extends Controller
     {
         $this->get('manuel_translation.translation_manager')->generateBackup();
 
-        $this->addFlash('success', 'Database backup Complete!!!');
+        $this->addFlash('success', $this->get('translator')
+            ->trans('flash.database_backup_comeplete', array(), 'ManuelTranslationBundle'));
 
         return $this->redirectToRoute('manuel_translation_list');
     }
