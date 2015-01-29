@@ -13,7 +13,7 @@ Bundle que permite la creación y edición de etiquetas de traducción desde la 
 
 -------------
 
-**Y además crear facilmente desde el Profiler las sin traducir aun:**
+**Y además crear facilmente desde el Profiler las etiquetas sin traducir aun:**
 
 <img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/profiler.png" alt="ManuelTranslation Profiler" title="ManuelTranslation" width="80%" align="middle"  />
 
