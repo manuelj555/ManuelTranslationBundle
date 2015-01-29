@@ -13,13 +13,17 @@ use Doctrine\ORM\Query;
  */
 class TranslationRepository extends EntityRepository
 {
-    public function getAllQueryBuilder($search = null, $domain = null, $onlyNews = null,
-        $onlyConflicted = null, $onlyChanged = null)
+    public function getAllQueryBuilder($search = null, $domain = null,
+        $onlyConflicted = null, $onlyChanged = null, $showInactives = true)
     {
         $query = $this->createQueryBuilder('translation')
             ->select('translation, values')
             ->leftJoin('translation.values', 'values')
             ->orderBy('translation.domain,translation.code');
+
+        if (!$showInactives) {
+            $query->andWhere('translation.active = true');
+        }
 
         if (null !== $search) {
             $sub = $this->getEntityManager()
@@ -30,6 +34,7 @@ class TranslationRepository extends EntityRepository
 
             $part = $query->expr()->orX()
                 ->add('translation.code LIKE :search')
+                ->add('translation.files LIKE :search')
                 ->add($query->expr()->exists($sub));
 
             $query->andWhere($part)
@@ -39,10 +44,6 @@ class TranslationRepository extends EntityRepository
         if (null !== $domain) {
             $query->andWhere('translation.domain IN (:domain)')
                 ->setParameter('domain', $domain);
-        }
-
-        if (null != $onlyNews) {
-            $query->andWhere('translation.new = true');
         }
 
         if (null != $onlyConflicted) {
@@ -56,10 +57,10 @@ class TranslationRepository extends EntityRepository
         return $query;
     }
 
-    public function getAll($search = null, $domain = null, $onlyNews = null,
+    public function getAll($search = null, $domain = null,
         $onlyConflicted = null, $onlyChanged = null)
     {
-        return $this->getAllQueryBuilder($search, $domain, $onlyNews, $onlyConflicted, $onlyChanged)
+        return $this->getAllQueryBuilder($search, $domain, $onlyConflicted, $onlyChanged)
             ->getQuery()
             ->getArrayResult();
     }
@@ -97,9 +98,9 @@ class TranslationRepository extends EntityRepository
             ->getResult();
     }
 
-    public function getAllEntities($search = null, $domain = null, $onlyNews = null)
+    public function getAllEntities($search = null, $domain = null)
     {
-        return $this->getAllQueryBuilder($search, $domain, $onlyNews)
+        return $this->getAllQueryBuilder($search, $domain)
             ->getQuery()
             ->getResult();
     }

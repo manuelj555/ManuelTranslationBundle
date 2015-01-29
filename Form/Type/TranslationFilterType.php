@@ -69,6 +69,10 @@ class TranslationFilterType extends AbstractType
             'required' => false,
             'label' => 'label.with_changes',
         ));
+        $builder->add('inactive', 'checkbox', array(
+            'required' => false,
+            'label' => 'label.inactives',
+        ));
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

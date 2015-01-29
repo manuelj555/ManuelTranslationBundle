@@ -116,6 +116,7 @@ class TranslationController extends Controller
         $entity->setLocalEditions(0);
         $entity->setServerEditions(0);
         $entity->setIsChanged(false);
+        $entity->setFiles($post['files']);
 
         $em->persist($entity);
         $em->flush();

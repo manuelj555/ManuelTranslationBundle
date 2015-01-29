@@ -106,6 +106,11 @@ class Translation
     private $conflicts = false;
 
     /**
+     * @ORM\Column(name="files", type="array", nullable=true)
+     */
+    private $files = array();
+
+    /**
      * Get id
      *
      * @return integer
@@ -411,5 +416,28 @@ class Translation
     public function getLocalEditions()
     {
         return $this->localEditions;
+    }
+
+    /**
+     * Set files
+     *
+     * @param array $files
+     * @return Translation
+     */
+    public function setFiles($files)
+    {
+        $this->files = $files;
+
+        return $this;
+    }
+
+    /**
+     * Get files
+     *
+     * @return array 
+     */
+    public function getFiles()
+    {
+        return $this->files;
     }
 }

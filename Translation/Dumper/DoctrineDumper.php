@@ -94,7 +94,7 @@ class DoctrineDumper implements DumperInterface
         $this->em->flush();
     }
 
-    protected function getExistentTranslations()
+    public function getExistentTranslations()
     {
         $items = $this->translationRepository->findAll();
 

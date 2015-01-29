@@ -45,6 +45,7 @@ class DefaultController extends Controller
             'search' => null,
             'conflicts' => null,
             'changed' => null,
+            'inactive' => false,
             'domains' => array('messages'),
         ));
 
@@ -59,7 +60,8 @@ class DefaultController extends Controller
 
         $query = $this->getDoctrine()
             ->getRepository('ManuelTranslationBundle:Translation')
-            ->getAllQueryBuilder($filters['search'], $filters['domains'], null, $filters['conflicts'], $filters['changed']);
+            ->getAllQueryBuilder($filters['search'], $filters['domains']
+                , $filters['conflicts'], $filters['changed'], $filters['inactive']);
 
         $form = $this->createForm('manuel_translation', $this->getNewTranslationInstance());
 

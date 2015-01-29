@@ -17,6 +17,8 @@
         }
 
         pre { white-space: pre-wrap; }
+
+        .trans-files, .trans-files h6 { line-height: 18px; color: #aaa }
     </style>
 {% endblock %}
 
@@ -80,8 +82,8 @@
         <thead>
             <tr>
                 {#<th class="col-sm-1"></th>#}
-                <th class="col-sm-3">{{ 'label.code'|trans }}</th>
-                <th class="col-sm-9">{{ 'label.translation_values'|trans }}</th>
+                <th class="col-sm-5">{{ 'label.code'|trans }}</th>
+                <th class="col-sm-7">{{ 'label.translation_values'|trans }}</th>
                 {#{% for locale in locales %}#}
                 {#<th>{{ locale }}</th>#}
                 {#{% endfor %}#}
@@ -93,21 +95,32 @@
                 <tr data-id="{{ item.id }}" data-domain="{{ item.domain }}" data-local-edit="{{ item.localEditions }}"
                     {%- if not item.active %}class="text-muted"{% endif %}>
                     <td>
-                        <div>
-                            <small data-toggle="tooltip" data-placement="top"
-                                   title="{{ item.active ? (item.conflicts ? 'label.sync_conflict'|trans : (item.isChanged ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans)) : 'label.status_unused'|trans }}">
-                                <strong class="code-text">{{ item.code }}</strong>
-                            </small>
+                        <div class="row-fluid clearfix">
+                            <div class="col-sm-8">
+                                <small data-toggle="tooltip" data-placement="top"
+                                       title="{{ item.active ? (item.conflicts ? 'label.sync_conflict'|trans : (item.isChanged ? 'label.changes_for_upload'|trans : 'label.no_changes_for_upload'|trans)) : 'label.status_unused'|trans }}">
+                                    <strong class="code-text">{{ item.code }}</strong>
+                                </small>
+                            </div>
+                            <div class="col-sm-4 text-right">
+                                <small class="text-{{ item.active ? (item.conflicts ? 'danger' : item.isChanged ? 'success' : 'muted') : 'muted' }}">{{ item.domain }}</small>
+                                {% if item.active %}
+                                    <a href="#" class="edit-translation btn btn-default btn-xs">
+                                        <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
+                                    </a>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div>
-                            <small class="text-{{ item.active ? (item.conflicts ? 'danger' : item.isChanged ? 'success' : 'muted') : 'muted' }}">{{ item.domain }}</small>
-                            {#</div>#}
-                            {#<div>#}
-                            {% if item.active %}
-                                <a href="#" class="edit-translation btn btn-default btn-xs">
-                                    <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
-                                </a>
-                            {% endif %}
+                        <hr/>
+                        <div class="trans-files">
+                            <h6>{{ 'label.used_in'|trans }}</h6>
+                            <ul>
+                                {% for file in item.files %}
+                                    <li>
+                                        <small>{{ file }}</small>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
                     </td>
                     <td>

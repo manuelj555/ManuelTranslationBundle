@@ -48,9 +48,13 @@ class Synchronizator
     {
         $updatedItems = 0;
         //los pedimos todos porque puede que no existan arriba
-        $localTranslations = $this->translationRepository->getAllChangedWithoutConflicts();
+        $localTranslations = $this->translationRepository->getAllWithoutConflicts();
         $serverTranslations = $this->serverSync->findAll();
         $status = self::STATUS_SUCCESS;
+
+        if ($localTranslations) {
+            $this->serverSync->generateBackup();
+        }
 
         /* @var $local Translation */
         foreach ($localTranslations as $local) {
@@ -72,8 +76,6 @@ class Synchronizator
                     //conflict
                     $status = self::STATUS_CONFLICT;
                     $local->setConflicts(true);
-                    dump($local, $server);
-                    die;
                 } else {
                     $local->setIsChanged(false);
                 }
@@ -198,6 +200,10 @@ class Synchronizator
             }
         }
 
+        if ($translation->getFiles() !== $server['files']) {
+            return false;
+        }
+
         return true;
     }
 
@@ -208,6 +214,7 @@ class Synchronizator
         $translation->setVersion($data['version']);
         $translation->setServerEditions($data['serverEditions']);
         $translation->setIsChanged(false);
+        $translation->setFiles($data['files']);
         foreach ($data['values'] as $locale => $transValue) {
             //por cada traduccion creamos una en local.
             $translation->setValue($locale, $transValue['value']);

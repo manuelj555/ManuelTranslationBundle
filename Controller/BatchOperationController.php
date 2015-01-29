@@ -31,7 +31,13 @@ class BatchOperationController extends Controller
      */
     public function transferFilesToBdAction()
     {
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->getDoctrine()->getManager();
+
+        $em->beginTransaction();
         $this->get('manuel_translation.translation_manager')->extractToDatabase();
+        $em->flush();
+        $em->commit();
 
         $this->addFlash('success', 'Database Loaded!!!');
 
@@ -43,7 +49,13 @@ class BatchOperationController extends Controller
      */
     public function synchronizeUpAction()
     {
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->getDoctrine()->getManager();
+
+        $em->beginTransaction();
         $result = $this->get('manuel_translation.synchronizator')->up($updated);
+        $em->flush();
+        $em->commit();
 
         if ($result == Synchronizator::STATUS_CONFLICT OR
             $this->get('manuel_translation.translations_repository')->hasConflicts()
@@ -62,7 +74,13 @@ class BatchOperationController extends Controller
      */
     public function synchronizeDownAction()
     {
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->getDoctrine()->getManager();
+
+        $em->beginTransaction();
         $result = $this->get('manuel_translation.synchronizator')->down($updated);
+        $em->flush();
+        $em->commit();
 
         if ($result == Synchronizator::STATUS_CONFLICT OR
             $this->get('manuel_translation.translations_repository')->hasConflicts()
@@ -104,7 +122,13 @@ class BatchOperationController extends Controller
      */
     public function inactiveUnusedTranslationsAction()
     {
+        /* @var $em \Doctrine\ORM\EntityManager */
+        $em = $this->getDoctrine()->getManager();
+
+        $em->beginTransaction();
         $this->get('manuel_translation.translation_manager')->inactiveUnused();
+        $em->flush();
+        $em->commit();
 
         $this->addFlash('success', 'Database Purged!!!');
 

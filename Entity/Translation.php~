@@ -88,7 +88,7 @@ class Translation
      *
      * @ORM\Column(name="is_changed", type="boolean")
      */
-    private $isChanged = false;
+    private $isChanged = true;
 
     /**
      * @ORM\OneToMany(
@@ -104,6 +104,11 @@ class Translation
      * @ORM\Column(name="conflicts", type="boolean", nullable=true)
      */
     private $conflicts = false;
+
+    /**
+     * @ORM\Column(name="files", type="array", nullable=true)
+     */
+    private $files = array();
 
     /**
      * Get id
@@ -411,5 +416,28 @@ class Translation
     public function getLocalEditions()
     {
         return $this->localEditions;
+    }
+
+    /**
+     * Set files
+     *
+     * @param array $files
+     * @return Translation
+     */
+    public function setFiles($files)
+    {
+        $this->files = $files;
+
+        return $this;
+    }
+
+    /**
+     * Get files
+     *
+     * @return array 
+     */
+    public function getFiles()
+    {
+        return $this->files;
     }
 }

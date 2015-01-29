@@ -67,6 +67,7 @@ class ManuelTranslationExtension extends Extension
     private function registerTranslatorResources($config, ContainerBuilder $container)
     {
         // Discover translation directories
+        $filesPrefixs = array($container->getParameter('kernel.root_dir') . '/Resources/views' => 'views');
         $extractDirs = array($container->getParameter('kernel.root_dir') . '/Resources/views');
         $translationFilesDirs = array($container->getParameter('kernel.root_dir') . '/Resources/translations');
 
@@ -75,6 +76,7 @@ class ManuelTranslationExtension extends Extension
 
         $bundles = $container->getParameter('kernel.bundles');
 
+
         foreach ($config['bundles'] as $bundle) {
             if (!isset($bundles[$bundle])) {
                 throw new InvalidArgumentException(sprintf('Bundle "%s" Not exists or is not Enabled', $bundle));
@@ -82,9 +84,12 @@ class ManuelTranslationExtension extends Extension
 
             $reflection = new \ReflectionClass($bundles[$bundle]);
             $extractDirs[] = dirname($reflection->getFileName());
+            $filesPrefixs[dirname($reflection->getFileName())] = $bundle;
+
 
             if (is_dir($bundleDir = sprintf($overrideViewsPath, $bundle))) {
-                $extractDirs[] = sprintf($overrideViewsPath, $bundle);
+                $extractDirs[] = $bundleDir;
+                $filesPrefixs[$bundleDir] = $bundle;
             }
 
             if (is_dir($d = $bundleDir . 'Resources/translations/')) {
@@ -93,6 +98,7 @@ class ManuelTranslationExtension extends Extension
 
             if (is_dir($d = sprintf($overrideViewsPath, $bundle))) {
                 $extractDirs[] = $d;
+                $filesPrefixs[$d] = $bundle;
             }
 
             if (is_dir($d = sprintf($overrideTransPath, $bundle))) {
@@ -102,5 +108,6 @@ class ManuelTranslationExtension extends Extension
 
         $container->setParameter('manuel_translation.extract_dirs', $extractDirs);
         $container->setParameter('manuel_translation.translations_files_dirs', $translationFilesDirs);
+        $container->setParameter('manuel_translation.files_prefix', $filesPrefixs);
     }
 }

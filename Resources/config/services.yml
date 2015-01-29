@@ -30,3 +30,4 @@ services:
         calls:
             - ['setBackupDumper', [@translation.dumper.php]]
             - ['setBackupDir', [%manuel_translation.translations_backup_dir%]]
+            - ['setFilesPrefix', [%manuel_translation.files_prefix%]]

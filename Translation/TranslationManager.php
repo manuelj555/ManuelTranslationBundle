@@ -10,7 +10,9 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation;
 
+use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\DoctrineDumper;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader;
 use Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader;
 use Symfony\Component\Filesystem\Filesystem;
@@ -38,7 +40,7 @@ class TranslationManager
      */
     private $doctrineLoader;
     /**
-     * @var DumperInterface
+     * @var DoctrineDumper
      */
     private $translationDumper;
     /**
@@ -50,6 +52,7 @@ class TranslationManager
     private $translationFilesDirs;
     private $backupDir;
     private $backupDumper;
+    private $filesPrefix;
 
     function __construct($extractor, $translationLoader, $doctrineLoader, $translationDumper,
         $translationRepository, $locales, $extractDirs, $translationFilesDirs)
@@ -80,10 +83,21 @@ class TranslationManager
         $this->backupDumper = $backupDumper;
     }
 
+    /**
+     * @param mixed $filesPrefix
+     */
+    public function setFilesPrefix($filesPrefix)
+    {
+        $this->filesPrefix = $filesPrefix;
+    }
+
+    /**
+     * @return FileMessageCatalogue
+     */
     public function getUsedMessages()
     {
         $locale = current($this->locales);
-        $usedMessages = new MessageCatalogue($locale);
+        $usedMessages = new FileMessageCatalogue($this->filesPrefix, $locale);
 
         foreach ($this->extractDirs as $dir) {
             $this->extractor->extract($dir, $usedMessages);
@@ -105,11 +119,11 @@ class TranslationManager
 
     public function extractToDatabase()
     {
-        $usedMessages = $this->getUsedMessages()->all();
+        $usedMessages = $this->getUsedMessages();
 
         foreach ($this->locales as $locale) {
             $fileMessages = $this->loadFileMessages($locale);
-            $forDump = new MessageCatalogue($locale, $usedMessages);
+            $forDump = new MessageCatalogue($locale, $usedMessages->all());
 
             foreach ($usedMessages as $domain => $items) {
                 foreach ($items as $usedCode => $usedValue) {
@@ -121,6 +135,8 @@ class TranslationManager
 
             $this->translationDumper->dump($forDump);
         }
+
+        $this->setTranslationFiles($usedMessages);
     }
 
     public function inactiveUnused()
@@ -140,16 +156,30 @@ class TranslationManager
 
     public function generateBackup()
     {
-        $path = rtrim($this->backupDir, '/') . '/' . date('Y-m-d-H-i-s') . '/backup.%s.php';
+        $path = rtrim($this->backupDir, '/') . '/' . time() . '/backup.%s.php';
 
         $filesystem = new Filesystem();
 
         foreach ($this->locales as $locale) {
-            $bdMessages = $this->translationLoader->load(null, $locale);
+            $bdMessages = $this->doctrineLoader->load(null, $locale);
 
             $output = "<?php\n\nreturn " . var_export($bdMessages->all(), true) . ";\n";
 
             $filesystem->dumpFile(sprintf($path, $locale), $output);
+        }
+    }
+
+    public function setTranslationFiles(FileMessageCatalogue $catalogue)
+    {
+        $translations = $this->translationDumper->getExistentTranslations();
+        $filesMessages = $catalogue->getFilesMessages();
+
+        foreach ($filesMessages as $domain => $messages) {
+            foreach ($messages as $code => $files) {
+                if (isset($translations[$domain][$code])) {
+                    $translations[$domain][$code]->setFiles(array_unique($files));
+                }
+            }
         }
     }
 }
