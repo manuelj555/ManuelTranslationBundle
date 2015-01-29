@@ -1,23 +1,15 @@
 # ManuelTranslationBundle
 
-Bundle que permite la edición de etiquetas de traducción desde la Base de datos
-
-
----------------------------------
-|  Hola          |     que      |
----------------------------------
-|   si          |     claro     |
-
-<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/trans_page.png" alt="ManuelTranslation Backend" title="ManuelTranslation" width="100%" style="border: 1px solid #aaa" />
-
-
-
-<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/form.png" alt="ManuelTranslation Form" title="ManuelTranslation" width="40%" align="right" />
-
-**Puedes crear y Modificar etiquetas de manera simple y sin tocar archivo xml, yml, php...**
+|   Que Ofrece               |            Preview             |
+|----------------------------|--------------------------------|
+| Bundle que permite la edición de etiquetas de traducción desde la Base de datos | 
+<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/trans_page.png" alt="ManuelTranslation Backend" title="ManuelTranslation" width="40%" /> |
+| **Puedes crear y Modificar etiquetas de manera simple y sin tocar archivo xml, yml, php...**
 
 * Establecer el dominio y el nombre de la etiqueta
-* Establecer las traducciones en base a los locales que estes implementando
+* Establecer las traducciones en base a los locales que estes implementando | /master/Resources/doc/form.png" alt="ManuelTranslation Form" title="ManuelTranslation" width="40%" align="right" /> |
+
+
 
 ------
 
