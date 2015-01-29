@@ -9,7 +9,7 @@ Bundle que permite la creación y edición de etiquetas de traducción desde la 
 
 **Puedes Crear y Modificar traducciones de etiquetas de manera simple y sin tocar archivos xml, yml, php...**
 
-<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/form.png" alt="ManuelTranslation Form" title="ManuelTranslation" width="70%" align="middle" />
+<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/form.png" alt="ManuelTranslation Form" title="ManuelTranslation" width="50%" align="middle" />
 
 -------------
 
