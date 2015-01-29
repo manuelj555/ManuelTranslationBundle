@@ -2,12 +2,14 @@
 
 Bundle que permite la edición de etiquetas de traducción desde la Base de datos
 
-<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/trans_page.png" alt="ManuelTranslation Backend" title="ManuelTranslation" width="100%" style="border: 1px solid #aaa" />
 
-
+---------------------------------
 |  Hola          |     que      |
 ---------------------------------
-|   si          |     claro        |
+|   si          |     claro     |
+
+<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/trans_page.png" alt="ManuelTranslation Backend" title="ManuelTranslation" width="100%" style="border: 1px solid #aaa" />
+
 
 
 <img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/form.png" alt="ManuelTranslation Form" title="ManuelTranslation" width="40%" align="right" />
