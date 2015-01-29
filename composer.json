@@ -4,7 +4,8 @@
     "php": ">=5.3.3",
     "symfony/framework-bundle": "~2.5",
     "guzzlehttp/guzzle": "~5.0",
-    "knplabs/knp-paginator-bundle": "~2.4"
+    "knplabs/knp-paginator-bundle": "~2.4",
+    "stof/doctrine-extensions-bundle": "~1.1@dev"
   },
   "autoload": {
     "psr-4": { "ManuelAguirre\\Bundle\\TranslationBundle\\": "" }
