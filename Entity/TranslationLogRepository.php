@@ -12,5 +12,13 @@ use Doctrine\ORM\EntityRepository;
  */
 class TranslationLogRepository extends EntityRepository
 {
-//    fin
+    public function getAllByTranslation($translation)
+    {
+        return $this->createQueryBuilder('tl')
+            ->where('tl.translation = :translation')
+            ->setParameter('translation', $translation)
+            ->orderBy('tl.id', 'DESC')
+            ->getQuery()
+            ->getArrayResult();
+    }
 }

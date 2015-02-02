@@ -93,6 +93,11 @@ class TranslationLog
     private $files = array();
 
     /**
+     * @ORM\Column(name="logged_at", type="datetime")
+     */
+    private $loggedAt = array();
+
+    /**
      * Get id
      *
      * @return integer

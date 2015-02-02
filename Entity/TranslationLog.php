@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="translation_bundle_translation_log")
  * @ORM\Entity(repositoryClass="ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationLogRepository")
+ *
+ * @ORM\HasLifecycleCallbacks()
  */
 class TranslationLog
 {
@@ -91,6 +93,11 @@ class TranslationLog
      * @ORM\Column(name="files", type="array", nullable=true)
      */
     private $files = array();
+
+    /**
+     * @ORM\Column(name="logged_at", type="datetime")
+     */
+    private $loggedAt = array();
 
     /**
      * Get id
@@ -373,5 +380,36 @@ class TranslationLog
     public function getTranslation()
     {
         return $this->translation;
+    }
+
+    /**
+     * Set loggedAt
+     *
+     * @param \DateTime $loggedAt
+     * @return TranslationLog
+     */
+    public function setLoggedAt($loggedAt)
+    {
+        $this->loggedAt = $loggedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get loggedAt
+     *
+     * @return \DateTime 
+     */
+    public function getLoggedAt()
+    {
+        return $this->loggedAt;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setLoggedAtValue()
+    {
+        $this->setLoggedAt(new \DateTime('now'));
     }
 }

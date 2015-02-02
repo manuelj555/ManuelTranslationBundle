@@ -27,8 +27,8 @@ class LogController extends Controller
     {
         $logs = $this->getDoctrine()
             ->getManager()
-            ->getRepository('')
-            ->getLogEntries($translation);
+            ->getRepository('ManuelTranslationBundle:TranslationLog')
+            ->getAllByTranslation($translation);
 
         return $this->render('@ManuelTranslation/Log/list.html.twig', array(
             'logs' => $logs,
