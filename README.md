@@ -42,8 +42,6 @@ public function registerBundles()
 {
     $bundles = array(
         ...
-        new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(), //solo si no esta antes agregado
-        new Knp\Bundle\PaginatorBundle\KnpPaginatorBundle(), //solo si no esta antes agregado
         new ManuelAguirre\Bundle\TranslationBundle\ManuelTranslationBundle(),
     );
     
@@ -84,21 +82,6 @@ ___________
 Este bundle nos permite editar y manejar traducciones desde la base de datos, pudiendo editarlas desde la página web, además nos permite sincronizar las traducciones entre el servidor y local del proyecto.
 
 ```yaml
-doctrine:
-    orm:
-        # Activamos la extensión loggable
-        mappings:
-            gedmo_loggable:
-                type: annotation
-                prefix: Gedmo\Loggable\Entity
-                dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"
-                is_bundle: false
-
-# Activamos la extensión loggable
-stof_doctrine_extensions:
-    orm:
-        default:
-            loggable: true
 
 manuel_translation:
     bundles:          # Los bundles de donde serán leidas las traducciones para pasarlas a la Base de Datos.
