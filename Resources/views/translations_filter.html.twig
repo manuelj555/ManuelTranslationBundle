@@ -4,7 +4,7 @@
 
 <div class="panel panel-default">
     <div class="panel-body">
-        {{ form_start(form_filter) }}
+        {{ form_start(form_filter, { attr: { 'action': path('manuel_translation_list') } }) }}
         <div class="row">
             <div class="col-sm-8 col-md-9">
                 <div class="form-horizontal">

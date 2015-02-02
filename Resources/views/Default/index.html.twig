@@ -64,8 +64,13 @@
 {% endblock %}
 
 {% set pagination_content %}
-<div class="text-right">
-    {{ knp_pagination_render(translations, 'KnpPaginatorBundle:Pagination:twitter_bootstrap_v3_pagination.html.twig') }}
+<div class="row">
+    <div class="col-sm-3">
+        {{ translations.nbResults }} Items
+    </div>
+    <div class="col-sm-9 text-right">
+        {{ include('@ManuelTranslation/_pagination.html.twig', {paginator: translations}) }}
+    </div>
 </div>
 {% endset %}
 
@@ -105,6 +110,9 @@
                                         <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
                                     </a>
                                 {% endif %}
+                                <a href="{{ path('manuel_translation_log_list', {id:item.id}) }}" class="btn btn-default btn-xs">
+                                    <span aria-hidden="true" class="glyphicon glyphicon-zoom-in"></span>
+                                </a>
                             </div>
                         </div>
                         <hr/>

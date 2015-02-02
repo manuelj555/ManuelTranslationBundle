@@ -1,0 +1,81 @@
+{% if paginator.haveToPaginate %}
+    {% set route = route|default(app.request.attributes.get('_route')) %}
+    {% set query = app.request.attributes.get('_route_params') %}
+    {% set pageParameterName = pageParameterName|default('page') %}
+
+    {% set show = 10 %}
+    {% set half = (show/2)|round(0, method = 'ceil') %}
+    {% set start = paginator.currentPage <= half ? 1 : (paginator.nbPages - paginator.currentPage < half ? paginator.nbPages - show : paginator.currentPage - half) %}
+    {% set start = start < 1 ? 1 : start %}
+    {% set end = start %}
+
+    <ul class="pagination">
+
+        {% if paginator.hasPreviousPage %}
+            <li>
+                <a href="{{ path(route, query|merge({(pageParameterName): paginator.previousPage})) }}">&laquo;&nbsp;{{ 'Previous'|trans }}</a>
+            </li>
+        {% else %}
+            <li class="disabled">
+                <span>&laquo;&nbsp;{{ 'Previous'|trans }}</span>
+            </li>
+        {% endif %}
+
+        {% if start > 1 %}
+            <li>
+                <a href="{{ path(route, query|merge({(pageParameterName): 1})) }}">1</a>
+            </li>
+            {% if start == 3 %}
+                <li>
+                    <a href="{{ path(route, query|merge({(pageParameterName): 2})) }}">2</a>
+                </li>
+            {% elseif start != 2 %}
+                <li class="disabled">
+                    <span>&hellip;</span>
+                </li>
+            {% endif %}
+        {% endif %}
+
+        {% for page in start .. paginator.nbPages if page < start + show %}
+            {% set end = page %}
+            {% if page != paginator.currentPage %}
+                <li>
+                    <a href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
+                </li>
+            {% else %}
+                <li class="active">
+                    <span>{{ page }}</span>
+                </li>
+            {% endif %}
+
+        {% endfor %}
+
+        {% if end < paginator.nbPages %}
+            {% if paginator.nbPages > (end + 1) %}
+                {% if paginator.nbPages > (end + 2) %}
+                    <li class="disabled">
+                        <span>&hellip;</span>
+                    </li>
+                {% else %}
+                    <li>
+                        <a href="{{ path(route, query|merge({(pageParameterName): (paginator.nbPages - 1)})) }}">{{ paginator.nbPages -1 }}</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+            <li>
+                <a href="{{ path(route, query|merge({(pageParameterName): paginator.nbPages})) }}">{{ paginator.nbPages }}</a>
+            </li>
+        {% endif %}
+
+        {% if paginator.hasNextPage %}
+            <li>
+                <a href="{{ path(route, query|merge({(pageParameterName): paginator.nextPage})) }}">{{ 'Next'|trans }}
+                    &nbsp;&raquo;</a>
+            </li>
+        {% else %}
+            <li class="disabled">
+                <span>{{ 'Next'|trans }}&nbsp;&raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+{% endif %}

@@ -32,3 +32,8 @@ services:
                 name: data_collector
                 template: @ManuelTranslation/DataCollector/translations.html.twig
                 id: manuel_translations
+
+    manuel_translation.doctrine.translation_log_listener:
+        class: ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\TranslationLogListener
+        tags:
+            - { name: doctrine.event_listener, event: postUpdate }

@@ -6,6 +6,8 @@ use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationValue;
 use ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationFilterType;
 use ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationType;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -65,10 +67,12 @@ class DefaultController extends Controller
 
         $form = $this->createForm('manuel_translation', $this->getNewTranslationInstance());
 
-        $translations = $this->get('knp_paginator')->paginate($query, $page, 50);
+        $paginator = new Pagerfanta(new DoctrineORMAdapter($query, false));
+        $paginator->setMaxPerPage(50);
+        $paginator->setCurrentPage($page);
 
         return $this->render('@ManuelTranslation/Default/index.html.twig', array(
-            'translations' => $translations,
+            'translations' => $paginator,
             'form' => $form->createView(),
             'locales' => $this->container->getParameter('manuel_translation.locales'),
             'form_filter' => $formFilter->createView(),

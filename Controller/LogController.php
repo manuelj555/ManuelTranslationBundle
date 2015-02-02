@@ -21,13 +21,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class LogController extends Controller
 {
     /**
-     * @Route("/list/{id}")
+     * @Route("/list/{id}", name="manuel_translation_log_list")
      */
     public function listAction(Translation $translation)
     {
         $logs = $this->getDoctrine()
             ->getManager()
-            ->getRepository('GedmoLoggable:LogEntry')
+            ->getRepository('')
             ->getLogEntries($translation);
 
         return $this->render('@ManuelTranslation/Log/list.html.twig', array(
