@@ -14,13 +14,13 @@ use Doctrine\ORM\Query;
 class TranslationRepository extends EntityRepository
 {
     public function getAllQueryBuilder($search = null, $domain = null,
-        $onlyConflicted = null, $onlyChanged = null, $showInactives = true)
+        $onlyConflicted = null, $onlyChanged = null, $inactives = false)
     {
         $query = $this->createQueryBuilder('translation')
             ->orderBy('translation.domain,translation.code');
 
-        if (!$showInactives) {
-            $query->andWhere('translation.active = true');
+        if ($inactives) {
+            $query->andWhere('translation.active = false');
         }
 
         if (null !== $search) {

@@ -167,6 +167,26 @@
                 <source>flash.database_loaded</source>
                 <target>Database Loaded Correctly!</target>
             </trans-unit>
+            <trans-unit id="label.reviews">
+                <source>label.reviews</source>
+                <target>Revitions</target>
+            </trans-unit>
+            <trans-unit id="label.log_date">
+                <source>label.log_date</source>
+                <target>Revision Date</target>
+            </trans-unit>
+            <trans-unit id="label.back">
+                <source>label.back</source>
+                <target>Back</target>
+            </trans-unit>
+            <trans-unit id="label.current">
+                <source>label.current</source>
+                <target>Current</target>
+            </trans-unit>
+            <trans-unit id="label.items">
+                <source>label.items</source>
+                <target>Items</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

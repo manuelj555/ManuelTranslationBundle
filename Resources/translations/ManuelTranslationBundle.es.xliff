@@ -167,6 +167,26 @@
                 <source>flash.database_loaded</source>
                 <target>¡La base de datos ha sido cargada correctamente!</target>
             </trans-unit>
+            <trans-unit id="label.reviews">
+                <source>label.reviews</source>
+                <target>Revisiones</target>
+            </trans-unit>
+            <trans-unit id="label.log_date">
+                <source>label.log_date</source>
+                <target>Fecha de Revisión</target>
+            </trans-unit>
+            <trans-unit id="label.back">
+                <source>label.back</source>
+                <target>Atrás</target>
+            </trans-unit>
+            <trans-unit id="label.current">
+                <source>label.current</source>
+                <target>Actual</target>
+            </trans-unit>
+            <trans-unit id="label.items">
+                <source>label.items</source>
+                <target>Registros</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

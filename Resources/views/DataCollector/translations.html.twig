@@ -11,6 +11,28 @@
     </style>
 {% endblock %}
 
+{% block toolbar %}
+    {% set missings = collector.count %}
+
+    {% if missings > 0 %}
+        {% set icon %}
+        <img src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAQAAADVGmdYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAaAAAAHABR6MGpAAAA9klEQVQ4y8WUvRXCIBSFv2NlR0dpmZY2dfr0OIATOAJDuAebOIXnWLoAFvL3Ekyo9FIkgfOR925ugH/JEghc0HlGcepBPmMCYCIQqi0a8hVUj01oxqOBUSCmtzeNIxBwDD921eDx/YUCDLE7v22J1CWbYgEOXdCc755tx+YGVOwf5YLKn9ZuQItIXasl2wepRXDMF0goBcdlp/Q+lIobIAbotg/dqv11tOS6Wl1AcjIlYMofowNKP18xxPZApcuP/actI1p9OlTeVqj1+tKJz+UKmeZpYAhiRD9Tyh/xehTQnbN4frGQNLnIfc94ssKtIFUdbLH4NyyRzUB/5UI/AAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE1LTAxLTI4VDIzOjM2OjQ2LTA1OjAwj3ixFQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxNS0wMS0yOFQyMzozNjo0Ni0wNTowMP4lCakAAAAXdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2Mi41vIfJ/gAAAABJRU5ErkJggg=="
+             alt="Missing Translations">
+        <span class="sf-toolbar-status sf-toolbar-status-yellow">{{ missings }}</span>
+        {% endset %}
+
+        {% set text %}
+        <div class="sf-toolbar-info-piece">
+            <div>Missing Translations</div>
+        </div>
+        {#<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" onload="var h = this.parentNode.innerHTML, rx=/<script>(.*?)<\/script>/g, s; while (s = rx.exec(h)) {eval(s[1]);};" />#}
+        {% endset %}
+
+        {% include '@WebProfiler/Profiler/toolbar_item.html.twig' with { 'link': true } %}
+    {% endif %}
+{% endblock %}
+
 {% block menu %}
     <span class="label">
     <span class="icon">
@@ -36,23 +58,23 @@ iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAQAAADVGmdYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7O
         </tr>
         {% for domain, ids in collector.translations %}
             {% for id in ids %}
-                <tr>
+                <tr class="translation-row">
                     <td style="line-height: 20px">
                         <strong>Id</strong>
-                        <input type="text" value="{{ id }}"/>
+                        <input type="text" name="code" value="{{ id }}"/>
                         <strong>Domain</strong>
-                        <input type="text" value="{{ domain }}"/>
+                        <input type="text" name="domain" value="{{ domain }}"/>
                     </td>
                     <td style="text-align: right;">
                         {% for locale in collector.locales %}
                             <div>
                                 <strong style="vertical-align: top">{{ locale }}</strong>
-                                <textarea rows="1">{{ id }}</textarea>
+                                <textarea name="value_{{ locale }}" rows="1">{{ id }}</textarea>
                             </div>
                         {% endfor %}
                     </td>
                     <td style="vertical-align: middle">
-                        <button type="button" class="sf-button">
+                        <button type="button" class="sf-button create-translation">
                             <span class="border-l">
                                 <span class="border-r">
                                     <span class="btn-bg">Create</span>
@@ -64,4 +86,27 @@ iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAQAAADVGmdYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7O
             {% endfor %}
         {% endfor %}
     </table>
+    <script src="{{ asset('bundles/manueltranslation/js/jquery.min.js') }}"></script>
+    <script>
+        $(function () {
+            $(".create-translation").on('click', function (e) {
+                e.preventDefault();
+                var $row = $(this).closest('.translation-row');
+
+                var data = {
+                    code: $row.find('[name="code"]').val(),
+                    domain: $row.find('[name="domain"]').val(),
+                    values: {
+                        {% for locale in collector.locales %}
+                        '{{ locale }}': $row.find('[name="value_{{ locale }}"]').val(),
+                        {% endfor %}
+                    }
+                };
+                console.log(data);
+                $.post('{{ path('manuel_translation_save_from_profiler') }}', data, function (res) {
+                    $row.remove();
+                });
+            });
+        });
+    </script>
 {% endblock %}

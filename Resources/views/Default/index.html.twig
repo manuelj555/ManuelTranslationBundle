@@ -66,7 +66,9 @@
 {% set pagination_content %}
 <div class="row">
     <div class="col-sm-3">
-        {{ translations.nbResults }} Items
+        <h4>
+            <b>{{ translations.nbResults }}</b> {{ 'label.items'|trans }}
+        </h4>
     </div>
     <div class="col-sm-9 text-right">
         {{ include('@ManuelTranslation/_pagination.html.twig', {paginator: translations}) }}
@@ -105,17 +107,32 @@
                             </div>
                             <div class="col-sm-4 text-right">
                                 <small class="">{{ item.domain }}</small>
+                            </div>
+                        </div>
+                        <div class="row-fluid clearfix">
+                            <div class="col-sm-12 text-right">
                                 {% if item.active %}
-                                    <a href="#" class="edit-translation btn btn-default btn-xs">
+                                    <a href="#" class="edit-translation btn btn-primary btn-xs">
                                         <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
                                     </a>
                                 {% endif %}
                                 <a href="{{ path('manuel_translation_log_list', {id:item.id}) }}" class="btn btn-default btn-xs">
                                     <span aria-hidden="true" class="glyphicon glyphicon-zoom-in"></span>
                                 </a>
+                                {% if item.active %}
+                                    <a href="{{ path('manuel_translation_change_status', {id : item.id, status: 'inactive'}) }}"
+                                       class="btn btn-warning btn-xs">
+                                        <span aria-hidden="true" class="glyphicon glyphicon-ban-circle"></span>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('manuel_translation_change_status', {id : item.id, status: 'active'}) }}"
+                                       class="btn btn-info btn-xs">
+                                        <span aria-hidden="true" class="glyphicon glyphicon-ok-circle"></span>
+                                    </a>
+                                {% endif %}
                             </div>
                         </div>
-                        <hr/>
+                        {#<hr/>#}
                         <div class="trans-files">
                             <h6>{{ 'label.used_in'|trans }}</h6>
                             <ul>

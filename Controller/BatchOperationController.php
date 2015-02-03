@@ -178,4 +178,18 @@ class BatchOperationController extends Controller
 
         return new Response('Ok');
     }
+
+    /**
+     * @Route("/change-status/{id}/{status}",
+     *  name="manuel_translation_change_status",
+     *  requirements={"status" = "active|inactive"}
+     * )
+     */
+    public function changeStatusAction(Translation $translation, $status)
+    {
+        $translation->setActive($status === 'active');
+        $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
+
+        return $this->redirectToRoute('manuel_translation_list');
+    }
 }

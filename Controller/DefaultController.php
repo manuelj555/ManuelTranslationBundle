@@ -156,4 +156,32 @@ class DefaultController extends Controller
         return $translation;
     }
 
+    /**
+     * @Route("/save-from-profiler", name="manuel_translation_save_from_profiler")
+     */
+    public function saveFromProfilerAction(Request $request)
+    {
+        $translation = $this->getNewTranslationInstance();
+        $translation->setCode($request->request->get('code'));
+        $translation->setDomain($request->request->get('domain'));
+
+        foreach ($request->request->get('values', array()) as $locale => $value) {
+            $translation->setValue($locale, $value);
+        }
+
+        if(count($this->get('validator')->validate($translation)) == 0){
+            $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
+
+            $filesystem = new Filesystem();
+            $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
+
+            foreach ($translation->getValues() as $locale => $value) {
+                $filename = sprintf($filenameTemplate, $locale);
+                $filesystem->dumpFile($filename, time());
+            }
+        }
+
+
+        return new Response('Ok');
+    }
 }
