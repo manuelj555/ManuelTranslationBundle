@@ -57,8 +57,8 @@ class Synchronizator
         }
 
         /* @var $local Translation */
-        foreach ($localTranslations as $local) {
-            set_time_limit(10);
+        foreach ($localTranslations as $index => $local) {
+            set_time_limit(30);
             if (!$this->existsInServer($serverTranslations, $local)) {
                 //si no existe, lo creamos en el server.
                 $this->createInServer($local);
@@ -76,9 +76,16 @@ class Synchronizator
                     //conflict
                     $status = self::STATUS_CONFLICT;
                     $local->setConflicts(true);
-                } else {
-                    $local->setIsChanged(false);
                 }
+
+                $local->setIsChanged(false);
+
+                unset($serverTranslations[$local->getDomain()][$local->getCode()]);
+
+//                if (($index % 50) === 0) {
+//                    $this->em->flush();
+//                    $this->em->clear();
+//                }
             }
         }
 
@@ -98,9 +105,11 @@ class Synchronizator
             $localTranslations[$item->getDomain()][$item->getCode()] = $item;
         }
 
+        $counter = 0;
+
         foreach ($serverTranslations as $domain => $items) {
             foreach ($items as $code => $server) {
-                set_time_limit(10);
+                set_time_limit(30);
                 if ($this->existsInLocal($localTranslations, $server)) {
                     /* @var $local Translation */
                     $local = $localTranslations[$server['domain']][$server['code']];
@@ -170,7 +179,9 @@ class Synchronizator
             return false;
         }
 
-        if ($translation->getServerEditions() !== $server['serverEditions']) {
+        if ($translation->getServerEditions() !== $server['serverEditions']
+            AND $translation->getServerEditions() > $server['serverEditions']
+        ) {
             return false;
         }
 
@@ -186,7 +197,9 @@ class Synchronizator
             return false;
         }
 
-        if ($translation->getVersion() !== $server['version']) {
+        if ($translation->getVersion() !== $server['version']
+            AND $translation->getVersion() > $server['version']
+        ) {
             return false;
         }
 

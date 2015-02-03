@@ -36,4 +36,5 @@ services:
     manuel_translation.doctrine.translation_log_listener:
         class: ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\TranslationLogListener
         tags:
-            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: preUpdate }
+            - { name: doctrine.event_listener, event: postFlush }

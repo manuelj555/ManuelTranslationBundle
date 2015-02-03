@@ -34,10 +34,14 @@ class BatchOperationController extends Controller
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->getDoctrine()->getManager();
 
+        $this->get('manuel_translation.doctrine.translation_log_listener')->setActiveLoggin(false);
+
         $em->beginTransaction();
         $this->get('manuel_translation.translation_manager')->extractToDatabase();
         $em->flush();
         $em->commit();
+
+        $this->get('manuel_translation.doctrine.translation_log_listener')->setActiveLoggin(true);
 
         $this->addFlash('success', $this->get('translator')
             ->trans('flash.database_loaded', array(), 'ManuelTranslationBundle'));
@@ -53,10 +57,10 @@ class BatchOperationController extends Controller
         /* @var $em \Doctrine\ORM\EntityManager */
         $em = $this->getDoctrine()->getManager();
 
-        $em->beginTransaction();
+//        $em->beginTransaction();
         $result = $this->get('manuel_translation.synchronizator')->up($updated);
-        $em->flush();
-        $em->commit();
+//        $em->flush();
+//        $em->commit();
 
         if ($result == Synchronizator::STATUS_CONFLICT OR
             $this->get('manuel_translation.translations_repository')->hasConflicts()
