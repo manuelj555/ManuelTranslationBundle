@@ -159,7 +159,7 @@ class TranslationController extends Controller
      */
     public function generateBackupAction()
     {
-        $this->get('manuel_translation.translation_manager')->generateBackup();
+        $this->get('manuel_translation.backup_manager')->generateBackup();
 
         return new Response('Ok');
     }
