@@ -50,9 +50,6 @@ class TranslationManager
     private $locales;
     private $extractDirs;
     private $translationFilesDirs;
-    private $backupDir;
-    private $backupDumper;
-    private $filesPrefix;
 
     function __construct($extractor, $translationLoader, $doctrineLoader, $translationDumper,
         $translationRepository, $locales, $extractDirs, $translationFilesDirs)
@@ -65,22 +62,6 @@ class TranslationManager
         $this->translationFilesDirs = $translationFilesDirs;
         $this->translationRepository = $translationRepository;
         $this->doctrineLoader = $doctrineLoader;
-    }
-
-    /**
-     * @param mixed $backupDir
-     */
-    public function setBackupDir($backupDir)
-    {
-        $this->backupDir = $backupDir;
-    }
-
-    /**
-     * @param mixed $backupDumper
-     */
-    public function setBackupDumper($backupDumper)
-    {
-        $this->backupDumper = $backupDumper;
     }
 
     /**
@@ -151,21 +132,6 @@ class TranslationManager
             if ($obsoletes = $operation->getObsoleteMessages($domain)) {
                 $this->translationRepository->inactiveByDomainAndCodes($domain, array_keys($obsoletes));
             }
-        }
-    }
-
-    public function generateBackup()
-    {
-        $path = rtrim($this->backupDir, '/') . '/' . time() . '/backup.%s.php';
-
-        $filesystem = new Filesystem();
-
-        foreach ($this->locales as $locale) {
-            $bdMessages = $this->doctrineLoader->load(null, $locale);
-
-            $output = "<?php\n\nreturn " . var_export($bdMessages->all(), true) . ";\n";
-
-            $filesystem->dumpFile(sprintf($path, $locale), $output);
         }
     }
 

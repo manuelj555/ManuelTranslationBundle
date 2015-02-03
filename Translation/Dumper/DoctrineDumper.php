@@ -57,20 +57,21 @@ class DoctrineDumper implements DumperInterface
         }
 
         $locale = $messages->getLocale();
-
         foreach ($messages->all() as $domain => $items) {
             foreach ($items as $code => $value) {
 
                 if (isset($this->existentTranslations[$domain][$code])) {
 
                     $values = $this->existentTranslations[$domain][$code]->getValues();
-                    if (!isset($values[$locale])) {
-                        //si no existe el valor de traduccion en el locale actual, lo creamos
+                    if (!isset($values[$locale]) OR isset($options['restoring'])) {
+                        //si no existe el valor de traduccion en el locale actual
                         $this->existentTranslations[$domain][$code]->setValue($locale, $value);
                     }
 
-                    //si se está usando, lo activamos
-                    $this->existentTranslations[$domain][$code]->setActive(true);
+                    if (!isset($options['restoring'])) {
+                        //si se está usando, lo activamos
+                        $this->existentTranslations[$domain][$code]->setActive(true);
+                    }
 
                 } else {
                     $t = $this->existentTranslations[$domain][$code] = new Translation($code);

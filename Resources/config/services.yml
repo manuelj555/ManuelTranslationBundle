@@ -28,6 +28,14 @@ services:
             - %manuel_translation.extract_dirs%
             - %manuel_translation.translations_files_dirs%
         calls:
+            - ['setFilesPrefix', [%manuel_translation.files_prefix%]]
+
+    manuel_translation.backup_manager:
+        class: ManuelAguirre\Bundle\TranslationBundle\Translation\BackupManager
+        arguments:
+            - @manuel_translation.translations_doctrine_loader
+            - @manuel_translation.translations_doctrine_dumper
+            - %manuel_translation.locales%
+        calls:
             - ['setBackupDumper', [@translation.dumper.php]]
             - ['setBackupDir', [%manuel_translation.translations_backup_dir%]]
-            - ['setFilesPrefix', [%manuel_translation.files_prefix%]]

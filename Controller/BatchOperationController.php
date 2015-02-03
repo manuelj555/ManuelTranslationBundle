@@ -150,19 +150,6 @@ class BatchOperationController extends Controller
     }
 
     /**
-     * @Route("/generate-backup", name="manuel_translation_generate_backup")
-     */
-    public function generateBackupAction()
-    {
-        $this->get('manuel_translation.translation_manager')->generateBackup();
-
-        $this->addFlash('success', $this->get('translator')
-            ->trans('flash.database_backup_comeplete', array(), 'ManuelTranslationBundle'));
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    /**
      * @Route("/resolve-conflict/{id}-{use}",
      *  name="manuel_translation_resolve_conflict",
      *  requirements={"use" = "local|server"}

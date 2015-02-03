@@ -59,6 +59,15 @@
                     <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
                     {{ 'label.inactive_unused_trans'|trans }}
                 </a></li>
+            <li class="divider"></li>
+            <li><a href="{{ path('manuel_translation_generate_backup') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-tasks"></span>
+                    {{ 'label.generate_backup'|trans }}
+                </a></li>
+            <li><a href="{{ path('manuel_translation_backup_list') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-floppy-open"></span>
+                    {{ 'label.restore_backup'|trans }}
+                </a></li>
         </ul>
     </div>
 {% endblock %}
@@ -116,7 +125,8 @@
                                         <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
                                     </a>
                                 {% endif %}
-                                <a href="{{ path('manuel_translation_log_list', {id:item.id}) }}" class="btn btn-default btn-xs">
+                                <a href="{{ path('manuel_translation_log_list', {id:item.id}) }}"
+                                   class="btn btn-default btn-xs">
                                     <span aria-hidden="true" class="glyphicon glyphicon-zoom-in"></span>
                                 </a>
                                 {% if item.active %}
