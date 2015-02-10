@@ -69,7 +69,13 @@ class ManuelTranslationExtension extends Extension
         // Discover translation directories
         $filesPrefixs = array($container->getParameter('kernel.root_dir') . '/Resources/views' => 'views');
         $extractDirs = array($container->getParameter('kernel.root_dir') . '/Resources/views');
-        $translationFilesDirs = array($container->getParameter('kernel.root_dir') . '/Resources/translations');
+
+        if(is_dir($container->getParameter('kernel.root_dir') . '/Resources/translations')){
+            $translationFilesDirs = array($container->getParameter('kernel.root_dir') . '/Resources/translations');
+        }else{
+            $translationFilesDirs = array();
+        }
+
 
         $overrideViewsPath = $container->getParameter('kernel.root_dir') . '/Resources/%s/views';
         $overrideTransPath = $container->getParameter('kernel.root_dir') . '/Resources/%s/translations';
