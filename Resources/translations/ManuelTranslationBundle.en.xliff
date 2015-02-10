@@ -187,6 +187,14 @@
                 <source>label.items</source>
                 <target>Items</target>
             </trans-unit>
+            <trans-unit id="label.generate_backup">
+                <source>label.generate_backup</source>
+                <target>Generate Backup</target>
+            </trans-unit>
+            <trans-unit id="label.restore_backup">
+                <source>label.restore_backup</source>
+                <target>Restore Backup</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
