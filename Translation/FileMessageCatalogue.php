@@ -19,7 +19,7 @@ use Symfony\Component\Translation\MessageCatalogue;
  */
 class FileMessageCatalogue extends MessageCatalogue
 {
-    private $filesMessages;
+    private $filesMessages = array();
     private $filesPrefix;
 
     public function __construct($filesPrefix, $locale, array $messages = array())
