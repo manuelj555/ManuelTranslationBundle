@@ -22,6 +22,11 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->arrayNode('locales')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                    ->prototype('scalar')->end()
+                ->end()
                 ->arrayNode('bundles')
                     ->prototype('scalar')->end()
                 ->end()
