@@ -50,11 +50,10 @@ class DoctrineDumper implements DumperInterface
     public function dump(MessageCatalogue $messages, $options = array())
     {
         set_time_limit(10);
-        //la idea es buscar las etiquetas que no existan y crearlas.
         $translations = $this->getExistentTranslations();
 
         $locale = $messages->getLocale();
-
+        //actualizamos las etiquetas de la BD en base al catálogo
         $translations = $this->setFromCatalogue($messages, $translations, $options);
 
         $counter = 0;
@@ -113,6 +112,15 @@ class DoctrineDumper implements DumperInterface
         $this->em->clear();
     }
 
+    /**
+     * Actualiza/Crea traducciones en el arreglo $translations.
+     *
+     * @param MessageCatalogue $catalogue
+     * @param                  $translations
+     * @param array            $options
+     *
+     * @return mixed
+     */
     protected function setFromCatalogue(MessageCatalogue $catalogue, $translations, $options = array())
     {
         $locale = $catalogue->getLocale();
@@ -123,7 +131,7 @@ class DoctrineDumper implements DumperInterface
                 if (isset($translations[$domain][$code])) {
 
                     $values = $translations[$domain][$code]->getValues();
-                    if (!isset($values[$locale])) {
+                    if (!isset($values[$locale]) OR isset($options['restoring'])) {
                         //si no existe el valor de traduccion en el locale actual
                         $translations[$domain][$code]->setValue($locale, $value);
                     }

@@ -32,8 +32,6 @@ class TranslationLogListener
                 OR $event->hasChangedField('domain')
             ) {
 
-                dump($event->getEntityChangeSet());
-
                 $log = new TranslationLog();
                 $log->setTranslation($event->getObject());
 

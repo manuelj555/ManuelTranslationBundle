@@ -102,6 +102,10 @@ class BackupManager
             ->files()
             ->name('/(.+?).php/');
 
+        if(0 === count($files)){
+            throw new \LogicException(sprintf("The dir %s not contains any php file", $path));
+        }
+
         /* @var $file SplFileInfo */
         foreach ($files as $filename => $file) {
             list($locale, $ext) = explode('.', $file->getFilename());
