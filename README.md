@@ -84,6 +84,7 @@ Este bundle nos permite editar y manejar traducciones desde la base de datos, pu
 ```yaml
 
 manuel_translation:
+    locales: [en, es] # Se deben definir los locales que el translator usará
     bundles:          # Los bundles de donde serán leidas las traducciones para pasarlas a la Base de Datos.
 #        - AppBundle
 ```
