@@ -1,25 +1,31 @@
 <?php
+/*
+ * This file is part of the Manuel Aguirre Project.
+ *
+ * (c) Manuel Aguirre <programador.manuel@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
-use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationValue;
-use ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationFilterType;
-use ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationType;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Translation\MessageCatalogue;
 
-class DefaultController extends Controller
+
+/**
+ * @author Manuel Aguirre <programador.manuel@gmail.com>
+ */
+class TranslationController extends Controller
 {
-
     protected $isServer = false;
     protected $hasServer = false;
 
@@ -35,7 +41,6 @@ class DefaultController extends Controller
             $this->hasServer = true;
         }
     }
-
 
     /**
      * @Route("/list/{page}", name="manuel_translation_list", defaults={"page" = 1})
@@ -91,14 +96,12 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/save/{id}",
-     * name="manuel_translation_save_translation"
-     * )
-     *
-     * @Method("POST")
+     * @Route("/form/{id}", name="manuel_translation_form", defaults={"id" = null})
      */
-    public function saveTranslationAction(Translation $translation, Request $request)
+    public function editAction(Request $request, Translation $translation = null)
     {
+        $translation = $translation ?: $this->getNewTranslationInstance();
+
         $form = $this->createForm('manuel_translation', $translation)
             ->handleRequest($request);
 
@@ -118,25 +121,59 @@ class DefaultController extends Controller
                 $filename = sprintf($filenameTemplate, $locale);
                 $filesystem->dumpFile($filename, time());
             }
+
+            $saved = true;
         } else {
-            return $this->render('@ManuelTranslation/form_errors.html.twig', array(
-                'form' => $form->createView(),
-            ));
+            $saved = false;
         }
 
-        return new Response('Ok');
+        $response = $this->render('@ManuelTranslation/Translation/form.html.twig', array(
+            'form' => $form->createView(),
+        ));
+
+        $response->headers->set('saved', $saved);
+
+        return $response;
     }
 
     /**
-     * @Route("/save-new",
-     * name="manuel_translation_save_translation_new"
-     * )
-     *
-     * @Method("POST")
+     * @Route("/show/item/{id}", name="manuel_translation_show_item")
      */
-    public function saveNewTranslationAction(Request $request)
+    public function getTranslationItemAction(Translation $translation)
     {
-        return $this->saveTranslationAction($this->getNewTranslationInstance(), $request);
+        return $this->render('@ManuelTranslation/Translation/_row.html.twig', array(
+            'translation' => $translation,
+            'locales' => $this->container->getParameter('manuel_translation.locales'),
+        ));
+    }
+
+    /**
+     * @Route("/save-from-profiler", name="manuel_translation_save_from_profiler")
+     */
+    public function saveFromProfilerAction(Request $request)
+    {
+        $translation = $this->getNewTranslationInstance();
+        $translation->setCode($request->request->get('code'));
+        $translation->setDomain($request->request->get('domain'));
+
+        foreach ($request->request->get('values', array()) as $locale => $value) {
+            $translation->setValue($locale, $value);
+        }
+
+        if (count($this->get('validator')->validate($translation)) == 0) {
+            $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
+
+            $filesystem = new Filesystem();
+            $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
+
+            foreach ($translation->getValues() as $locale => $value) {
+                $filename = sprintf($filenameTemplate, $locale);
+                $filesystem->dumpFile($filename, time());
+            }
+        }
+
+
+        return new Response('Ok');
     }
 
     /**
@@ -154,34 +191,5 @@ class DefaultController extends Controller
         }
 
         return $translation;
-    }
-
-    /**
-     * @Route("/save-from-profiler", name="manuel_translation_save_from_profiler")
-     */
-    public function saveFromProfilerAction(Request $request)
-    {
-        $translation = $this->getNewTranslationInstance();
-        $translation->setCode($request->request->get('code'));
-        $translation->setDomain($request->request->get('domain'));
-
-        foreach ($request->request->get('values', array()) as $locale => $value) {
-            $translation->setValue($locale, $value);
-        }
-
-        if(count($this->get('validator')->validate($translation)) == 0){
-            $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
-
-            $filesystem = new Filesystem();
-            $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
-
-            foreach ($translation->getValues() as $locale => $value) {
-                $filename = sprintf($filenameTemplate, $locale);
-                $filesystem->dumpFile($filename, time());
-            }
-        }
-
-
-        return new Response('Ok');
     }
 }

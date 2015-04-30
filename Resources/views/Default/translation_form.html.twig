@@ -29,6 +29,7 @@
                 {% for locale, child in form.values %}
                     {{ form_row(child, {label:locale|title}) }}
                 {% endfor %}
+                {{ form_rest(form) }}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default"

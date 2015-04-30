@@ -3,6 +3,7 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -31,6 +32,7 @@ class Translation
      * @var string
      *
      * @ORM\Column(name="code", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $code;
 
@@ -38,6 +40,7 @@ class Translation
      * @var string
      *
      * @ORM\Column(name="domain", type="string", length=255)
+     * @Assert\NotBlank()
      */
     private $domain = 'messages';
 

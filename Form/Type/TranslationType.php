@@ -10,6 +10,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Form\Type;
 
+use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -48,7 +49,6 @@ class TranslationType extends AbstractType
     {
         $builder->add('values', 'collection', array(
             'type' => 'textarea',
-            'error_bubbling' => true,
         ));
         $builder->add('localEditions', 'hidden', array('error_bubbling' => true));
 
@@ -60,7 +60,7 @@ class TranslationType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => 'ManuelAguirre\Bundle\TranslationBundle\Entity\Translation',
-            'error_bubbling' => true,
+//            'error_bubbling' => true,
             'translation_domain' => 'ManuelTranslationBundle',
         ));
     }
@@ -69,23 +69,23 @@ class TranslationType extends AbstractType
     {
         $form = $event->getForm();
 
-        $disabled = $event->getData()->getId() != null;
+        $disabled = ($event->getData() and $event->getData()->getId());
 
         $form->add('code', null, array(
-            'error_bubbling' => true,
             'disabled' => $disabled,
             'label' => 'label.code',
         ));
         $form->add('domain', null, array(
-            'error_bubbling' => true,
             'disabled' => $disabled,
             'label' => 'label.domain',
+            'data' => 'messages',
         ));
 
-        $domains['messages'] = 'messages';
         $domains = $this->translationRepository->getExistentDomains();
+        $domains['messages'] = 'messages';
 
         $form->add('existent_domains', 'choice', array(
+            'disabled' => $disabled,
             'label' => false,
             'choices' => $domains,
             'expanded' => true,
@@ -100,8 +100,10 @@ class TranslationType extends AbstractType
     {
         $form = $event->getForm();
         $data = $event->getData();
+        /** @var Translation $translation */
+        $translation = $form->getData();
 
-        if ($data['localEditions'] < $form['localEditions']->getData()) {
+        if ($data['localEditions'] < $translation->getLocalEditions()) {
             //si es menor, significa que otra persona ha hecho cambios
             $form->addError(new FormError("Please Refresh Page"));
         }
