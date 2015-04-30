@@ -122,22 +122,22 @@
                             <div class="col-sm-12 text-right">
                                 {% if item.active %}
                                     <a href="#" class="edit-translation btn btn-primary btn-xs">
-                                        <span aria-hidden="true" class="glyphicon glyphicon-edit"></span>
+                                        <span aria-hidden="true" class="glyphicon glyphicon-edit"></span> {{ 'label.edit'|trans }}
                                     </a>
                                 {% endif %}
                                 <a href="{{ path('manuel_translation_log_list', {id:item.id}) }}"
                                    class="btn btn-default btn-xs">
-                                    <span aria-hidden="true" class="glyphicon glyphicon-zoom-in"></span>
+                                    <span aria-hidden="true" class="glyphicon glyphicon-zoom-in"></span> {{ 'label.reviews'|trans }}
                                 </a>
                                 {% if item.active %}
                                     <a href="{{ path('manuel_translation_change_status', {id : item.id, status: 'inactive'}) }}"
                                        class="btn btn-warning btn-xs">
-                                        <span aria-hidden="true" class="glyphicon glyphicon-ban-circle"></span>
+                                        <span aria-hidden="true" class="glyphicon glyphicon-ban-circle"></span> {{ 'label.active'|trans }}
                                     </a>
                                 {% else %}
                                     <a href="{{ path('manuel_translation_change_status', {id : item.id, status: 'active'}) }}"
                                        class="btn btn-info btn-xs">
-                                        <span aria-hidden="true" class="glyphicon glyphicon-ok-circle"></span>
+                                        <span aria-hidden="true" class="glyphicon glyphicon-ok-circle"></span> {{ 'label.inactive'|trans }}
                                     </a>
                                 {% endif %}
                             </div>

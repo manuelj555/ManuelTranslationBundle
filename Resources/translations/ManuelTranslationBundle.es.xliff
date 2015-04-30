@@ -195,6 +195,14 @@
                 <source>label.restore_backup</source>
                 <target>Restaurar Respaldo</target>
             </trans-unit>
+            <trans-unit id="label.edit">
+                <source>label.edit</source>
+                <target>Editar</target>
+            </trans-unit>
+            <trans-unit id="label.inactive">
+                <source>label.inactive</source>
+                <target>Inactivo</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
