@@ -227,6 +227,8 @@
 //                        updateFormFromList($currentItem);
                 $formErrorsContainer.html('');
                 $(".existen-domains :radio").attr('checked', false);
+            }).on('shown.bs.modal', function () {
+                $(this).find(':input:not(:disabled,:button):first').focus();
             });
 
             $('.edit-translation').on('click', function (e) {
