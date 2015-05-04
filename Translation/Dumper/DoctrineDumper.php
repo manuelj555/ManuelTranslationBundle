@@ -61,11 +61,13 @@ class DoctrineDumper implements DumperInterface
         foreach ($translations as $domain => $items) {
             foreach ($items as $t) {
                 $this->em->persist($t);
-
-                if (($counter++ % 20) === 0) {
-                    $this->em->flush();
-                    $this->em->clear();
-                }
+                /*
+                 * Se comenta el flush debido a que al parecer, se estan creando nuevos objetos en vez de actualizar
+                 */
+//                if (($counter++ % 20) === 0) {
+//                    $this->em->flush();
+//                    $this->em->clear();
+//                }
             }
         }
 
@@ -129,7 +131,6 @@ class DoctrineDumper implements DumperInterface
             foreach ($items as $code => $value) {
 
                 if (isset($translations[$domain][$code])) {
-
                     $values = $translations[$domain][$code]->getValues();
                     if (!isset($values[$locale]) OR isset($options['restoring'])) {
                         //si no existe el valor de traduccion en el locale actual
