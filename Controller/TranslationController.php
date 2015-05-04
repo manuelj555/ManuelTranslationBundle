@@ -192,4 +192,41 @@ class TranslationController extends Controller
 
         return $translation;
     }
+
+    /**
+     * @Route("/update_all", name="manuel_translation_export")
+     */
+    public function updateXliffAction($_locale)
+    {
+        $catalogue = $this->get('manuel_translation.translations_doctrine_loader')
+            ->load('', $_locale);
+
+        $path = $this->container->getParameter('manuel_translation.translations_update_dir');
+
+        $this->get('translation.dumper.xliff')->dump($catalogue, array(
+            'path' => $path,
+        ));
+
+        return $this->redirectToRoute('manuel_translation_list');
+    }
+
+    /**
+     * @Route("/local/load", name="manuel_translation_local_load")
+     */
+    public function loadFromFileAction()
+    {
+        $this->get('manuel_translation.local_synchronizator')->fromFile();
+
+        return $this->redirectToRoute('manuel_translation_list');
+    }
+
+    /**
+     * @Route("/local/write", name="manuel_translation_local_write")
+     */
+    public function writeToFileAction()
+    {
+        $this->get('manuel_translation.local_synchronizator')->toFile();
+
+        return $this->redirectToRoute('manuel_translation_list');
+    }
 }

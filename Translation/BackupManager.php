@@ -64,7 +64,8 @@ class BackupManager
 
     public function generateBackup()
     {
-        $path = rtrim($this->backupDir, '/') . '/' . time() . '/%s.php';
+        $backupPathName = time();
+        $path = rtrim($this->backupDir, '/') . '/' . $backupPathName . '/%s.php';
 
         $filesystem = new Filesystem();
 
@@ -75,6 +76,8 @@ class BackupManager
 
             $filesystem->dumpFile(sprintf($path, $locale), $output);
         }
+
+        return $backupPathName;
     }
 
     public function listBackups()

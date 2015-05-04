@@ -70,3 +70,12 @@ services:
         arguments: [@manuel_translation.translations_repository]
         tags:
             - { name: form.type , alias: manuel_translation }
+
+    manuel_translation.local_synchronizator:
+        class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\LocalSynchronizator
+        arguments:
+            - @doctrine.orm.entity_manager
+            - @manuel_translation.translations_repository
+            - @manuel_translation.backup_manager
+            - @filesystem
+            - %manuel_translation.filename_sync%
