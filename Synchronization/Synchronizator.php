@@ -12,6 +12,10 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Synchronization;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\DoctrineDumper;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 
 /**
  * @autor Manuel Aguirre <programador.manuel@gmail.com>
@@ -22,251 +26,119 @@ class Synchronizator
     const STATUS_ERROR = 2;
     const STATUS_CONFLICT = 3;
 
-
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var DoctrineLoader
      */
-    protected $em;
-
+    private $doctrineLoader;
     /**
      * @var TranslationRepository
      */
-    protected $translationRepository;
+    private $translationRepository;
     /**
-     * @var ServerSync
+     * @var Filesystem
      */
-    protected $serverSync;
+    private $filesystem;
+    private $locales;
+    private $backupDir;
 
-    function __construct($em, $translationRepository, $serverSync)
+    /**
+     * Synchronizator constructor.
+     *
+     * @param DoctrineLoader        $doctrineLoader
+     * @param TranslationRepository $translationRepository
+     * @param Filesystem            $filesystem
+     * @param                       $locales
+     * @param                       $backupDir
+     */
+    public function __construct(DoctrineLoader $doctrineLoader, TranslationRepository $translationRepository, Filesystem $filesystem, $locales, $backupDir)
     {
-        $this->em = $em;
+        $this->doctrineLoader = $doctrineLoader;
         $this->translationRepository = $translationRepository;
-        $this->serverSync = $serverSync;
+        $this->filesystem = $filesystem;
+        $this->locales = $locales;
+        $this->backupDir = $backupDir;
     }
 
-    public function up(&$updatedItems = 0)
+    public function generateFiles()
     {
-        $updatedItems = 0;
-        //los pedimos todos porque puede que no existan arriba
-        $localTranslations = $this->translationRepository->getAllWithoutConflicts();
-        $serverTranslations = $this->serverSync->findAll();
-        $status = self::STATUS_SUCCESS;
+        $path = rtrim($this->backupDir, '/') . '/%s.php';
 
-        if ($localTranslations) {
-            $this->serverSync->generateBackup();
+        foreach ($this->locales as $locale) {
+            $bdMessages = $this->doctrineLoader->load(null, $locale);
+
+            $output = "<?php\n\nreturn " . var_export($bdMessages->all(), true) . ";\n";
+
+            $this->filesystem->dumpFile(sprintf($path, $locale), $output);
         }
+    }
 
-        /* @var $local Translation */
-        foreach ($localTranslations as $index => $local) {
-            set_time_limit(30);
-            if (!$this->existsInServer($serverTranslations, $local)) {
-                //si no existe, lo creamos en el server.
-                $this->createInServer($local);
-                ++$updatedItems;
-            } elseif ($this->isLocalChanged($local)) {
-                $server = $serverTranslations[$local->getDomain()][$local->getCode()];
+    public function sync()
+    {
+        $fileTranslations = $this->createTranslationsFromFiles();
+        $dbTranslations = $this->getTranslationsFromDatabase();
 
-                $equals = $this->isEqual($local, $server);
-                $serverChanged = $this->isServerChanged($server, $local);
-
-                if (!$serverChanged and !$equals) {
-                    $this->updateServer($local);
-                    ++$updatedItems;
-                } elseif (!$equals) {
-                    //conflict
-                    $status = self::STATUS_CONFLICT;
-                    $local->setConflicts(true);
+        foreach ($fileTranslations as $domain => $translations) {
+            /**
+             * @var string $code
+             * @var Translation $t
+             */
+            foreach ($translations as $code => $t) {
+                if(isset($dbTranslations[$domain][$code])){
+                    //debemos verificar si tienen data distinta
+                }else{
+                    //La creamos de una vez
                 }
-
-                $local->setIsChanged(false);
-
-                unset($serverTranslations[$local->getDomain()][$local->getCode()]);
-
-//                if (($index % 50) === 0) {
-//                    $this->em->flush();
-//                    $this->em->clear();
-//                }
             }
+
         }
 
-        $this->em->flush();
-
-        return $status;
+        dump($fileTranslations, $dbTranslations);
     }
 
-    public function down(&$updatedItems = 0)
+    protected function createTranslationsFromFiles()
     {
-        $updatedItems = 0;
-        $status = self::STATUS_SUCCESS;
-        $localTranslations = array();
-        $serverTranslations = $this->serverSync->findAll();
+        $path = $this->backupDir;
+        $translations = array();
 
-        foreach ($this->translationRepository->getAllEntities() as $item) {
-            $localTranslations[$item->getDomain()][$item->getCode()] = $item;
+        $files = Finder::create()
+            ->in($path)
+            ->files()
+            ->name(sprintf('/(%s).php/', join('|', $this->locales)));
+
+        if (0 === count($files)) {
+            throw new \LogicException(sprintf("The dir %s not contains any php file", $path));
         }
 
-        $counter = 0;
+        /* @var $file SplFileInfo */
+        foreach ($files as $filename => $file) {
+            list($locale, $ext) = explode('.', $file->getFilename());
 
-        foreach ($serverTranslations as $domain => $items) {
-            foreach ($items as $code => $server) {
-                set_time_limit(30);
-                if ($this->existsInLocal($localTranslations, $server)) {
-                    /* @var $local Translation */
-                    $local = $localTranslations[$server['domain']][$server['code']];
-                    if ($this->isServerChanged($server, $local)) {
-                        if ($this->isLocalChanged($local) and !$this->isEqual($local, $server)) {
-                            $status = self::STATUS_CONFLICT;
-                            $local->setConflicts(true);
-                        } else {
-                            $this->updateLocal($local, $server);
-//                            $this->markUpdated($server);
-                            ++$updatedItems;
-                        }
+            $data = require (string) $file;
+
+            foreach ($data as $domain => $values) {
+                foreach ($values as $code => $value) {
+                    if (!isset($translations[$domain][$code])) {
+                        $translations[$domain][$code] = new Translation($code, $domain);
                     }
-                } else {
-                    $this->createInLocal($server);
-//                    $this->markUpdated($server);
-                    ++$updatedItems;
+
+                    $translations[$domain][$code]->setValue($locale, $value);
                 }
             }
         }
 
-        $this->em->flush();
-
-        return $status;
+        return $translations;
     }
 
-    /**
-     * Determina si Local está al día
-     *
-     * @param Translation $translation
-     * @param             $server
-     */
-    public function isLocalChanged(Translation $translation)
+    protected function getTranslationsFromDatabase()
     {
-        return $translation->getIsChanged();
-    }
+        $translations = array();
+        $dbTranslations = $this->translationRepository->getAllEntities();
 
-    /**
-     * Determina si el server está al día
-     *
-     * @param Translation $translation
-     * @param             $server
-     */
-    public function isServerChanged($server, Translation $local)
-    {
-        return $local->getVersion() < $server['version']
-        OR $local->getServerEditions() < $server['serverEditions'];
-    }
-
-    public function existsInServer($serverItems, Translation $translation)
-    {
-        return isset($serverItems[$translation->getDomain()][$translation->getCode()]);
-    }
-
-    public function existsInLocal($localTranslations, $server)
-    {
-        return isset($localTranslations[$server['domain']][$server['code']]);
-    }
-
-    public function isEqual(Translation $translation, array $server)
-    {
-        if ($translation->getCode() !== $server['code']) {
-            return false;
+        /** @var Translation $translation */
+        foreach ($dbTranslations as $translation) {
+            $translations[$translation->getDomain()][$translation->getCode()] = $translation;
         }
 
-        if ($translation->getDomain() !== $server['domain']) {
-            return false;
-        }
-
-        if ($translation->getServerEditions() !== $server['serverEditions']
-            AND $translation->getServerEditions() > $server['serverEditions']
-        ) {
-            return false;
-        }
-
-        if ($translation->getActive() !== $server['active']) {
-            return false;
-        }
-
-        if ($translation->getAutogenerated() !== $server['autogenerated']) {
-            return false;
-        }
-
-        if ($translation->getNew() !== $server['new']) {
-            return false;
-        }
-
-        if ($translation->getVersion() !== $server['version']
-            AND $translation->getVersion() > $server['version']
-        ) {
-            return false;
-        }
-
-        if ($translation->getValues() !== $server['values']) {
-            return false;
-        }
-
-        if ($translation->getFiles() !== $server['files']) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public function updateLocal(Translation $translation, array $data)
-    {
-        $translation->setLocalEditions(0);
-        $translation->setConflicts(0);
-        $translation->setVersion($data['version']);
-        $translation->setServerEditions($data['serverEditions']);
-        $translation->setIsChanged(false);
-        $translation->setFiles($data['files']);
-        $translation->setValues($data['values']);
-    }
-
-    public function updateServer(Translation $translation, $force = false)
-    {
-        $this->serverSync->update($translation, $force);
-    }
-
-    public function createInServer(Translation $translation)
-    {
-        $this->serverSync->add($translation);
-    }
-
-    public function createInLocal($data)
-    {
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $translation = new Translation($data['code'], $data['domain']);
-        $translation->setNew($data['new']);
-        $translation->setAutogenerated($data['autogenerated']);
-        $translation->setActive($data['active']);
-
-        $return = $this->updateLocal($translation, $data);
-
-        $this->em->persist($translation);
-
-        return $return;
-    }
-
-//    public function markUpdated($server)
-//    {
-//        $this->serverSync->markUpdated($server['code'], $server['domain']);
-//    }
-
-    public function resolveConflictUsingLocal(Translation $translation)
-    {
-        $this->updateServer($translation, true);
-
-        $this->em->flush();
-    }
-
-    public function resolveConflictUsingServer(Translation $translation)
-    {
-        $data = $this->serverSync->find($translation->getCode(), $translation->getDomain());
-        $this->updateLocal($translation, $data);
-
-        $this->em->flush();
+        return $translations;
     }
 }
