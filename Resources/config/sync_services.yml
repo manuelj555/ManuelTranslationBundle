@@ -2,6 +2,7 @@ services:
     manuel_translation.synchronizator:
         class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator
         arguments:
+            - @doctrine.orm.entity_manager
             - @manuel_translation.translations_doctrine_loader
             - @manuel_translation.translations_repository
             - @filesystem

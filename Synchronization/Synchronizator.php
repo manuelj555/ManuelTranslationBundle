@@ -10,6 +10,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Synchronization;
 
+use Doctrine\Common\Persistence\ObjectManager;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\DoctrineDumper;
@@ -25,6 +26,11 @@ class Synchronizator
     const STATUS_SUCCESS = 1;
     const STATUS_ERROR = 2;
     const STATUS_CONFLICT = 3;
+
+    /**
+     * @var ObjectManager
+     */
+    private $om;
 
     /**
      * @var DoctrineLoader
@@ -44,19 +50,46 @@ class Synchronizator
     /**
      * Synchronizator constructor.
      *
+     * @param ObjectManager         $om
      * @param DoctrineLoader        $doctrineLoader
      * @param TranslationRepository $translationRepository
      * @param Filesystem            $filesystem
      * @param                       $locales
      * @param                       $backupDir
      */
-    public function __construct(DoctrineLoader $doctrineLoader, TranslationRepository $translationRepository, Filesystem $filesystem, $locales, $backupDir)
+    public function __construct(ObjectManager $om, DoctrineLoader $doctrineLoader, TranslationRepository $translationRepository, Filesystem $filesystem, $locales, $backupDir)
     {
+        $this->om = $om;
         $this->doctrineLoader = $doctrineLoader;
         $this->translationRepository = $translationRepository;
         $this->filesystem = $filesystem;
         $this->locales = $locales;
         $this->backupDir = $backupDir;
+    }
+
+    public function generateFile()
+    {
+        $path = rtrim($this->backupDir, '/') . '/translations.php';
+        $translations = $this->translationRepository->getActiveTranslations();
+
+        $export = array();
+
+        /** @var Translation $translation */
+        foreach ($translations as $translation) {
+            $export[$translation['domain']][$translation['code']] = array(
+                'values' => $translation['values'],
+                'files' => $translation['files'],
+                'hash' => $translation['hash'],
+            );
+        }
+
+        $output = "<?php\n\nreturn " . var_export($export, true) . ";\n";
+
+        if(is_file($path)){
+            $this->filesystem->copy($path, $path . '~', true);
+        }
+
+        $this->filesystem->dumpFile($path, $output);
     }
 
     public function generateFiles()
@@ -74,55 +107,82 @@ class Synchronizator
 
     public function sync()
     {
-        $fileTranslations = $this->createTranslationsFromFiles();
+        $fileTranslations = $this->createTranslationsFromFile();
         $dbTranslations = $this->getTranslationsFromDatabase();
 
+        $conflicts = array();
+        $numNews = $numUpdates = 0;
+dump($fileTranslations);
         foreach ($fileTranslations as $domain => $translations) {
             /**
-             * @var string $code
+             * @var string      $code
              * @var Translation $t
              */
             foreach ($translations as $code => $t) {
-                if(isset($dbTranslations[$domain][$code])){
-                    //debemos verificar si tienen data distinta
-                }else{
+                if (isset($dbTranslations[$domain][$code])) {
+                    /** @var Translation $dbT */
+                    $dbT = $dbTranslations[$domain][$code];
+                    // debemos verificar si tienen data distinta
+                    // Si el hash es el mismo, ya estan sincronizados
+                    if (!$this->isEqueals($t, $dbT) and $t->getHash() != $dbT->getHash()) {
+                        $conflicts[] = array('file' => $t, 'database' => $dbT, 'hash' => $t->getHash());
+                    }
+                    // Removemos la traduccion del arreglo para saber cuales ya no existen en el archivo.
+                    // y asi poder determinar que traducciones son para desactivar
+                    unset($dbTranslations[$domain][$code]);
+                } else {
                     //La creamos de una vez
+                    ++$numNews;
+                    $this->om->persist($t);
                 }
             }
-
         }
 
-        dump($fileTranslations, $dbTranslations);
+        // Las traducciones que quedan aca son para inactivar
+        foreach ($dbTranslations as $items) {
+            foreach ($items as $item) {
+                $toInactivate[] = $item;
+            }
+        }
+        // TODO: verificar si es posible inactivar las traducciones no presentes
+//        $this->om->flush();
+
+        return new SyncResult($numNews, $numUpdates, $conflicts, $toInactivate);
     }
 
-    protected function createTranslationsFromFiles()
+    public function updateTranslation(Translation $translation, $values, $files, $hash)
     {
-        $path = $this->backupDir;
-        $translations = array();
-
-        $files = Finder::create()
-            ->in($path)
-            ->files()
-            ->name(sprintf('/(%s).php/', join('|', $this->locales)));
-
-        if (0 === count($files)) {
-            throw new \LogicException(sprintf("The dir %s not contains any php file", $path));
+        foreach ($values as $locale => $value) {
+            $translation->setValue($locale, $value);
         }
 
-        /* @var $file SplFileInfo */
-        foreach ($files as $filename => $file) {
-            list($locale, $ext) = explode('.', $file->getFilename());
+        $translation->setFiles($files);
+        $translation->setHash($hash);
 
-            $data = require (string) $file;
+        $translation->setIsChanged(false);
 
-            foreach ($data as $domain => $values) {
-                foreach ($values as $code => $value) {
-                    if (!isset($translations[$domain][$code])) {
-                        $translations[$domain][$code] = new Translation($code, $domain);
-                    }
+        $this->om->persist($translation);
+    }
 
-                    $translations[$domain][$code]->setValue($locale, $value);
-                }
+    protected function isEqueals(Translation $file, Translation $database)
+    {
+        return $file->getValues() == $database->getValues() and
+        $file->getFiles() == $database->getFiles();
+    }
+
+    protected function createTranslationsFromFile()
+    {
+        $path = rtrim($this->backupDir, '/') . '/translations.php';
+
+        $translations = require_once $path;
+
+        foreach ($translations as $domain => $items) {
+            foreach ($items as $code => $info) {
+                $translations[$domain][$code] = $t = new Translation($code, $domain);
+
+                $t->setValues($info['values']);
+                $t->setFiles($info['files']);
+                $t->setHash($info['hash']);
             }
         }
 
@@ -133,6 +193,19 @@ class Synchronizator
     {
         $translations = array();
         $dbTranslations = $this->translationRepository->getAllEntities();
+
+        /** @var Translation $translation */
+        foreach ($dbTranslations as $translation) {
+            $translations[$translation->getDomain()][$translation->getCode()] = $translation;
+        }
+
+        return $translations;
+    }
+
+    protected function getActiveTranslationsFromDatabase()
+    {
+        $translations = array();
+        $dbTranslations = $this->translationRepository->getActiveTranslations();
 
         /** @var Translation $translation */
         foreach ($dbTranslations as $translation) {

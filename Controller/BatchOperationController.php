@@ -154,7 +154,7 @@ class BatchOperationController extends Controller
     }
 
     /**
-     * @Route("/resolve-conflict/{id}-{use}",
+     * @ Route("/resolve-conflict/{id}-{use}",
      *  name="manuel_translation_resolve_conflict",
      *  requirements={"use" = "local|server"}
      * )

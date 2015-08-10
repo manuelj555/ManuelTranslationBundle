@@ -100,7 +100,7 @@ class TranslationRepository extends EntityRepository
     public function getActiveTranslations()
     {
         return $this->createQueryBuilder('translation')
-            ->select('translation.code, translation.domain, translation.values')
+            ->select('translation.code, translation.domain, translation.values, translation.files, translation.hash')
             ->orderBy('translation.code')
             ->andWhere('translation.active = true')
             ->getQuery()

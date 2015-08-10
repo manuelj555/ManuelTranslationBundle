@@ -1,0 +1,42 @@
+<table class="table">
+    <tr>
+        <td>
+            <strong>{{ translation.code }}</strong>
+            <a class="resolve-conflicts pull-right btn btn-default btn-xs"
+               target="_blank" href="{{ path('manuel_translation_resolve_conflict', {id: id}) }}"
+               data-values="{{ translation.values|json_encode }}"
+               data-files="{{ translation.files|json_encode }}"
+               data-hash="{{ hash }}"
+                    >
+                <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
+            </a>
+            <small class="pull-right">{{ translation.domain }}</small>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% for locale, value in translation.values %}
+                <div class="row">
+                    <div class="col-sm-1">{{ locale|upper }}</div>
+                    <div class="col-sm-11">
+                        <pre>{{ value }}</pre>
+                    </div>
+                </div>
+            {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="trans-files">
+                <h6>{{ 'label.used_in'|trans }}</h6>
+                <ul>
+                    {% for file in translation.files %}
+                        <li>
+                            <small>{{ file }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </td>
+    </tr>
+</table>

@@ -119,6 +119,12 @@ class Translation implements \Serializable
     private $updatedAt;
 
     /**
+     * @ORM\Column(name="hash", type="string", nullable=true)
+     */
+    private $hash;
+    private $updatedHash = false;
+
+    /**
      * Get id
      *
      * @return integer
@@ -517,5 +523,36 @@ class Translation implements \Serializable
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @param mixed $hash
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+        $this->updatedHash = true;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function setHashValue()
+    {
+        if($this->updatedHash){
+            //Si se hizo una actualización del hash, no lo actualizamos acá
+            return;
+        }
+
+        $this->setHash(uniqid(md5(serialize($this->getValues()))));
     }
 }
