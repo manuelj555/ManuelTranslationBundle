@@ -85,24 +85,11 @@ class Synchronizator
 
         $output = "<?php\n\nreturn " . var_export($export, true) . ";\n";
 
-        if(is_file($path)){
+        if (is_file($path)) {
             $this->filesystem->copy($path, $path . '~', true);
         }
 
         $this->filesystem->dumpFile($path, $output);
-    }
-
-    public function generateFiles()
-    {
-        $path = rtrim($this->backupDir, '/') . '/%s.php';
-
-        foreach ($this->locales as $locale) {
-            $bdMessages = $this->doctrineLoader->load(null, $locale);
-
-            $output = "<?php\n\nreturn " . var_export($bdMessages->all(), true) . ";\n";
-
-            $this->filesystem->dumpFile(sprintf($path, $locale), $output);
-        }
     }
 
     public function sync()
@@ -111,8 +98,8 @@ class Synchronizator
         $dbTranslations = $this->getTranslationsFromDatabase();
 
         $conflicts = array();
-        $numNews = $numUpdates = 0;
-dump($fileTranslations);
+        $numNews = $numUpdates = $inactivated = 0;
+
         foreach ($fileTranslations as $domain => $translations) {
             /**
              * @var string      $code
@@ -122,10 +109,16 @@ dump($fileTranslations);
                 if (isset($dbTranslations[$domain][$code])) {
                     /** @var Translation $dbT */
                     $dbT = $dbTranslations[$domain][$code];
-                    // debemos verificar si tienen data distinta
-                    // Si el hash es el mismo, ya estan sincronizados
-                    if (!$this->isEqueals($t, $dbT) and $t->getHash() != $dbT->getHash()) {
-                        $conflicts[] = array('file' => $t, 'database' => $dbT, 'hash' => $t->getHash());
+                    if ($dbT->getActive()) {
+                        // debemos verificar si tienen data distinta
+                        // Si el hash es el mismo, ya estan sincronizados
+                        if (!$this->isEqueals($t, $dbT) and $t->getHash() != $dbT->getHash()) {
+                            $conflicts[] = array('file' => $t, 'database' => $dbT, 'hash' => $t->getHash());
+                        }
+                    } else {
+                        //Si no está activo, lo actualizamos de una vez sin preguntar.
+                        $this->updateTranslation($dbT, $t->getValues(), $t->getFiles(), $t->getHash());
+                        ++$numUpdates;
                     }
                     // Removemos la traduccion del arreglo para saber cuales ya no existen en el archivo.
                     // y asi poder determinar que traducciones son para desactivar
@@ -141,13 +134,17 @@ dump($fileTranslations);
         // Las traducciones que quedan aca son para inactivar
         foreach ($dbTranslations as $items) {
             foreach ($items as $item) {
-                $toInactivate[] = $item;
+                if ($item->getActive()) {
+                    $item->setActive(false);
+                    $this->om->persist($item);
+                    ++$inactivated;
+                }
             }
         }
-        // TODO: verificar si es posible inactivar las traducciones no presentes
-//        $this->om->flush();
 
-        return new SyncResult($numNews, $numUpdates, $conflicts, $toInactivate);
+        $this->om->flush();
+
+        return new SyncResult($numNews, $numUpdates, $conflicts, $inactivated);
     }
 
     public function updateTranslation(Translation $translation, $values, $files, $hash)
@@ -158,8 +155,6 @@ dump($fileTranslations);
 
         $translation->setFiles($files);
         $translation->setHash($hash);
-
-        $translation->setIsChanged(false);
 
         $this->om->persist($translation);
     }

@@ -50,10 +50,8 @@ class TranslationType extends AbstractType
         $builder->add('values', 'collection', array(
             'type' => 'textarea',
         ));
-        $builder->add('localEditions', 'hidden', array('error_bubbling' => true));
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, array($this, 'addCodeAndDomainForms'));
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, array($this, 'validateLocalEditions'));
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
@@ -94,18 +92,5 @@ class TranslationType extends AbstractType
             'mapped' => false,
             'placeholder' => false,
         ));
-    }
-
-    public function validateLocalEditions(FormEvent $event)
-    {
-        $form = $event->getForm();
-        $data = $event->getData();
-        /** @var Translation $translation */
-        $translation = $form->getData();
-
-        if ($data['localEditions'] < $translation->getLocalEditions()) {
-            //si es menor, significa que otra persona ha hecho cambios
-            $form->addError(new FormError("Please Refresh Page"));
-        }
     }
 }

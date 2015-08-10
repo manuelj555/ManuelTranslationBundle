@@ -19,7 +19,7 @@ class SyncResult
     private $news = 0;
     private $updated = 0;
     private $conflictItems = array();
-    private $toInvactiveItems = array();
+    private $inactivated = 0;
 
     /**
      * SyncResult constructor.
@@ -29,12 +29,12 @@ class SyncResult
      * @param array $conflictItems
      * @param array $toInvactiveItems
      */
-    public function __construct($news, $updated, array $conflictItems, array $toInvactiveItems)
+    public function __construct($news, $updated, array $conflictItems, $inactivated)
     {
         $this->news = $news;
         $this->updated = $updated;
         $this->conflictItems = $conflictItems;
-        $this->toInvactiveItems = $toInvactiveItems;
+        $this->inactivated = $inactivated;
     }
 
     /**
@@ -62,11 +62,11 @@ class SyncResult
     }
 
     /**
-     * @return array
+     * @return int
      */
-    public function getToInvactiveItems()
+    public function getInactivated()
     {
-        return $this->toInvactiveItems;
+        return $this->inactivated;
     }
 
 }

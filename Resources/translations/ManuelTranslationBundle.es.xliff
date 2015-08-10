@@ -203,6 +203,50 @@
                 <source>label.inactive</source>
                 <target>Inactivo</target>
             </trans-unit>
+            <trans-unit id="label.update_file">
+                <source>label.update_file</source>
+                <target>Actualizar/Generar Archivo de Traducciones</target>
+            </trans-unit>
+            <trans-unit id="label.load_from_file">
+                <source>label.load_from_file</source>
+                <target>Sincronizar base de datos desde Archivo de traducciones</target>
+            </trans-unit>
+            <trans-unit id="update_file_complete_flash">
+                <source>update_file_complete_flash</source>
+                <target>Archivo actualizado con éxito</target>
+            </trans-unit>
+            <trans-unit id="label.sync_results">
+                <source>label.sync_results</source>
+                <target>Resultados de la Sincronización</target>
+            </trans-unit>
+            <trans-unit id="label.new_items">
+                <source>label.new_items</source>
+                <target>Elementos Agregados</target>
+            </trans-unit>
+            <trans-unit id="label.updated_items">
+                <source>label.updated_items</source>
+                <target>Elementos Actualizados</target>
+            </trans-unit>
+            <trans-unit id="label.conflicted_items">
+                <source>label.conflicted_items</source>
+                <target>Elementos con conflictos</target>
+            </trans-unit>
+            <trans-unit id="label.to_inactivate_items">
+                <source>label.to_inactivate_items</source>
+                <target>Elementos Inactivados</target>
+            </trans-unit>
+            <trans-unit id="label.database_values">
+                <source>label.database_values</source>
+                <target>Valoes en la Base de datos</target>
+            </trans-unit>
+            <trans-unit id="label.file_values">
+                <source>label.file_values</source>
+                <target>Valores en el archivo de traducciones</target>
+            </trans-unit>
+            <trans-unit id="label.conflict_items">
+                <source>label.conflict_items</source>
+                <target>Elementos con conflictos</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

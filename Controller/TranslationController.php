@@ -26,22 +26,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TranslationController extends Controller
 {
-    protected $isServer = false;
-    protected $hasServer = false;
-
-    public function setContainer(ContainerInterface $container = null)
-    {
-        parent::setContainer($container);
-
-        if ($container->hasParameter('manuel_translation.server.api_key')) {
-            $this->isServer = true;
-        }
-
-        if ($container->has('manuel_translation.server_sync')) {
-            $this->hasServer = true;
-        }
-    }
-
     /**
      * @Route("/list/{page}", name="manuel_translation_list", defaults={"page" = 1})
      */
@@ -50,8 +34,6 @@ class TranslationController extends Controller
         $session = $this->get('session');
         $filters = $session->get('manuel_translations.trans_filter', array(
             'search' => null,
-            'conflicts' => null,
-            'changed' => null,
             'inactive' => false,
             'domains' => array('messages'),
         ));
@@ -67,8 +49,7 @@ class TranslationController extends Controller
 
         $query = $this->getDoctrine()
             ->getRepository('ManuelTranslationBundle:Translation')
-            ->getAllQueryBuilder($filters['search'], $filters['domains']
-                , $filters['conflicts'], $filters['changed'], $filters['inactive']);
+            ->getAllQueryBuilder($filters['search'], $filters['domains'], $filters['inactive']);
 
         $form = $this->createForm('manuel_translation', $this->getNewTranslationInstance());
 
@@ -81,7 +62,6 @@ class TranslationController extends Controller
             'form' => $form->createView(),
             'locales' => $this->container->getParameter('manuel_translation.locales'),
             'form_filter' => $formFilter->createView(),
-            'enable_sync' => $this->hasServer,
         ));
     }
 
@@ -106,11 +86,6 @@ class TranslationController extends Controller
             ->handleRequest($request);
 
         if ($form->isSubmitted() and $form->isValid()) {
-
-            if ($this->isServer) {
-                //cuando somos un servidor, cada cambio debe notarse para los clientes.
-                $translation->setServerEditions($translation->getServerEditions() + 1);
-            }
 
             $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
 

@@ -13,8 +13,7 @@ use Doctrine\ORM\Query;
  */
 class TranslationRepository extends EntityRepository
 {
-    public function getAllQueryBuilder($search = null, $domain = null,
-        $onlyConflicted = null, $onlyChanged = null, $inactives = false)
+    public function getAllQueryBuilder($search = null, $domain = null, $inactives = false)
     {
         $query = $this->createQueryBuilder('translation')
             ->orderBy('translation.active DESC, translation.domain,translation.code');
@@ -38,14 +37,6 @@ class TranslationRepository extends EntityRepository
                 ->setParameter('domain', $domain);
         }
 
-        if (null != $onlyConflicted) {
-            $query->andWhere('translation.conflicts = true');
-        }
-
-        if (null != $onlyChanged) {
-            $query->andWhere('translation.isChanged = true');
-        }
-
         return $query;
     }
 
@@ -55,39 +46,6 @@ class TranslationRepository extends EntityRepository
         return $this->getAllQueryBuilder($search, $domain, $onlyConflicted, $onlyChanged)
             ->getQuery()
             ->getArrayResult();
-    }
-
-    public function getAllChanged()
-    {
-        return $this->getAllQueryBuilder(null, null, null)
-            ->andWhere('translation.isChanged = true')
-            ->getQuery()
-            ->getArrayResult();
-    }
-
-    public function getAllChangedWithoutConflicts()
-    {
-        return $this->getAllQueryBuilder(null, null, null)
-            ->andWhere('translation.isChanged = true')
-            ->andWhere('translation.conflicts = false')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function getAllWithoutConflicts()
-    {
-        return $this->getAllQueryBuilder(null, null, null)
-            ->andWhere('translation.conflicts = false')
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function getAllWithConflicts()
-    {
-        return $this->getAllQueryBuilder(null, null, null)
-            ->andWhere('translation.conflicts = true')
-            ->getQuery()
-            ->getResult();
     }
 
     public function getAllEntities($search = null, $domain = null)
@@ -119,9 +77,6 @@ class TranslationRepository extends EntityRepository
 
     public function saveTranslation(Translation $entity, $flush = true)
     {
-        $entity->setLocalEditions($entity->getLocalEditions() + 1);
-        $entity->setIsChanged(true);
-
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
@@ -159,15 +114,6 @@ class TranslationRepository extends EntityRepository
             ->setParameter('codes', (array) $codes)
             ->getQuery()
             ->execute();
-    }
-
-    public function hasConflicts()
-    {
-        return $this->createQueryBuilder('t')
-            ->select('COUNT(t.id)')
-            ->where('t.conflicts = true')
-            ->getQuery()
-            ->getSingleScalarResult() > 0;
     }
 
     public function getOneArrayByCodeAndDomain($code, $domain)

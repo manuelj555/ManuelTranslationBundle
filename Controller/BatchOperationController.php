@@ -50,91 +50,6 @@ class BatchOperationController extends Controller
     }
 
     /**
-     * @Route("/synchronize/up", name="manuel_translation_synchronize_up")
-     */
-    public function synchronizeUpAction()
-    {
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $this->getDoctrine()->getManager();
-
-//        $em->beginTransaction();
-        $result = $this->get('manuel_translation.synchronizator')->up($updated);
-//        $em->flush();
-//        $em->commit();
-
-        if ($result == Synchronizator::STATUS_CONFLICT OR
-            $this->get('manuel_translation.translations_repository')->hasConflicts()
-        ) {
-            $this->addFlash('warning', $this->get('translator')
-                ->trans('flash.have_conflicts', array(), 'ManuelTranslationBundle'));
-
-            $this->addFlash('info', $this->get('translator')
-                ->trans('flash.num_elements_updated', array('%updated%' => $updated), 'ManuelTranslationBundle'));
-
-            return $this->redirectToRoute('manuel_translation_show_conflicts');
-        }
-
-        $this->addFlash('success', $this->get('translator')
-            ->trans('flash.sync_complete', array('%updated%' => $updated), 'ManuelTranslationBundle'));
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    /**
-     * @Route("/synchronize/down", name="manuel_translation_synchronize_down")
-     */
-    public function synchronizeDownAction()
-    {
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $this->getDoctrine()->getManager();
-
-        $em->beginTransaction();
-        $result = $this->get('manuel_translation.synchronizator')->down($updated);
-        $em->flush();
-        $em->commit();
-
-        if ($result == Synchronizator::STATUS_CONFLICT OR
-            $this->get('manuel_translation.translations_repository')->hasConflicts()
-        ) {
-            $this->addFlash('warning', $this->get('translator')
-                ->trans('flash.have_conflicts', array(), 'ManuelTranslationBundle'));
-
-            $this->addFlash('info', $this->get('translator')
-                ->trans('flash.num_elements_updated', array('%updated%' => $updated), 'ManuelTranslationBundle'));
-
-            return $this->redirectToRoute('manuel_translation_show_conflicts');
-        }
-
-        $this->addFlash('success', $this->get('translator')
-            ->trans('flash.sync_complete', array('%updated%' => $updated), 'ManuelTranslationBundle'));
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    /**
-     * @Route("/synchronize/edit-conflicts", name="manuel_translation_show_conflicts")
-     */
-    public function editConflictsAction()
-    {
-        $translations = $this->get('manuel_translation.translations_repository')
-            ->getAllWithConflicts();
-
-        if (!count($translations)) {
-            $this->addFlash('info', $this->get('translator')
-                ->trans('flash.no_conflicts', array(), 'ManuelTranslationBundle'));
-
-            return $this->redirectToRoute('manuel_translation_list');
-        }
-
-        $serverTranslations = $this->get('manuel_translation.server_sync')->findAll();
-
-        return $this->render('@ManuelTranslation/Default/edit_conflicts.html.twig', array(
-            'translations' => $translations,
-            'server_translations' => $serverTranslations,
-        ));
-    }
-
-    /**
      * @Route("/inactive-unused-translations", name="manuel_translation_inactive_unused")
      */
     public function inactiveUnusedTranslationsAction()
@@ -151,23 +66,6 @@ class BatchOperationController extends Controller
             ->trans('flash.database_purged_complete', array(), 'ManuelTranslationBundle'));
 
         return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    /**
-     * @ Route("/resolve-conflict/{id}-{use}",
-     *  name="manuel_translation_resolve_conflict",
-     *  requirements={"use" = "local|server"}
-     * )
-     */
-    public function resolveConflictAction(Translation $translation, $use)
-    {
-        if ($use === 'local') {
-            $this->get('manuel_translation.synchronizator')->resolveConflictUsingLocal($translation);
-        } else {
-            $this->get('manuel_translation.synchronizator')->resolveConflictUsingServer($translation);
-        }
-
-        return new Response('Ok');
     }
 
     /**

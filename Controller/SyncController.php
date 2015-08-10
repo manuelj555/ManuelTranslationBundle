@@ -29,7 +29,7 @@ class SyncController extends Controller
     {
         $this->get('manuel_translation.synchronizator')->generateFile();
 
-        $this->addFlash('success', 'update_file_complete_flash');
+        $this->addFlash('success', $this->get('translator')->trans('update_file_complete_flash'));
 
         return $this->redirectToRoute('manuel_translation_list');
     }
@@ -41,17 +41,11 @@ class SyncController extends Controller
     {
         $result = $this->get('manuel_translation.synchronizator')->sync();
 
-        if (0 === count($result->getConflictItems()) and 0 === count($result->getToInvactiveItems())) {
-
-            $this->addFlash('success', ' sync_complete_flash');
-
-            return $this->redirectToRoute('manuel_translation_list');
-        }
         return $this->render('@ManuelTranslation/Sync/resolve_conflicts.html.twig', array(
             'news' => $result->getNews(),
             'updates' => $result->getUpdated(),
             'conflicted_items' => $result->getConflictItems(),
-            'to_inactivate_items' => $result->getConflictItems(),
+            'inactivated' => $result->getInactivated(),
         ));
     }
 

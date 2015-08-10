@@ -27,39 +27,42 @@
         </tr>
         <tr>
             <td>{{ 'label.to_inactivate_items'|trans }}</td>
-            <td class="text-right">{{ to_inactivate_items|length|number_format(0) }}</td>
+            <td class="text-right">{{ inactivated|number_format(0) }}</td>
         </tr>
     </table>
 
     {% if conflicted_items|length > 0 %}
-        <table class="table table-bordered table-striped table-hover translation-list">
-            <thead>
-                <tr>
-                    <th class="col-sm-6">{{ 'label.local_values'|trans }}</th>
-                    <th class="col-sm-6">{{ 'label.database_values'|trans }}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data in conflicted_items %}
-                    <tr class="conflict-item">
-                        <td>
-                            {% include '@ManuelTranslation/Sync/_translation_data.html.twig' with {
-                            id: data['database'].id,
-                            translation: data['file'],
-                            hash: data['hash'],
-                            } only %}
-                        </td>
-                        <td>
-                            {% include '@ManuelTranslation/Sync/_translation_data.html.twig' with {
-                            id: data['database'].id,
-                            translation: data['database'],
-                            hash: data['hash'],
-                            } only %}
-                        </td>
+        <fieldset>
+            <legend>{{ 'label.conflict_items'|trans }}</legend>
+            <table class="table table-bordered table-striped table-hover translation-list">
+                <thead>
+                    <tr>
+                        <th class="col-sm-6">{{ 'label.local_values'|trans }}</th>
+                        <th class="col-sm-6">{{ 'label.database_values'|trans }}</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for data in conflicted_items %}
+                        <tr class="conflict-item">
+                            <td>
+                                {% include '@ManuelTranslation/Sync/_translation_data.html.twig' with {
+                                id: data['database'].id,
+                                translation: data['file'],
+                                hash: data['hash'],
+                                } only %}
+                            </td>
+                            <td>
+                                {% include '@ManuelTranslation/Sync/_translation_data.html.twig' with {
+                                id: data['database'].id,
+                                translation: data['database'],
+                                hash: data['hash'],
+                                } only %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </fieldset>
     {% endif %}
 
 {% endblock %}
