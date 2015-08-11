@@ -63,7 +63,7 @@ class Translation implements \Serializable
      *
      * @ORM\Column(name="active", type="boolean")
      */
-    private $active;
+    private $active = true;
 
     /**
      * @ORM\Column(name="trans_values", type="array", nullable=true)
