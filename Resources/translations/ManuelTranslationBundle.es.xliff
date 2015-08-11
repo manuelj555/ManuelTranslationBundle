@@ -247,6 +247,10 @@
                 <source>label.conflict_items</source>
                 <target>Elementos con conflictos</target>
             </trans-unit>
+            <trans-unit id="local_hash_update_of_range">
+                <source>local_hash_update_of_range</source>
+                <target>Necesita syncronizar sus datos locales antes de actualizar o generar el archivo de traducciones</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

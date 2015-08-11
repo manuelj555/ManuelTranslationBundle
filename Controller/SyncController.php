@@ -27,9 +27,11 @@ class SyncController extends Controller
      */
     public function generateFilesAction()
     {
-        $this->get('manuel_translation.synchronizator')->generateFile();
-
-        $this->addFlash('success', $this->get('translator')->trans('update_file_complete_flash'));
+        if($this->get('manuel_translation.synchronizator')->generateFile()){
+            $this->addFlash('success', $this->get('translator')->trans('update_file_complete_flash', array(), 'ManuelTranslationBundle'));
+        }else{
+            $this->addFlash('warning', $this->get('translator')->trans('local_hash_update_of_range', array(), 'ManuelTranslationBundle'));
+        }
 
         return $this->redirectToRoute('manuel_translation_list');
     }

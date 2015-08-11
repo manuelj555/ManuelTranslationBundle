@@ -6,5 +6,6 @@ services:
             - @manuel_translation.translations_doctrine_loader
             - @manuel_translation.translations_repository
             - @filesystem
+            - %kernel.cache_dir%
             - %manuel_translation.locales%
             - %manuel_translation.translations_backup_dir%
