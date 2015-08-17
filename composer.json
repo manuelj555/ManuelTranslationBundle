@@ -3,7 +3,6 @@
   "require": {
     "php": ">=5.3.3",
     "symfony/framework-bundle": "~2.5",
-    "guzzlehttp/guzzle": "~5.0",
     "pagerfanta/pagerfanta": "~1.0"
   },
   "autoload": {
