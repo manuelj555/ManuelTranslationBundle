@@ -8,5 +8,10 @@
   },
   "autoload": {
     "psr-4": {"ManuelAguirre\\Bundle\\TranslationBundle\\": ""}
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
   }
 }
