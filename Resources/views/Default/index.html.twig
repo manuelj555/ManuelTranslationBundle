@@ -20,7 +20,7 @@
 
 {% block page_header %}{{ 'label.translation_list'|trans }}{% endblock %}
 
-{% block page_header_rigth %}
+{% block page_header_right %}
     <a href="{{ path('manuel_translation_form') }}" class="btn btn-primary" id="add-translation">
         <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
     </a>
@@ -131,6 +131,9 @@
                                 $modal.modal('hide');
                                 $form.find(':submit').button('reset');
                             })
+                        }else{
+                            $modal.modal('hide');
+                            $form.find(':submit').button('reset');
                         }
                     }
                 });
