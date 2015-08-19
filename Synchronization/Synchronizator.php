@@ -187,7 +187,7 @@ class Synchronizator
                     /** @var Translation $dbT */
                     $dbT = $dbTranslations[$domain][$code];
 
-                    if ($t->getHash() == $dbT->getHash()) {
+                    if ($t->getHash() === $dbT->getHash()) {
                         // Si lo hash son iguales, no se debe hacer ningún cambio
                         continue;
                     }
