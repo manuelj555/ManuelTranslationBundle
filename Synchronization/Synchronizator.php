@@ -104,6 +104,12 @@ class Synchronizator
             );
         }
 
+        ksort($export['translations']);
+
+        foreach($export['translations'] as $domain => $items){
+            ksort($export['translations'][$domain]);
+        }
+
         $output = "<?php\n\nreturn " . var_export($export, true) . ";\n";
 
         if (is_file($path)) {
