@@ -86,14 +86,26 @@ class Translation implements \Serializable
     private $updatedAt;
 
     /**
-     * @ORM\Column(name="changed", type="boolean", nullable=true)
+     * Posibles valores: local, file
+     * @ORM\Column(name="last_changed", type="string", nullable=true)
      */
-    private $changed = true;
+    private $lastChanged = 'local';
+    /**
+     * Indica si se ha establecido un valor para el atributo $lastChanged, para que los callback
+     * de doctrine no reemplaze el valor de dicho atributo en ese caso.
+     * @var bool
+     */
+    private $updatedLastChanged = false;
 
     /**
      * @ORM\Column(name="hash", type="string", nullable=true)
      */
     private $hash;
+    /**
+     * Indica si se ha establecido un valor para el atributo $hash, para que los callback
+     * de doctrine no reemplaze el valor de dicho atributo en ese caso.
+     * @var bool
+     */
     private $updatedHash = false;
 
     /**
@@ -390,7 +402,7 @@ class Translation implements \Serializable
      */
     public function setHashValue()
     {
-        if($this->updatedHash){
+        if ($this->updatedHash) {
             //Si se hizo una actualización del hash, no lo actualizamos acá
             return;
         }
@@ -401,32 +413,33 @@ class Translation implements \Serializable
     /**
      * @return mixed
      */
-    public function getChanged()
+    public function getLastChanged()
     {
-        return $this->changed;
+        return $this->lastChanged ?: 'local';
     }
 
     /**
-     * @param mixed $changed
+     * @param mixed $lastChanged
      */
-    public function setChanged($changed)
+    public function setLastChanged($lastChanged)
     {
-        $this->changed = $changed;
+        if ($lastChanged == 'file') {
+            $this->lastChanged = 'file';
+        } else {
+            $this->lastChanged = 'local';
+        }
+
+        $this->updatedLastChanged = true;
     }
 
     /**
-     * @return boolean
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
      */
-    public function isUpdatedHash()
+    public function setLastChangedOnSave()
     {
-        return $this->updatedHash;
-    }
-
-    /**
-     * @param boolean $updatedHash
-     */
-    public function setUpdatedHash($updatedHash)
-    {
-        $this->updatedHash = $updatedHash;
+        if (!$this->updatedLastChanged) {
+            $this->lastChanged = 'local';
+        }
     }
 }
