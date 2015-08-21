@@ -26,13 +26,10 @@ class ManuelTranslationExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yml');
+        $loader->load('sync_services.yml');
 
         if ($container->getParameter('kernel.environment') !== 'prod') {
             $loader->load('services_dev.yml');
-        }
-
-        if ($this->isConfigEnabled($container, $config['client'])) {
-            $loader->load('sync_services.yml');
         }
 
         $container->setParameter('manuel_translation.locales', $config['locales']);
@@ -42,27 +39,6 @@ class ManuelTranslationExtension extends Extension
         $container->setParameter('manuel_translation.filename_sync', $config['filename_sync']);
 
         $this->registerTranslatorResources($config, $container);
-        $this->registerClientConfig($config['client'], $container);
-        $this->registerServerConfig($config['server'], $container);
-    }
-
-    private function registerServerConfig($config, ContainerBuilder $container)
-    {
-        if (!$this->isConfigEnabled($container, $config)) {
-            return;
-        }
-
-        $container->setParameter('manuel_translation.server.api_key', $config['api_key']);
-    }
-
-    private function registerClientConfig($config, ContainerBuilder $container)
-    {
-        if (!$this->isConfigEnabled($container, $config)) {
-            return;
-        }
-
-        $container->setParameter('manuel_translation.client.api_key', $config['api_key']);
-        $container->setParameter('manuel_translation.client.server_url', $config['server_url']);
     }
 
     private function registerTranslatorResources($config, ContainerBuilder $container)
