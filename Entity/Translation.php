@@ -86,6 +86,11 @@ class Translation implements \Serializable
     private $updatedAt;
 
     /**
+     * @ORM\Column(name="changed", type="boolean", nullable=true)
+     */
+    private $changed = true;
+
+    /**
      * @ORM\Column(name="hash", type="string", nullable=true)
      */
     private $hash;
@@ -391,5 +396,37 @@ class Translation implements \Serializable
         }
 
         $this->setHash(uniqid(md5(serialize($this->getValues()))));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChanged()
+    {
+        return $this->changed;
+    }
+
+    /**
+     * @param mixed $changed
+     */
+    public function setChanged($changed)
+    {
+        $this->changed = $changed;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isUpdatedHash()
+    {
+        return $this->updatedHash;
+    }
+
+    /**
+     * @param boolean $updatedHash
+     */
+    public function setUpdatedHash($updatedHash)
+    {
+        $this->updatedHash = $updatedHash;
     }
 }

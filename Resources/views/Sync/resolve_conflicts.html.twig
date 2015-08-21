@@ -4,7 +4,7 @@
 
 {% block page_header %}{{ 'label.sync_results'|trans }}{% endblock %}
 
-{% block page_header_right %}
+{% block top_right %}
     {% if conflicted_items|length == 0 %}
         <a class="btn btn-primary" href="{{ path('manuel_translation_list') }}">Aceptar</a>
     {% endif %}
@@ -45,6 +45,7 @@
                                 id: data['database'].id,
                                 translation: data['file'],
                                 hash: data['hash'],
+                                changed: false,
                                 } only %}
                             </td>
                             <td>
@@ -52,6 +53,7 @@
                                 id: data['database'].id,
                                 translation: data['database'],
                                 hash: data['hash'],
+                                changed: true,
                                 } only %}
                             </td>
                         </tr>
