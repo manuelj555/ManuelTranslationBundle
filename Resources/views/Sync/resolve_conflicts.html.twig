@@ -4,9 +4,12 @@
 
 {% block page_header %}{{ 'label.sync_results'|trans }}{% endblock %}
 
-{% block top_right %}
+{% block page_header_right %}
     {% if conflicted_items|length == 0 %}
-        <a class="btn btn-primary" href="{{ path('manuel_translation_list') }}">Aceptar</a>
+        <a class="btn btn-primary" href="{{ path('manuel_translation_generate_file') }}">
+            {{ 'label.update_file'|trans }}
+        </a>
+        <a class="btn btn-default" href="{{ path('manuel_translation_list') }}">{{ 'label.back'|trans }}</a>
     {% endif %}
 {% endblock %}
 
