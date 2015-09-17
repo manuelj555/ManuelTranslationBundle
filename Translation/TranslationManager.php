@@ -128,7 +128,7 @@ class TranslationManager
     {
         $usedMessages = $this->getUsedMessages();
 
-        $bdMessages = $this->doctrineLoader->load(null, 'en');
+        $bdMessages = $this->doctrineLoader->load(null, $usedMessages->getLocale());
 
         $operation = new DiffOperation($bdMessages, $usedMessages);
 
