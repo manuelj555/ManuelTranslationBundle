@@ -23,12 +23,13 @@
                     {{ 'label.load_trans_in_bd'|trans }}
                 </a>
             </li>
-            <li>
-                <a href="{{ path('manuel_translation_inactive_unused') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
-                    {{ 'label.inactive_unused_trans'|trans }}
-                </a>
-            </li>
+            {# Por ahora esto no se usará #}
+            {#<li>#}
+                {#<a href="{{ path('manuel_translation_inactive_unused') }}">#}
+                    {#<span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>#}
+                    {#{{ 'label.inactive_unused_trans'|trans }}#}
+                {#</a>#}
+            {#</li>#}
         {% endif %}
     </ul>
 </div>
