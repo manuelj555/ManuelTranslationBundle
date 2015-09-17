@@ -24,39 +24,7 @@
     <a href="{{ path('manuel_translation_form') }}" class="btn btn-primary" id="add-translation">
         <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
     </a>
-    <div class="btn-group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            <span aria-hidden="true" class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-right" role="menu">
-            <li>
-                <a href="{{ path('manuel_translation_generate_file') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-indent-right"></span>
-                    {{ 'label.update_file'|trans }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('manuel_translation_load_from_file') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-random"></span>
-                    {{ 'label.load_from_file'|trans }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('manuel_translation_transfer_files_to_bd') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
-                    {{ 'label.load_trans_in_bd'|trans }}
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('manuel_translation_inactive_unused') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
-                    {{ 'label.inactive_unused_trans'|trans }}
-                </a></li>
-            <li class="divider">
-
-            </li>
-        </ul>
-    </div>
+    {{ include('@ManuelTranslation/Default/dropdown_options.html.twig') }}
 {% endblock %}
 
 {% set pagination_content %}
@@ -77,24 +45,7 @@
     {{ include('@ManuelTranslation/translations_filter.html.twig') }}
     {{ pagination_content }}
 
-    <table class="table table-bordered table-condensed translation-list">
-        <thead>
-            <tr>
-                {#<th class="col-sm-1"></th>#}
-                <th class="col-sm-5">{{ 'label.code'|trans }}</th>
-                <th class="col-sm-7">{{ 'label.translation_values'|trans }}</th>
-                {#{% for locale in locales %}#}
-                {#<th>{{ locale }}</th>#}
-                {#{% endfor %}#}
-                {#<th class="col-sm-1">{{ 'label.actions'|trans }}</th>#}
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in translations %}
-                {{ include('@ManuelTranslation/Translation/_row.html.twig', {translation: item}) }}
-            {% endfor %}
-        </tbody>
-    </table>
+    {{ include('@ManuelTranslation/Default/table_list.html.twig') }}
 
     {{ pagination_content }}
 

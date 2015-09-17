@@ -1,0 +1,34 @@
+{% trans_default_domain "ManuelTranslationBundle" %}
+<div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <span aria-hidden="true" class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+        <li>
+            <a href="{{ path('manuel_translation_generate_file') }}">
+                <span aria-hidden="true" class="glyphicon glyphicon-indent-right"></span>
+                {{ 'label.update_file'|trans }}
+            </a>
+        </li>
+        <li>
+            <a href="{{ path('manuel_translation_load_from_file') }}">
+                <span aria-hidden="true" class="glyphicon glyphicon-random"></span>
+                {{ 'label.load_from_file'|trans }}
+            </a>
+        </li>
+        {% if app.environment != 'prod' %}
+            <li>
+                <a href="{{ path('manuel_translation_transfer_files_to_bd') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
+                    {{ 'label.load_trans_in_bd'|trans }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('manuel_translation_inactive_unused') }}">
+                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
+                    {{ 'label.inactive_unused_trans'|trans }}
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>

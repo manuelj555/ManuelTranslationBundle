@@ -30,36 +30,9 @@
     {% if conflicted_items|length > 0 %}
         <fieldset>
             <legend>{{ 'label.conflict_items'|trans }}</legend>
-            <table class="table table-bordered table-striped table-hover translation-list">
-                <thead>
-                    <tr>
-                        <th class="col-sm-6">{{ 'label.file_values'|trans }}</th>
-                        <th class="col-sm-6">{{ 'label.database_values'|trans }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for data in conflicted_items %}
-                        <tr class="conflict-item">
-                            <td>
-                                {% include '@ManuelTranslation/Sync/_translation_data.html.twig' with {
-                                id: data['database'].id,
-                                translation: data['file'],
-                                hash: data['hash'],
-                                last_changed: 'file',
-                                } only %}
-                            </td>
-                            <td>
-                                {% include '@ManuelTranslation/Sync/_translation_data.html.twig' with {
-                                id: data['database'].id,
-                                translation: data['database'],
-                                hash: data['hash'],
-                                last_changed: 'local',
-                                } only %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            
+            {{ include('@ManuelTranslation/Sync/table_conflicts.html.twig') }}
+
         </fieldset>
     {% endif %}
 

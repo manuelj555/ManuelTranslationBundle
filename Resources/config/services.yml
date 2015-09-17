@@ -9,3 +9,15 @@ services:
         arguments: [@manuel_translation.translations_repository, %manuel_translation.filename_template%]
         tags:
             - { name: translation.loader, alias: doctrine }
+
+    manuel_translation.translation_form_filter_type:
+        class: ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationFilterType
+        arguments: [@manuel_translation.translations_repository]
+        tags:
+            - { name: form.type, alias: translation_filter }
+
+    manuel_translation.translation_type:
+        class: ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationType
+        arguments: [@manuel_translation.translations_repository]
+        tags:
+            - { name: form.type , alias: manuel_translation }

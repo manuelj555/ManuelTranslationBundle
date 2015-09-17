@@ -1,0 +1,19 @@
+{% trans_default_domain "ManuelTranslationBundle" %}
+<table class="table table-bordered table-condensed translation-list">
+    <thead>
+        <tr>
+            {#<th class="col-sm-1"></th>#}
+            <th class="col-sm-5">{{ 'label.code'|trans }}</th>
+            <th class="col-sm-7">{{ 'label.translation_values'|trans }}</th>
+            {#{% for locale in locales %}#}
+            {#<th>{{ locale }}</th>#}
+            {#{% endfor %}#}
+            {#<th class="col-sm-1">{{ 'label.actions'|trans }}</th>#}
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in translations %}
+            {{ include('@ManuelTranslation/Translation/_row.html.twig', {translation: item}) }}
+        {% endfor %}
+    </tbody>
+</table>
