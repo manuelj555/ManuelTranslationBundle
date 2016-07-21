@@ -33,9 +33,14 @@ class TranslationToFileCommand extends ContainerAwareCommand
 
         $io->writeln("Copiando traducciones al archivo");
 
-        $this->getContainer()->get('manuel_translation.synchronizator')->generateFile();
+        $result = $this->getContainer()->get('manuel_translation.synchronizator')->generateFile();
 
-        $io->success("El archivo de traducciones se ha creado/actualizado con exito");
+        if($result){
+            $io->success("El archivo de traducciones se ha creado/actualizado con exito");
+        }else{
+            $io->error("No se pudo actualizar el archivo, debe sincronizar su base de datos antes");
+        }
+
     }
 
 }

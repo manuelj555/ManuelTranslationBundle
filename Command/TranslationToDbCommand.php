@@ -29,7 +29,7 @@ class TranslationToDbCommand extends ContainerAwareCommand
     {
         $this->setName('manuel:translation:sync')
             ->setDescription("Sincroniza las traducciones que están en el archivo con la Base de datos")
-            ->addOption('show-conflicts', 'sc', InputOption::VALUE_OPTIONAL,
+            ->addOption('show-conflicts', null, InputOption::VALUE_NONE,
                 'Muestra las etiquetas con conflictos si las hay');
     }
 
@@ -60,9 +60,9 @@ class TranslationToDbCommand extends ContainerAwareCommand
         ]);
 
         if (0 !== $numConflicts) {
-            $io->section("Traducciones en conflicto:");
+            if ($input->getOption('show-conflicts')) {
+                $io->section("Traducciones en conflicto:");
 
-            if ($input->hasOption('show-conflicts')) {
                 $io->write('<options=bold;fg=yellow>');
                 $io->listing(iterator_to_array($this->getConflictedCodes($result)));
                 $io->write('</>');
