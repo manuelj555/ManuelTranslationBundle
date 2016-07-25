@@ -50,7 +50,14 @@
     </td>
     <td>
         {% for locale in locales %}
-            <pre class="value-content data-{{ locale }}">{{ translation.values[locale]|default }}</pre>
+            {% set locale_value = translation.values[locale]|default %}
+            <pre class="value-content data-{{ locale }}" title="{{ locale }}">
+                {%- if locale_value is not empty -%}
+                    {{- locale_value -}}
+                {%- else -%}
+                    [value for <span class="label label-primary">{{ locale }}</span> is missing]
+                {%- endif -%}
+            </pre>
         {% endfor %}
         <table class="table table-condensed table-bordered" style="margin-bottom: 0px">
             <tr>
