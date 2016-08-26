@@ -41,6 +41,19 @@
 {% endset %}
 
 {% block content %}
+    {% verbatim %}
+    <div id="translations-container">
+        
+        <trans-list :items="items" :locales="locales"></trans-list>
+
+    </div>
+    {% endverbatim %}
+
+<br><br><br>
+    {{ block('content_old') }}
+{% endblock %}
+
+{% block content_old %}
 
     {{ include('@ManuelTranslation/translations_filter.html.twig') }}
     {{ pagination_content }}
@@ -53,8 +66,15 @@
 {% endblock %}
 
 {% block javascripts %}
+    <script>
+    var TranslationData = {
+        baseUrlApi: '{{ path('manuel_translation_api_list') }}',
+        locales: {{ locales|json_encode|raw }}
+    };
+    </script>
+
     {{ parent() }}
-    <script type="text/javascript">
+    {#<script type="text/javascript">
         $(document).ready(function () {
             var $modal = $('#translation-form-modal');
             var $form = $modal.find('form');
@@ -109,5 +129,5 @@
                 $("#{{ form.domain.vars.id }}").val($(this).val());
             });
         });
-    </script>
+    </script>#}
 {% endblock %}
