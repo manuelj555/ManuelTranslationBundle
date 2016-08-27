@@ -1,9 +1,13 @@
 <template>
 	<div class="translation-files" v-if="hasFiles()">
-		<h6>Used in</h6>
-		<ul>
-			<li v-for="file in files">{{ file }}</li>
-		</ul>
+		<div class="row">
+			<div class="col-sm-2 col-md-1 translation-item-locale"><h6>Used in</h6></div>
+			<div class="col-sm-10 col-md-11">
+				<ul>
+					<li v-for="file in files">{{ file }}</li>
+				</ul>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -13,7 +17,7 @@ export default {
 		files: {
 			required: true,
 			type: [Array, Object]
-		}
+		},
 	},
 	methods: {
 		hasFiles () {
@@ -31,5 +35,6 @@ export default {
 }
 .translation-files ul{
 	padding-left: 20px;
+	margin-top: 12px;
 }
 </style>

@@ -4,6 +4,10 @@ import VueResource from 'vue-resource'
 
 Vue.use(VueResource)
 
+Vue.filter('boolean', function(value) {
+	return value ? 'Yes' : 'No'
+})
+
 let app = new Vue({
 	el: '#translations-container',
 

@@ -1,29 +1,31 @@
 <template>
 <div class="row">
-	<div class="col-sm-9 col-lg-10">
+	<div class="col-sm-9 col-md-10">
 		<trans-item-value v-for="locale in locales" 
 		:value="getValue(locale)" :locale="locale" :editing="editing"></trans-item-value>
 	</div> 
-	<div class="col-sm-3 col-lg-2 translation-item-actions">
+	<div class="col-sm-3 col-md-2 translation-item-actions">
 
-		<button type="button" v-show="!editing" class="btn btn-info btn-xs" @click="editing = true">
+		<button type="button" v-show="!editing" class="btn btn-info btn-xs" @click="initEdition()">
 			<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-			Edit 
+			Edit
 		</button>
 
-		<button type="button" v-show="!editing" class="btn btn-default btn-xs" @click="editing = true">
+		<!-- <button type="button" v-show="!editing" class="btn btn-default btn-xs" @click="editing = true">
 			<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>
 			Revitions
-		</button>
+		</button> -->
 
-		<button type="button" v-show="!editing" class="btn btn-warning btn-xs" @click="editing = true">
+		<!-- <button type="button" v-show="!editing" class="btn btn-warning btn-xs" @click="editing = true">
 			<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
 			Inactivate
-		</button>
+		</button> -->
 
-		<button type="button" v-show="editing" class="btn btn-primary btn-xs" @click="editing = false">Save</button>
+		<button type="button" v-show="editing" class="btn btn-primary btn-xs" @click="updateValue()">Save</button>
 
-		<button type="button" v-show="editing" class="btn btn-danger btn-xs" @click="editing = false">Cancel</button>
+		<button type="button" v-show="editing" class="btn btn-danger btn-xs" @click="cancelEdition()">Cancel</button>
+
+		<slot name="extra-buttons"></slot>
 
 	</div>
 </div>
@@ -40,28 +42,49 @@ export default {
 			type: [Object, Array],
 			twoWay: true
 		},
-		locales: {required: true, type: [Array, Object]}
+		locales: {required: true, type: [Array, Object]},
+		editing: {required: true, type: [Boolean], twoWay: true},
 	},
 
 	data () {
 		return {
-			editing: false,
+			originalValues: null,
 		}
 	},
 
 	methods: {
 		getValue (locale) {
-			return this.values[locale] ? this.values[locale] : ''
+			return this.values[locale] || ''
 		},
 
 		updateValue (locale, value) {
-			Vue.set(this.values, locale, value)
+			this.$broadcast('update-values', this.values)
+			this.editing = false
+			this.originalValues = null
 		},
+
+		initEdition () {
+			this.editing = true
+			this.originalValues = Object.assign({}, this.values) // clonar objeto
+		},
+
+		cancelEdition () {
+			this.$broadcast('cancel-edition', this.originalValues)
+			this.editing = false
+			this.values = this.originalValues
+			this.originalValues = null
+		}
 	},
 
 	events: {
 		'update-value' (locale, value) {
-			this.updateValue(locale, value)
+			//this.updateValue(locale, value)
+		},
+		'activate-edition' () {
+			this.initEdition()
+		},
+		'deactivate-edition' () {
+			this.cancelEdition()
 		}
 	},
 
