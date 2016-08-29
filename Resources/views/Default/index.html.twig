@@ -2,6 +2,10 @@
 
 {% trans_default_domain "ManuelTranslationBundle" %}
 
+{% block body %}
+    <div id="translations-container">{{ parent() }}</div>
+{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
@@ -18,10 +22,14 @@
     </style>
 {% endblock %}
 
-{% block page_header %}{{ 'label.translation_list'|trans }}{% endblock %}
+{% block page_header %}
+    {{ 'label.translation_list'|trans }}
+    <small v-alert="message"></small>
+{% endblock %}
 
 {% block page_header_right %}
-    <a href="{{ path('manuel_translation_form') }}" class="btn btn-primary" id="add-translation">
+    <a href="{{ path('manuel_translation_form') }}" @click.prevent="addTranslation" 
+    class="btn btn-primary" id="add-translation">
         <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
     </a>
     {{ include('@ManuelTranslation/Default/dropdown_options.html.twig') }}
@@ -42,15 +50,10 @@
 
 {% block content %}
     {% verbatim %}
-    <div id="translations-container">
         
-        <trans-list :items="items" :locales="locales"></trans-list>
+        <trans-list :locales="locales" :base-api-url.once="baseUrlApi"></trans-list>
 
-    </div>
     {% endverbatim %}
-
-<br><br><br>
-    {{ block('content_old') }}
 {% endblock %}
 
 {% block content_old %}

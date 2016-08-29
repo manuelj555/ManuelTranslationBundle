@@ -1,39 +1,57 @@
 <template>
 
-<trans-item v-for="item in items" :item="item" :locales="locales"></trans-item>
+<trans-item v-for="item in items" 
+:item="item" :locales="locales"></trans-item>
 
-<!--<table class="table table-bordered table-condensed translation-list">
-    <thead>
-        <tr>
-            <th class="col-sm-5">Code</th>
-            <th class="col-sm-7">Values</th>
-        </tr>
-    </thead>
-    <tbody>
-
-        {% for item in translations %}
-            {{ include('@ManuelTranslation/Translation/_row.html.twig', {translation: item}) }}
-        {% endfor %}
-    </tbody>
-</table>-->
 </template>
 
 <script>
+import Vue from 'vue'
 import TransItem from './TransItem.vue'
+import VueResource from 'vue-resource'
+
+Vue.use(VueResource)
 
 export default {
     props: {
-        items: {
-            default: () => {},
-        },
-        locales: {required: true, type: [Array, Object]}
+        locales: {required: true, type: [Array, Object]},
+        baseApiUrl: {required: true, type: [String]}
     },
 
 	data () {
 		return {
-
+            items: {},
         }
 	},
+
+    ready () {
+        this.resource = this.$resource(this.baseApiUrl + '{id}')
+
+        this.getTranslations()
+    },
+
+    methods: {
+        getTranslations () {
+            return this.resource.get().then((res) => {
+                this.$set('items', res.json());
+            })
+        },
+
+        save (item) {
+            this.resource.save({id: item.id}, item).then(response => {
+                this.$dispatch('translation-saved', response.json())
+                this.getTranslations().then(() => {
+                    this.$broadcast('translation-saved.complete', response.json())                    
+                })
+            })
+        },
+    },
+
+    events: {
+        'save-item' (item) {
+            this.save(item)
+        } 
+    },
 
     components: {TransItem}
 }

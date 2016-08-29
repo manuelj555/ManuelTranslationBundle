@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import TransList from '../vue/components/TransList.vue'
-import VueResource from 'vue-resource'
-
-Vue.use(VueResource)
+import Alert from '../vue/directives/Alert.vue'
 
 Vue.filter('boolean', function(value) {
 	return value ? 'Yes' : 'No'
@@ -12,25 +10,33 @@ let app = new Vue({
 	el: '#translations-container',
 
 	data () {
-		TranslationData.items = []
-
-		return TranslationData
+		return Object.assign({
+			message: {
+				content: '',
+				type: null
+			}
+		}, TranslationData)
 	},
 
-	ready () {
-		this.resource = this.$resource(this.baseUrlApi + '{id}')
-
-		this.getTranslations()
+	computed: {
 	},
 
 	methods: {
-		getTranslations () {
-			this.resource.get({}).then((res) => {
-				this.$set('items', res.json());
-				//this.$set('totalPosts', Number(res.headers['X-Total-Count']));
-			})
-		}
+		addTranslation () {
+			//this.$dispatch('show-success-message', 'Hola Manuel')
+		},
 	},
 
-	components: {TransList}
+	events: {
+		/*'translation-saved' (row) {
+			this.message = {
+				message: 'Translation "%code%" saved!'.replace('%code%', row.code),
+				type: 'success',
+				time: 2000
+			};
+		}*/
+	},
+
+	components: {TransList},
+	directives: {Alert},
 })

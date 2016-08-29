@@ -36,14 +36,32 @@ class ApiController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $query = $this->getDoctrine()
-            ->getRepository('ManuelTranslationBundle:Translation')
+        $query = $this->get('manuel_translation.repository')
             ->getAllQueryBuilder();
 
-        $data = $query->getQuery()->getArrayResult();
-
-        //dump($data);die;
+        $data = $query->getQuery()->getResult();
+        $data = $this->get('serializer')->normalize($data, 'array');
 
         return new JsonResponse($data);
+    }
+
+    /**
+     * @Route("/{id}", name="manuel_translation_api_post")
+     * @Method("POST")
+     */
+    public function postAction(Request $request, Translation $translation)
+    {
+        $translation = $this->get('serializer')->deserialize(
+            $request->getContent(), 
+            Translation::class, 
+            'json', 
+            ['object_to_populate' => $translation]
+        );
+
+        $this->get('manuel_translation.repository')->saveTranslation($translation);
+
+        return new JsonResponse(
+            $this->get('serializer')->normalize($translation, 'array')
+        );
     }
 }

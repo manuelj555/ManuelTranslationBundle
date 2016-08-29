@@ -1,6 +1,6 @@
 <template>
 <div class="translation-item">
-	<div class="panel panel-default">
+	<div class="panel panel-default" :class="{'panel-warning': !item.active}">
 		<div class="panel-heading">
 			<trans-item-header 
 			:code.once="item.code" :domain.once="item.domain"
@@ -11,21 +11,24 @@
 			<div class="row">
 				<div class="col-sm-12">
 					<trans-item-values :values.sync="item.values" 
-					:locales="locales" :editing.sync="editing">
+					:locales="locales" :editing.sync="editing" :active="item.active">
+
 						<div slot="extra-buttons">
 							<button type="button" v-show="showFilesVisible" class="btn btn-default btn-xs" @click="visibleFiles = true">Show Files</button>
 
 							<button type="button" v-show="hideFilesVisible" class="btn btn-default btn-xs" @click="visibleFiles = false">Hide Files</button>
 						</div>
+
 					</trans-item-values>
 				</div>
 				<div class="col-sm-12" v-if="hasFiles" v-show="editing || visibleFiles">
 					<trans-item-files :files="item.files"></trans-item-files>
 				</div>
 			</div>
+			<div class="alert" v-alert="message" alert-class-prefix="alert"></div>
 		</div>
 	</div>
-	 <!-- {{ item|json }} -->
+
 </div>
 </template>
 
@@ -34,6 +37,7 @@ import Vue from 'vue'
 import TransItemValues from './TransItemValues.vue'
 import TransItemFiles from './TransItemFiles.vue'
 import TransItemHeader from './TransItemHeader.vue'
+import Alert from '../directives/Alert.vue'
 
 export default {
 	props: {
@@ -60,6 +64,7 @@ export default {
 		return {
 			editing: false,
 			visibleFiles: false,
+			message: {},
 		}
 	},
 
@@ -79,12 +84,39 @@ export default {
 				this.activateEdition()
 			}
 		},
+		save () {
+			this.$dispatch('save-item', this.item)
+		},
 	},
 
-	components: {TransItemValues, TransItemFiles, TransItemHeader}
+	events: {
+		'update-values' () {
+			// cuando se actualizen los valores, guardamos el registro
+			this.save()
+		},
+		'translation-saved.complete' (item) {
+			if (item.id == this.item.id){
+				this.message = {message: 'Data Saved!', type: 'success', time: 2000}
+			}
+		},
+		'activate-translation' () {
+			this.item.active = true
+			this.save()
+		},
+		'deactivate-translation' () {
+			this.item.active = false
+			this.save()
+		}
+	},
+
+	components: {TransItemValues, TransItemFiles, TransItemHeader},
+	directives: {Alert},
 }
 </script>
 
 <style>
-	
+
+	.translation-item .alert{ padding: 5px; }
+	.translation-item .panel-warning .panel-heading .text-muted{ color: #FFFFFF; }
+
 </style>

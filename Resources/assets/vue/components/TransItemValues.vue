@@ -16,14 +16,19 @@
 			Revitions
 		</button> -->
 
-		<!-- <button type="button" v-show="!editing" class="btn btn-warning btn-xs" @click="editing = true">
+		<button type="button" v-show="editing" class="btn btn-primary" @click="updateValue()">Save</button>
+
+		<button type="button" v-show="editing" class="btn btn-danger btn-sm" @click="cancelEdition()">Cancel</button>
+
+		<button type="button" v-show="editing && active" class="btn btn-warning btn-xs" @click="deactivateTranslation()">
 			<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
 			Inactivate
-		</button> -->
+		</button>
 
-		<button type="button" v-show="editing" class="btn btn-primary btn-xs" @click="updateValue()">Save</button>
-
-		<button type="button" v-show="editing" class="btn btn-danger btn-xs" @click="cancelEdition()">Cancel</button>
+		<button type="button" v-show="editing && !active" class="btn btn-success btn-xs" @click="activateTranslation()">
+			<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+			Activate
+		</button>
 
 		<slot name="extra-buttons"></slot>
 
@@ -44,6 +49,7 @@ export default {
 		},
 		locales: {required: true, type: [Array, Object]},
 		editing: {required: true, type: [Boolean], twoWay: true},
+		active: {required: true, type: [Boolean]},
 	},
 
 	data () {
@@ -59,6 +65,7 @@ export default {
 
 		updateValue (locale, value) {
 			this.$broadcast('update-values', this.values)
+			this.$dispatch('update-values', this.values)
 			this.editing = false
 			this.originalValues = null
 		},
@@ -73,6 +80,14 @@ export default {
 			this.editing = false
 			this.values = this.originalValues
 			this.originalValues = null
+		},
+
+		deactivateTranslation () {
+			this.$dispatch('deactivate-translation')
+		},
+
+		activateTranslation () {
+			this.$dispatch('activate-translation')
 		}
 	},
 

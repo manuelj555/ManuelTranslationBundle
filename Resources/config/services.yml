@@ -1,4 +1,5 @@
 services:
+    manuel_translation.repository: "@manuel_translation.translations_repository"
     manuel_translation.translations_repository:
         class: ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository
         factory: ["@doctrine.orm.entity_manager", "getRepository"]
