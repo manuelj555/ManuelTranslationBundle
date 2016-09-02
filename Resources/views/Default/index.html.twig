@@ -34,23 +34,10 @@
     {{ include('@ManuelTranslation/Default/dropdown_options.html.twig') }}
 {% endblock %}
 
-{% set pagination_content %}
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>
-                <b>{{ translations.nbResults }}</b> {{ 'label.items'|trans }}
-            </h4>
-        </div>
-        <div class="col-sm-9 text-right">
-            {{ include('@ManuelTranslation/_pagination.html.twig', {paginator: translations}) }}
-        </div>
-    </div>
-{% endset %}
-
 {% block content %}
     {% verbatim %}
         
-        <trans-list :locales="locales" :base-api-url.once="baseUrlApi"></trans-list>
+        <trans-list></trans-list>
 
     {% endverbatim %}
 {% endblock %}
@@ -72,65 +59,23 @@
     var TranslationData = {
         baseUrlApi: '{{ path('manuel_translation_api_list') }}',
         locales: {{ locales|json_encode|raw }},
-        locale: '{{ app.request.locale }}'
+        locale: '{{ app.request.locale }}',
+        domains: ['messages', 'test', 'otro'],
     };
     </script>
 
     {{ parent() }}
-    {#<script type="text/javascript">
-        $(document).ready(function () {
-            var $modal = $('#translation-form-modal');
-            var $form = $modal.find('form');
-            var $currentRow = null;
-            var $buttonAdd = $("#add-translation");
-
-            $buttonAdd.on('click', function (e) {
-                e.preventDefault();
-                $currentRow = null;
-                $form.attr('action', this.href).attr('novalidate', 'novalidate');
-                $modal.find('.modal-body').load(this.href + ' .form-content', function () {
-                    $modal.modal('show');
-                });
-            });
-
-            $form.on('submit', function (e) {
-                e.preventDefault();
-                $form.find(':submit').button('loading');
-                $.post(this.action, $form.serializeArray(), function (res, status, request) {
-                    $form.find('.form-content').replaceWith($(res).find('.form-content'));
-                    if (request.getResponseHeader('saved')) {
-                        if ($currentRow) {
-                            $.get($currentRow.data('refresh-url'), function (tr) {
-                                $currentRow.replaceWith(tr);
-                                $modal.modal('hide');
-                                $form.find(':submit').button('reset');
-                            })
-                        }else{
-                            $modal.modal('hide');
-                            $form.find(':submit').button('reset');
-                        }
-                    }
-                });
-            });
-
-            $modal.on('show.bs.modal', function () {
-                $(".existen-domains :radio").attr('checked', false);
-            }).on('shown.bs.modal', function () {
-                $(this).find(':input:not(:disabled,:button):first').focus();
-            });
-
-            $('.translation-list').on('click', '.edit-translation', function (e) {
-                e.preventDefault();
-                $currentRow = $(this).closest('tr');
-                $form.attr('action', this.href);
-                $modal.find('.modal-body').load(this.href + ' .form-content', function () {
-                    $modal.modal('show');
-                });
-            });
-
-            $form.on('click', ".existen-domains :radio", function (e) {
-                $("#{{ form.domain.vars.id }}").val($(this).val());
-            });
-        });
-    </script>#}
 {% endblock %}
+
+{#% set pagination_content %}
+    <div class="row">
+        <div class="col-sm-3">
+            <h4>
+                <b>{{ translations.nbResults }}</b> {{ 'label.items'|trans }}
+            </h4>
+        </div>
+        <div class="col-sm-9 text-right">
+            {{ include('@ManuelTranslation/_pagination.html.twig', {paginator: translations}) }}
+        </div>
+    </div>
+{% endset %#}

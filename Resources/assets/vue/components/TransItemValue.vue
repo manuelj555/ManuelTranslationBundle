@@ -12,10 +12,6 @@
 <script>
 import Vue from 'vue'
 
-Vue.filter('defaultMessage', function(value) {
-	return value || '[Empty Value]'
-})
-
 export default {
 	props: {
 		value: {

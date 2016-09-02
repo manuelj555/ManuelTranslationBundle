@@ -47,7 +47,8 @@ gulp.task('watch', function(){
     gulp.watch([
         'js/app.js',
         'js/**/*.js',
-        'vue/**/*.vue'
+        'vue/**/*.vue',
+        'vue/**/*.js'
     ], { cwd: './assets'}, ['js:vue']);
 });
 

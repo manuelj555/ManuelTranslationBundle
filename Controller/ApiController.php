@@ -46,10 +46,30 @@ class ApiController extends Controller
     }
 
     /**
-     * @Route("/{id}", name="manuel_translation_api_post")
+     * @Route("/", name="manuel_translation_api_create")
      * @Method("POST")
      */
-    public function postAction(Request $request, Translation $translation)
+    public function createAction(Request $request)
+    {
+        $translation = $this->get('serializer')->deserialize(
+            $request->getContent(), 
+            Translation::class, 
+            'json' //, 
+            //['object_to_populate' => $translation]
+        );
+
+        $this->get('manuel_translation.repository')->saveTranslation($translation);
+
+        return new JsonResponse(
+            $this->get('serializer')->normalize($translation, 'array')
+        );
+    }
+
+    /**
+     * @Route("/{id}", name="manuel_translation_api_update")
+     * @Method("PUT")
+     */
+    public function updateAction(Request $request, Translation $translation)
     {
         $translation = $this->get('serializer')->deserialize(
             $request->getContent(), 

@@ -1,10 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-var _assign = require('babel-runtime/core-js/object/assign');
-
-var _assign2 = _interopRequireDefault(_assign);
-
 var _vue = require('vue');
 
 var _vue2 = _interopRequireDefault(_vue);
@@ -21,6 +17,10 @@ var _locales = require('./locales.js');
 
 var _locales2 = _interopRequireDefault(_locales);
 
+var _TranslationData = require('../vue/plugins/TranslationData.js');
+
+var _TranslationData2 = _interopRequireDefault(_TranslationData);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _vue2.default.use(_vueI18n2.default);
@@ -31,29 +31,21 @@ _vue2.default.filter('boolean', function (value) {
 	return value ? _vue2.default.t('label.yes') : _vue2.default.t('label.no');
 });
 
+_vue2.default.use(_TranslationData2.default, TranslationData);
+
 var app = new _vue2.default({
 	el: '#translations-container',
 
-	data: function data() {
-		return (0, _assign2.default)({
-			message: {
-				content: '',
-				type: null
-			}
-		}, TranslationData);
-	},
-
-
 	methods: {
 		addTranslation: function addTranslation() {
-			//this.$dispatch('show-success-message', 'Hola Manuel')
+			this.$broadcast('add-item');
 		}
 	},
 
 	components: { TransList: _TransList2.default }
 });
 
-},{"../vue/components/TransList.vue":8,"./locales.js":2,"babel-runtime/core-js/object/assign":10,"vue":52,"vue-i18n":49}],2:[function(require,module,exports){
+},{"../vue/components/TransList.vue":9,"../vue/plugins/TranslationData.js":11,"./locales.js":2,"vue":54,"vue-i18n":51}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -71,11 +63,14 @@ exports.default = {
 			active: 'Active',
 			yes: 'Yes',
 			no: 'No',
-			loading: 'Loading'
+			loading: 'Loading',
+			empty_value: 'Empty Value',
+			cancel_reation: 'Cancel Creation'
 		},
 		alert: {
-			success: {
-				save: 'Save Successfull!'
+			save: {
+				success: 'Save Successfull!',
+				error: 'Save Error!'
 			}
 		}
 	},
@@ -90,17 +85,79 @@ exports.default = {
 			active: 'Activa',
 			yes: 'Si',
 			no: 'No',
-			loading: 'Cargando'
+			loading: 'Cargando',
+			empty_value: 'Valor Vacío',
+			cancel_reation: 'Cancelar Creación'
 		},
 		alert: {
-			success: {
-				save: 'Guardado con éxito!'
+			save: {
+				success: 'Guardado con éxito!',
+				error: 'Error al Guardar!'
 			}
 		}
 	}
 };
 
 },{}],3:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n.dropdown-translation-domains .dropdown-menu{padding: 5px 10px}\n.dropdown-translation-domains .dropdown-menu label{padding-left: 0px}\n.dropdown-translation-domains .checkbox{margin: 0px}\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = {
+	props: {
+		domain: { required: true, twoWay: true }
+	},
+
+	data: function data() {
+		return {
+			domainInput: '',
+			domains: this.getDomains()
+		};
+	},
+
+
+	methods: {
+		updateDomain: function updateDomain() {
+			var clear = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+			if (!this.domainInput.trim()) {
+				return;
+			}
+
+			this.domain = this.domainInput;
+
+			if (clear) {
+				this.domainInput = '';
+			}
+		}
+	},
+
+	ready: function ready() {
+		$(this.$el).on('click', '.dropdown-menu *', function (e) {
+			e.stopPropagation();
+		});
+	}
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"btn-group dropdown-translation-domains\">\n\t<button class=\"btn btn-default btn-sm\">{{ domain }}</button>\n\t<button class=\"btn btn-default dropdown-toggle btn-sm\" type=\"button\" data-toggle=\"dropdown\">\n\t\t<span class=\"caret\"></span>\n\t</button>\n\t<ul class=\"dropdown-menu\" aria-labelledby=\"dropdownMenu1\">\n\t\t<li v-for=\"value in domains\">\n\t\t\t<div class=\"checkbox\">\n\t\t\t\t<label>\n\t\t\t\t\t<input type=\"radio\" v-model=\"domain\" value=\"{{ value }}\"> {{ value }}\n\t\t\t\t</label>\n\t\t\t</div>\n\t\t</li>\n\t\t<li>\n\t\t\t<input type=\"text\" class=\"form-control input-sm\" v-model=\"domainInput\" @change=\"updateDomain(true)\" @keyup=\"updateDomain()\" @blur=\"updateDomain(true)\" placeholder=\"New Domain\">\n\t\t</li>\n\t</ul>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n.dropdown-translation-domains .dropdown-menu{padding: 5px 10px}\n.dropdown-translation-domains .dropdown-menu label{padding-left: 0px}\n.dropdown-translation-domains .checkbox{margin: 0px}\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-0c6fc293", module.exports)
+  } else {
+    hotAPI.update("_v-0c6fc293", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":54,"vue-hot-reload-api":50,"vueify/lib/insert-css":55}],4:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.glyphicon.label:empty { display: inline; }\n\n.translation-item .alert{ padding: 5px; }\n.translation-item .panel-warning .panel-heading .text-muted{ color: #FFFFFF; }\n\n.translation-inactive .panel-heading{opacity: 0.4}\n.translation-inactive .panel-body{opacity: 0.7}\n\n")
 'use strict';
@@ -135,6 +192,10 @@ var _vueLoading2 = _interopRequireDefault(_vueLoading);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+_vue2.default.filter('defaultMessage', function (value) {
+	return value || '[' + _vue2.default.t('label.empty_value') + ']';
+});
+
 exports.default = {
 	props: {
 		item: {
@@ -153,6 +214,9 @@ exports.default = {
 		},
 		hideFilesVisible: function hideFilesVisible() {
 			return this.hasFiles && this.visibleFiles && !this.editing;
+		},
+		isNew: function isNew() {
+			return null === this.item.id;
 		}
 	},
 
@@ -162,6 +226,12 @@ exports.default = {
 			visibleFiles: false,
 			isLoading: false
 		};
+	},
+	ready: function ready() {
+		if (this.isNew) {
+			// Si no hay id es porque es un item nuevo, por lo que activamos la edición por defecto:
+			this.activateEdition();
+		}
 	},
 
 
@@ -183,12 +253,26 @@ exports.default = {
 		},
 		save: function save() {
 			this.isLoading = true;
-			this.$dispatch('save-item', this.item, this.onSaveSuccess);
+			this.$dispatch('save-item', this.item, this.onSaveSuccess, this.onSaveError);
 		},
 		onSaveSuccess: function onSaveSuccess() {
+			this.onSaveCompleted();
+			this.$emit('alert-icon:show', 'save-success');
+		},
+		onSaveError: function onSaveError() {
+			this.onSaveCompleted();
+			this.$emit('alert-icon:show', 'save-error');
+		},
+		onSaveCompleted: function onSaveCompleted() {
 			this.editing = false;
 			this.isLoading = false;
-			this.$emit('alert-icon:show', 'save-success');
+		},
+		remove: function remove() {
+			if (!this.isNew) {
+				return;
+			}
+
+			this.$dispatch('remove-item', this.item);
 		}
 	},
 
@@ -212,7 +296,7 @@ exports.default = {
 
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"translation-item\" v-loading=\"isLoading\" :loading-options=\"{text: $t('label.loading') + '...'}\">\n\t<div class=\"panel panel-default\" :class=\"{'translation-inactive': !item.active}\">\n\t\t<div class=\"panel-heading\">\n\t\t\t<trans-item-header :code.once=\"item.code\" :domain.once=\"item.domain\" :autogenerated.once=\"item.autogenerated\" :active=\"item.active\" @click=\"toggleEdition()\">\n\n\t\t\t\t<span slot=\"message\">\n\t\t\t\t\t<span class=\"glyphicon glyphicon-ok label label-success\" v-alert-icon.literal=\"save-success\">\n\t\t\t\t\t\t{{ $t('alert.success.save') }}\n\t\t\t\t\t</span>\n\t\t\t\t\t<span class=\"glyphicon glyphicon-remove label label-danger\" v-alert-icon.literal=\"save-error\"></span>\n\t\t\t\t</span>\n\n\t\t\t</trans-item-header>\n\t\t</div>\n\t\t<div class=\"panel-body\"> \n\t\t\t<div class=\"row\">\n\t\t\t\t<div class=\"col-sm-12\">\n\t\t\t\t\t<trans-item-values :values.sync=\"item.values\" :locales=\"locales\" :editing.sync=\"editing\" :active=\"item.active\">\n\n\t\t\t\t\t\t<div slot=\"extra-buttons\">\n\t\t\t\t\t\t\t<button type=\"button\" v-show=\"showFilesVisible\" class=\"btn btn-default btn-xs\" @click=\"visibleFiles = true\">Show Files</button>\n\n\t\t\t\t\t\t\t<button type=\"button\" v-show=\"hideFilesVisible\" class=\"btn btn-default btn-xs\" @click=\"visibleFiles = false\">Hide Files</button>\n\t\t\t\t\t\t</div>\n\n\t\t\t\t\t</trans-item-values>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"col-sm-12\" v-if=\"hasFiles\" v-show=\"editing || visibleFiles\">\n\t\t\t\t\t<trans-item-files :files=\"item.files\"></trans-item-files>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"translation-item\" v-loading=\"isLoading\" :loading-options=\"{text: $t('label.loading') + '...'}\">\n\t<div class=\"panel panel-default\" :class=\"{'translation-inactive': !item.active}\">\n\t\t<div class=\"panel-heading\">\n\t\t\t<trans-item-header :code.sync=\"item.code\" :domain.sync=\"item.domain\" :autogenerated.once=\"item.autogenerated\" :active=\"item.active\" @click=\"!isNew &amp;&amp; toggleEdition()\" :is-new=\"isNew\">\n\n\t\t\t\t<span slot=\"message\">\n\t\t\t\t\t<span class=\"glyphicon glyphicon-ok label label-success\" v-alert-icon.literal=\"save-success\">\n\t\t\t\t\t\t{{ $t('alert.save.success') }}\n\t\t\t\t\t</span>\n\t\t\t\t\t<span class=\"glyphicon glyphicon-remove label label-danger\" v-alert-icon.literal=\"save-error\">\n\t\t\t\t\t\t{{ $t('alert.save.error') }}\t\t\t\t\t\t\n\t\t\t\t\t</span>\n\t\t\t\t</span>\n\n\t\t\t</trans-item-header>\n\t\t</div>\n\t\t<div class=\"panel-body\"> \n\t\t\t<div class=\"row\">\n\t\t\t\t<div class=\"col-sm-12\">\n\t\t\t\t\t<trans-item-values :values.sync=\"item.values\" :locales=\"locales\" :editing.sync=\"editing\" :active=\"item.active\" :is-new=\"isNew\">\n\n\t\t\t\t\t\t<div slot=\"extra-buttons\">\n\t\t\t\t\t\t\t<button type=\"button\" v-show=\"editing &amp;&amp; isNew\" class=\"btn btn-danger btn-xs\" @click=\"remove()\">{{ $t('label.cancel_reation') }}</button>\n\n\t\t\t\t\t\t\t<button type=\"button\" v-show=\"showFilesVisible\" class=\"btn btn-default btn-xs\" @click=\"visibleFiles = true\">Show Files</button>\n\n\t\t\t\t\t\t\t<button type=\"button\" v-show=\"hideFilesVisible\" class=\"btn btn-default btn-xs\" @click=\"visibleFiles = false\">Hide Files</button>\n\t\t\t\t\t\t</div>\n\n\t\t\t\t\t</trans-item-values>\n\t\t\t\t</div>\n\t\t\t\t<div class=\"col-sm-12\" v-if=\"hasFiles\" v-show=\"editing || visibleFiles\">\n\t\t\t\t\t<trans-item-files :files=\"item.files\"></trans-item-files>\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -227,7 +311,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-69ecf440", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"../directives/AlertIcon.vue":9,"./TransItemFiles.vue":4,"./TransItemHeader.vue":5,"./TransItemValues.vue":7,"vue":52,"vue-hot-reload-api":48,"vue-loading":50,"vueify/lib/insert-css":53}],4:[function(require,module,exports){
+},{"../directives/AlertIcon.vue":10,"./TransItemFiles.vue":5,"./TransItemHeader.vue":6,"./TransItemValues.vue":8,"vue":54,"vue-hot-reload-api":50,"vue-loading":52,"vueify/lib/insert-css":55}],5:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.translation-files{\n\tcolor: #aaa;\n\tline-height: 18px;\n\tfont-size: 0.85em;\n}\n.translation-files ul{\n\tpadding-left: 20px;\n\tmargin-top: 12px;\n}\n")
 "use strict";
@@ -264,24 +348,34 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7f9000c7", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":52,"vue-hot-reload-api":48,"vueify/lib/insert-css":53}],5:[function(require,module,exports){
+},{"vue":54,"vue-hot-reload-api":50,"vueify/lib/insert-css":55}],6:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.trans-item-header {\n\tcursor: pointer;\n}\n")
-"use strict";
+'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+
+var _DomainForm = require('./DomainForm.vue');
+
+var _DomainForm2 = _interopRequireDefault(_DomainForm);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 exports.default = {
 	props: {
-		code: { required: true },
-		domain: { required: true },
+		code: { required: true, twoWay: true },
+		domain: { required: true, twoWay: true },
 		autogenerated: { required: true },
-		active: { required: true }
-	}
+		active: { required: true },
+		isNew: { required: true, type: Boolean }
+	},
+
+	components: { DomainForm: _DomainForm2.default }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row trans-item-header\">\n\t<div class=\"col-sm-6\">\n\t\t<h3 class=\"panel-title\">\n\t\t\t{{ code }}\n\t\t\t<slot name=\"message\"></slot>\n\t\t</h3>\n\t</div>\n\t<div class=\"col-sm-6 text-right\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-sm-5 text-left\"><small class=\"text-muted\">{{ domain }}</small></div>\n\t\t\t<div class=\"col-sm-4\"><b>{{ $t('label.autogenerated') }}:</b> {{ autogenerated | boolean }}</div>\n\t\t\t<div class=\"col-sm-3\"><b>{{ $t('label.active') }}:</b> {{ active | boolean }}</div>\n\t\t</div>\n\t</div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row trans-item-header\">\n\t<div class=\"col-sm-6\">\n\t\t<h3 class=\"panel-title\" v-if=\"!isNew\">\n\t\t\t{{ code | defaultMessage }}\n\t\t\t<slot name=\"message\"></slot>\n\t\t</h3>\n\t\t<input v-if=\"isNew\" type=\"text\" class=\"form-control input-sm\" v-model=\"code\">\n\t</div>\n\t<div class=\"col-sm-6 text-right\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-sm-5 text-left\">\n\t\t\t\t<small class=\"text-muted\" v-if=\"!isNew\">{{ domain }}</small>\n\t\t\t\t<domain-form v-if=\"isNew\" :domain.sync=\"domain\"></domain-form>\n\t\t\t</div>\n\t\t\t<div class=\"col-sm-4\"><b>{{ $t('label.autogenerated') }}:</b> {{ autogenerated | boolean }}</div>\n\t\t\t<div class=\"col-sm-3\"><b>{{ $t('label.active') }}:</b> {{ active | boolean }}</div>\n\t\t</div>\n\t</div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -296,7 +390,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4a17c66d", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":52,"vue-hot-reload-api":48,"vueify/lib/insert-css":53}],6:[function(require,module,exports){
+},{"./DomainForm.vue":3,"vue":54,"vue-hot-reload-api":50,"vueify/lib/insert-css":55}],7:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.translation-item-locale { \n\ttext-align: right;\n\tpadding-top: 4px;\n\tfont-weight: bold;\n\tfont-size: 1em;\n\ttext-transform: uppercase;\n}\n\n.translation-item-value{\n\tpadding: 4px;\n}\n")
 'use strict';
@@ -310,10 +404,6 @@ var _vue = require('vue');
 var _vue2 = _interopRequireDefault(_vue);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-_vue2.default.filter('defaultMessage', function (value) {
-	return value || '[Empty Value]';
-});
 
 exports.default = {
 	props: {
@@ -362,7 +452,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-c1546a7e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":52,"vue-hot-reload-api":48,"vueify/lib/insert-css":53}],7:[function(require,module,exports){
+},{"vue":54,"vue-hot-reload-api":50,"vueify/lib/insert-css":55}],8:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
 var __vueify_style__ = __vueify_insert__.insert("\n.translation-item-actions button,\n.translation-item-actions .btn{\n\tmargin-bottom: 10px;\n\tdisplay: block; \n\twidth: 100%;\n}\n")
 'use strict';
@@ -394,7 +484,8 @@ exports.default = {
 		},
 		locales: { required: true, type: [Array, Object] },
 		editing: { required: true, type: [Boolean], twoWay: true },
-		active: { required: true, type: [Boolean] }
+		active: { required: true, type: [Boolean] },
+		isNew: { required: true, type: [Boolean] }
 	},
 
 	data: function data() {
@@ -447,7 +538,7 @@ exports.default = {
 	components: { TransItemValue: _TransItemValue2.default }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\t<div class=\"col-sm-9 col-md-10\">\n\t\t<trans-item-value v-for=\"locale in locales\" :value=\"getValue(locale)\" :locale=\"locale\" :editing=\"editing\"></trans-item-value>\n\t</div> \n\t<div class=\"col-sm-3 col-md-2 translation-item-actions\">\n\n\t\t<button type=\"button\" v-show=\"!editing\" class=\"btn btn-info btn-xs\" @click=\"initEdition()\">\n\t\t\t<span class=\"glyphicon glyphicon-edit\" aria-hidden=\"true\"></span>\n\t\t\t{{ $t('label.edit') }}\n\t\t</button>\n\n\t\t<!-- <button type=\"button\" v-show=\"!editing\" class=\"btn btn-default btn-xs\" @click=\"editing = true\">\n\t\t\t<span class=\"glyphicon glyphicon-zoom-in\" aria-hidden=\"true\"></span>\n\t\t\tRevitions\n\t\t</button> -->\n\n\t\t<button type=\"button\" v-show=\"editing\" class=\"btn btn-primary\" @click=\"updateValue()\">{{ $t('label.save') }}</button>\n\n\t\t<button type=\"button\" v-show=\"editing\" class=\"btn btn-danger btn-sm\" @click=\"cancelEdition()\">{{ $t('label.cancel') }}</button>\n\n\t\t<button type=\"button\" v-show=\"editing &amp;&amp; active\" class=\"btn btn-warning btn-xs\" @click=\"deactivateTranslation()\">\n\t\t\t<span class=\"glyphicon glyphicon-ban-circle\" aria-hidden=\"true\"></span>\n\t\t\t{{ $t('label.deactivate') }}\n\t\t</button>\n\n\t\t<button type=\"button\" v-show=\"editing &amp;&amp; !active\" class=\"btn btn-success btn-xs\" @click=\"activateTranslation()\">\n\t\t\t<span class=\"glyphicon glyphicon-ban-circle\" aria-hidden=\"true\"></span>\n\t\t\t{{ $t('label.activate') }}\n\t\t</button>\n\n\t\t<slot name=\"extra-buttons\"></slot>\n\n\t</div>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"row\">\n\t<div class=\"col-sm-9 col-md-10\">\n\t\t<trans-item-value v-for=\"locale in locales\" :value=\"getValue(locale)\" :locale=\"locale\" :editing=\"editing\"></trans-item-value>\n\t</div> \n\t<div class=\"col-sm-3 col-md-2 translation-item-actions\">\n\n\t\t<button type=\"button\" v-show=\"!editing\" class=\"btn btn-info btn-xs\" @click=\"initEdition()\">\n\t\t\t<span class=\"glyphicon glyphicon-edit\" aria-hidden=\"true\"></span>\n\t\t\t{{ $t('label.edit') }}\n\t\t</button>\n\n\t\t<!-- <button type=\"button\" v-show=\"!editing\" class=\"btn btn-default btn-xs\" @click=\"editing = true\">\n\t\t\t<span class=\"glyphicon glyphicon-zoom-in\" aria-hidden=\"true\"></span>\n\t\t\tRevitions\n\t\t</button> -->\n\n\t\t<button type=\"button\" v-show=\"editing\" class=\"btn btn-primary\" @click=\"updateValue()\">{{ $t('label.save') }}</button>\n\n\t\t<button type=\"button\" v-show=\"editing &amp;&amp; !isNew\" class=\"btn btn-danger btn-sm\" @click=\"cancelEdition()\">{{ $t('label.cancel') }}</button>\n\n\t\t<button type=\"button\" v-show=\"editing &amp;&amp; active &amp;&amp; !isNew\" class=\"btn btn-warning btn-xs\" @click=\"deactivateTranslation()\">\n\t\t\t<span class=\"glyphicon glyphicon-ban-circle\" aria-hidden=\"true\"></span>\n\t\t\t{{ $t('label.deactivate') }}\n\t\t</button>\n\n\t\t<button type=\"button\" v-show=\"editing &amp;&amp; !active &amp;&amp; !isNew\" class=\"btn btn-success btn-xs\" @click=\"activateTranslation()\">\n\t\t\t<span class=\"glyphicon glyphicon-ban-circle\" aria-hidden=\"true\"></span>\n\t\t\t{{ $t('label.activate') }}\n\t\t</button>\n\n\t\t<slot name=\"extra-buttons\"></slot>\n\n\t</div>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -462,7 +553,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-4f0f2e82", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"./TransItemValue.vue":6,"babel-runtime/core-js/object/assign":10,"vue":52,"vue-hot-reload-api":48,"vueify/lib/insert-css":53}],8:[function(require,module,exports){
+},{"./TransItemValue.vue":7,"babel-runtime/core-js/object/assign":12,"vue":54,"vue-hot-reload-api":50,"vueify/lib/insert-css":55}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -486,18 +577,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 _vue2.default.use(_vueResource2.default);
 
 exports.default = {
-    props: {
-        locales: { required: true, type: [Array, Object] },
-        baseApiUrl: { required: true, type: [String] }
-    },
-
     data: function data() {
         return {
-            items: {}
+            items: {},
+            locales: this.getLocales()
         };
     },
     ready: function ready() {
-        this.resource = this.$resource(this.baseApiUrl + '{id}');
+        this.resource = this.$resource(this.getTranslationApiUrl() + '{id}');
 
         this.getTranslations();
     },
@@ -511,32 +598,60 @@ exports.default = {
                 _this.$set('items', res.json());
             });
         },
-        save: function save(item, success, error) {
-            this.resource.save({ id: item.id }, item).then(function (response) {
+        save: function save(item, success, error, complete) {
+            var _this2 = this;
+
+            var promise = null;
+            if (item.id) {
+                promise = this.resource.update({ id: item.id }, item);
+            } else {
+                promise = this.resource.save({ id: item.id }, item);
+            }
+
+            promise.then(function (response) {
                 var data = response.json();
+                _this2.items.$set(_this2.items.indexOf(item), data); // Actualizamos el item con la nueva data
                 success && success(data);
-                //this.$dispatch('translation-saved', response.json())
-                // Por ahora no recargar listado.
-                // Creo que no hace falta :)
-                /*this.getTranslations().then(() => {
-                    //this.$broadcast('translation-saved.complete', response.json())                    
-                })*/
+
+                _this2.addDomain(data.domain);
             }, function (response) {
                 error && error(response);
             });
+        },
+        add: function add() {
+            this.items.unshift({
+                id: null,
+                active: true,
+                autogenerated: false,
+                code: null,
+                domain: 'messages',
+                files: [],
+                values: {},
+                new: false
+            });
+        },
+        remove: function remove(item) {
+            this.items.$remove(item);
+            // todo ver si se van a eliminar elementos de la bd
         }
     },
 
     events: {
         'save-item': function saveItem(item, success, error) {
             this.save(item, success, error);
+        },
+        'add-item': function addItem() {
+            this.add();
+        },
+        'remove-item': function removeItem(item) {
+            this.remove(item);
         }
     },
 
     components: { TransItem: _TransItem2.default }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<trans-item v-for=\"item in items\" :item=\"item\" :locales=\"locales\"></trans-item>\n\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n\n<trans-item v-for=\"item in items\" :item=\"item\" :locales.once=\"locales\"></trans-item>\n\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
@@ -547,7 +662,7 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-73f26c4b", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"./TransItem.vue":3,"vue":52,"vue-hot-reload-api":48,"vue-resource":51}],9:[function(require,module,exports){
+},{"./TransItem.vue":4,"vue":54,"vue-hot-reload-api":50,"vue-resource":53}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -593,23 +708,51 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-7a2ffbc8", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":52,"vue-hot-reload-api":48}],10:[function(require,module,exports){
+},{"vue":54,"vue-hot-reload-api":50}],11:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = install;
+function install(Vue, TranslationData) {
+	Vue.prototype.getTranslationApiUrl = function () {
+		return TranslationData.baseUrlApi;
+	};
+
+	Vue.prototype.getLocales = function () {
+		return TranslationData.locales;
+	};
+
+	Vue.prototype.getDomains = function () {
+		return TranslationData.domains;
+	};
+
+	Vue.prototype.addDomain = function (domain) {
+
+		if (-1 === TranslationData.domains.indexOf(domain)) {
+			TranslationData.domains.push(domain);
+		}
+	};
+}
+
+},{}],12:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/object/assign"), __esModule: true };
-},{"core-js/library/fn/object/assign":11}],11:[function(require,module,exports){
+},{"core-js/library/fn/object/assign":13}],13:[function(require,module,exports){
 require('../../modules/es6.object.assign');
 module.exports = require('../../modules/_core').Object.assign;
-},{"../../modules/_core":16,"../../modules/es6.object.assign":46}],12:[function(require,module,exports){
+},{"../../modules/_core":18,"../../modules/es6.object.assign":48}],14:[function(require,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
 };
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 var isObject = require('./_is-object');
 module.exports = function(it){
   if(!isObject(it))throw TypeError(it + ' is not an object!');
   return it;
 };
-},{"./_is-object":29}],14:[function(require,module,exports){
+},{"./_is-object":31}],16:[function(require,module,exports){
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = require('./_to-iobject')
@@ -631,16 +774,16 @@ module.exports = function(IS_INCLUDES){
     } return !IS_INCLUDES && -1;
   };
 };
-},{"./_to-index":39,"./_to-iobject":41,"./_to-length":42}],15:[function(require,module,exports){
+},{"./_to-index":41,"./_to-iobject":43,"./_to-length":44}],17:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = function(it){
   return toString.call(it).slice(8, -1);
 };
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 // optional / simple context binding
 var aFunction = require('./_a-function');
 module.exports = function(fn, that, length){
@@ -661,18 +804,18 @@ module.exports = function(fn, that, length){
     return fn.apply(that, arguments);
   };
 };
-},{"./_a-function":12}],18:[function(require,module,exports){
+},{"./_a-function":14}],20:[function(require,module,exports){
 // 7.2.1 RequireObjectCoercible(argument)
 module.exports = function(it){
   if(it == undefined)throw TypeError("Can't call method on  " + it);
   return it;
 };
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 // Thank's IE8 for his funny defineProperty
 module.exports = !require('./_fails')(function(){
   return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_fails":23}],20:[function(require,module,exports){
+},{"./_fails":25}],22:[function(require,module,exports){
 var isObject = require('./_is-object')
   , document = require('./_global').document
   // in old IE typeof document.createElement is 'object'
@@ -680,12 +823,12 @@ var isObject = require('./_is-object')
 module.exports = function(it){
   return is ? document.createElement(it) : {};
 };
-},{"./_global":24,"./_is-object":29}],21:[function(require,module,exports){
+},{"./_global":26,"./_is-object":31}],23:[function(require,module,exports){
 // IE 8- don't enum bug keys
 module.exports = (
   'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
 ).split(',');
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var global    = require('./_global')
   , core      = require('./_core')
   , ctx       = require('./_ctx')
@@ -747,7 +890,7 @@ $export.W = 32;  // wrap
 $export.U = 64;  // safe
 $export.R = 128; // real proto method for `library` 
 module.exports = $export;
-},{"./_core":16,"./_ctx":17,"./_global":24,"./_hide":26}],23:[function(require,module,exports){
+},{"./_core":18,"./_ctx":19,"./_global":26,"./_hide":28}],25:[function(require,module,exports){
 module.exports = function(exec){
   try {
     return !!exec();
@@ -755,17 +898,17 @@ module.exports = function(exec){
     return true;
   }
 };
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
   ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
 if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-},{}],25:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 var hasOwnProperty = {}.hasOwnProperty;
 module.exports = function(it, key){
   return hasOwnProperty.call(it, key);
 };
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 var dP         = require('./_object-dp')
   , createDesc = require('./_property-desc');
 module.exports = require('./_descriptors') ? function(object, key, value){
@@ -774,21 +917,21 @@ module.exports = require('./_descriptors') ? function(object, key, value){
   object[key] = value;
   return object;
 };
-},{"./_descriptors":19,"./_object-dp":31,"./_property-desc":36}],27:[function(require,module,exports){
+},{"./_descriptors":21,"./_object-dp":33,"./_property-desc":38}],29:[function(require,module,exports){
 module.exports = !require('./_descriptors') && !require('./_fails')(function(){
   return Object.defineProperty(require('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
 });
-},{"./_descriptors":19,"./_dom-create":20,"./_fails":23}],28:[function(require,module,exports){
+},{"./_descriptors":21,"./_dom-create":22,"./_fails":25}],30:[function(require,module,exports){
 // fallback for non-array-like ES3 and non-enumerable old V8 strings
 var cof = require('./_cof');
 module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
   return cof(it) == 'String' ? it.split('') : Object(it);
 };
-},{"./_cof":15}],29:[function(require,module,exports){
+},{"./_cof":17}],31:[function(require,module,exports){
 module.exports = function(it){
   return typeof it === 'object' ? it !== null : typeof it === 'function';
 };
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 // 19.1.2.1 Object.assign(target, source, ...)
 var getKeys  = require('./_object-keys')
@@ -822,7 +965,7 @@ module.exports = !$assign || require('./_fails')(function(){
     while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
   } return T;
 } : $assign;
-},{"./_fails":23,"./_iobject":28,"./_object-gops":32,"./_object-keys":34,"./_object-pie":35,"./_to-object":43}],31:[function(require,module,exports){
+},{"./_fails":25,"./_iobject":30,"./_object-gops":34,"./_object-keys":36,"./_object-pie":37,"./_to-object":45}],33:[function(require,module,exports){
 var anObject       = require('./_an-object')
   , IE8_DOM_DEFINE = require('./_ie8-dom-define')
   , toPrimitive    = require('./_to-primitive')
@@ -839,9 +982,9 @@ exports.f = require('./_descriptors') ? Object.defineProperty : function defineP
   if('value' in Attributes)O[P] = Attributes.value;
   return O;
 };
-},{"./_an-object":13,"./_descriptors":19,"./_ie8-dom-define":27,"./_to-primitive":44}],32:[function(require,module,exports){
+},{"./_an-object":15,"./_descriptors":21,"./_ie8-dom-define":29,"./_to-primitive":46}],34:[function(require,module,exports){
 exports.f = Object.getOwnPropertySymbols;
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 var has          = require('./_has')
   , toIObject    = require('./_to-iobject')
   , arrayIndexOf = require('./_array-includes')(false)
@@ -859,7 +1002,7 @@ module.exports = function(object, names){
   }
   return result;
 };
-},{"./_array-includes":14,"./_has":25,"./_shared-key":37,"./_to-iobject":41}],34:[function(require,module,exports){
+},{"./_array-includes":16,"./_has":27,"./_shared-key":39,"./_to-iobject":43}],36:[function(require,module,exports){
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
 var $keys       = require('./_object-keys-internal')
   , enumBugKeys = require('./_enum-bug-keys');
@@ -867,9 +1010,9 @@ var $keys       = require('./_object-keys-internal')
 module.exports = Object.keys || function keys(O){
   return $keys(O, enumBugKeys);
 };
-},{"./_enum-bug-keys":21,"./_object-keys-internal":33}],35:[function(require,module,exports){
+},{"./_enum-bug-keys":23,"./_object-keys-internal":35}],37:[function(require,module,exports){
 exports.f = {}.propertyIsEnumerable;
-},{}],36:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 module.exports = function(bitmap, value){
   return {
     enumerable  : !(bitmap & 1),
@@ -878,20 +1021,20 @@ module.exports = function(bitmap, value){
     value       : value
   };
 };
-},{}],37:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 var shared = require('./_shared')('keys')
   , uid    = require('./_uid');
 module.exports = function(key){
   return shared[key] || (shared[key] = uid(key));
 };
-},{"./_shared":38,"./_uid":45}],38:[function(require,module,exports){
+},{"./_shared":40,"./_uid":47}],40:[function(require,module,exports){
 var global = require('./_global')
   , SHARED = '__core-js_shared__'
   , store  = global[SHARED] || (global[SHARED] = {});
 module.exports = function(key){
   return store[key] || (store[key] = {});
 };
-},{"./_global":24}],39:[function(require,module,exports){
+},{"./_global":26}],41:[function(require,module,exports){
 var toInteger = require('./_to-integer')
   , max       = Math.max
   , min       = Math.min;
@@ -899,34 +1042,34 @@ module.exports = function(index, length){
   index = toInteger(index);
   return index < 0 ? max(index + length, 0) : min(index, length);
 };
-},{"./_to-integer":40}],40:[function(require,module,exports){
+},{"./_to-integer":42}],42:[function(require,module,exports){
 // 7.1.4 ToInteger
 var ceil  = Math.ceil
   , floor = Math.floor;
 module.exports = function(it){
   return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
 };
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 // to indexed object, toObject with fallback for non-array-like ES3 strings
 var IObject = require('./_iobject')
   , defined = require('./_defined');
 module.exports = function(it){
   return IObject(defined(it));
 };
-},{"./_defined":18,"./_iobject":28}],42:[function(require,module,exports){
+},{"./_defined":20,"./_iobject":30}],44:[function(require,module,exports){
 // 7.1.15 ToLength
 var toInteger = require('./_to-integer')
   , min       = Math.min;
 module.exports = function(it){
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
-},{"./_to-integer":40}],43:[function(require,module,exports){
+},{"./_to-integer":42}],45:[function(require,module,exports){
 // 7.1.13 ToObject(argument)
 var defined = require('./_defined');
 module.exports = function(it){
   return Object(defined(it));
 };
-},{"./_defined":18}],44:[function(require,module,exports){
+},{"./_defined":20}],46:[function(require,module,exports){
 // 7.1.1 ToPrimitive(input [, PreferredType])
 var isObject = require('./_is-object');
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
@@ -939,18 +1082,18 @@ module.exports = function(it, S){
   if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
   throw TypeError("Can't convert object to primitive value");
 };
-},{"./_is-object":29}],45:[function(require,module,exports){
+},{"./_is-object":31}],47:[function(require,module,exports){
 var id = 0
   , px = Math.random();
 module.exports = function(key){
   return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
 };
-},{}],46:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 // 19.1.3.1 Object.assign(target, source)
 var $export = require('./_export');
 
 $export($export.S + $export.F, 'Object', {assign: require('./_object-assign')});
-},{"./_export":22,"./_object-assign":30}],47:[function(require,module,exports){
+},{"./_export":24,"./_object-assign":32}],49:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -1112,7 +1255,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],48:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 var Vue // late bind
 var map = Object.create(null)
 var shimmed = false
@@ -1413,7 +1556,7 @@ function format (id) {
   return match ? match[0] : id
 }
 
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 (function (process){
 /*!
  * vue-i18n v4.4.0
@@ -2353,10 +2496,10 @@ if (typeof window !== 'undefined' && window.Vue) {
 
 module.exports = plugin;
 }).call(this,require('_process'))
-},{"_process":47}],50:[function(require,module,exports){
+},{"_process":49}],52:[function(require,module,exports){
 !function(t,e){"object"==typeof exports&&"object"==typeof module?module.exports=e():"function"==typeof define&&define.amd?define([],e):"object"==typeof exports?exports["vue-loading"]=e():t["vue-loading"]=e()}(this,function(){return function(t){function e(o){if(n[o])return n[o].exports;var r=n[o]={exports:{},id:o,loaded:!1};return t[o].call(r.exports,r,r.exports,e),r.loaded=!0,r.exports}var n={};return e.m=t,e.c=n,e.p="",e(0)}([function(t,e,n){"use strict";function o(t){return t&&t.__esModule?t:{"default":t}}Object.defineProperty(e,"__esModule",{value:!0});var r=n(2),i=o(r);n(19),e["default"]={params:["loadingOptions"],handleShow:function(){"static"===window.getComputedStyle(this.el).position&&(this["static"]=!0,this.el.style.position="relative");var t=document.createElement("div");t.className="vue-loading",this.el.appendChild(t);var e=document.createElement("div");e.className="vue-loading-msg",e.textContent=this.options.text,t.appendChild(e),window.requestAnimationFrame(function(){t.style.opacity=1}),this.loadingBox=t},handleHide:function(){var t=this;this.loadingBox.addEventListener("transitionend",function(){t.loadingBox.remove(),t["static"]&&t.el.style.removeProperty("position")}),this.loadingBox.style.opacity=0},bind:function(){this["static"]=!1,this.loadingBox=null,this.first=!0,this.options={text:"Loading ..."},this.params.loadingOptions&&(0,i["default"])(this.options,this.params.loadingOptions)},update:function(t){if(t)this.first=!1,this.handleShow();else{if(this.first)return void(this.first=!1);this.handleHide()}}}},function(t,e){var n=t.exports={version:"1.2.6"};"number"==typeof __e&&(__e=n)},function(t,e,n){t.exports={"default":n(3),__esModule:!0}},function(t,e,n){n(15),t.exports=n(1).Object.assign},function(t,e){t.exports=function(t){if("function"!=typeof t)throw TypeError(t+" is not a function!");return t}},function(t,e){var n={}.toString;t.exports=function(t){return n.call(t).slice(8,-1)}},function(t,e,n){var o=n(4);t.exports=function(t,e,n){if(o(t),void 0===e)return t;switch(n){case 1:return function(n){return t.call(e,n)};case 2:return function(n,o){return t.call(e,n,o)};case 3:return function(n,o,r){return t.call(e,n,o,r)}}return function(){return t.apply(e,arguments)}}},function(t,e){t.exports=function(t){if(void 0==t)throw TypeError("Can't call method on  "+t);return t}},function(t,e,n){var o=n(10),r=n(1),i=n(6),s="prototype",a=function(t,e,n){var u,c,f,l=t&a.F,p=t&a.G,d=t&a.S,h=t&a.P,v=t&a.B,g=t&a.W,m=p?r:r[e]||(r[e]={}),y=p?o:d?o[e]:(o[e]||{})[s];p&&(n=e);for(u in n)c=!l&&y&&u in y,c&&u in m||(f=c?y[u]:n[u],m[u]=p&&"function"!=typeof y[u]?n[u]:v&&c?i(f,o):g&&y[u]==f?function(t){var e=function(e){return this instanceof t?new t(e):t(e)};return e[s]=t[s],e}(f):h&&"function"==typeof f?i(Function.call,f):f,h&&((m[s]||(m[s]={}))[u]=f))};a.F=1,a.G=2,a.S=4,a.P=8,a.B=16,a.W=32,t.exports=a},function(t,e){t.exports=function(t){try{return!!t()}catch(e){return!0}}},function(t,e){var n=t.exports="undefined"!=typeof window&&window.Math==Math?window:"undefined"!=typeof self&&self.Math==Math?self:Function("return this")();"number"==typeof __g&&(__g=n)},function(t,e,n){var o=n(5);t.exports=Object("z").propertyIsEnumerable(0)?Object:function(t){return"String"==o(t)?t.split(""):Object(t)}},function(t,e){var n=Object;t.exports={create:n.create,getProto:n.getPrototypeOf,isEnum:{}.propertyIsEnumerable,getDesc:n.getOwnPropertyDescriptor,setDesc:n.defineProperty,setDescs:n.defineProperties,getKeys:n.keys,getNames:n.getOwnPropertyNames,getSymbols:n.getOwnPropertySymbols,each:[].forEach}},function(t,e,n){var o=n(12),r=n(14),i=n(11);t.exports=n(9)(function(){var t=Object.assign,e={},n={},o=Symbol(),r="abcdefghijklmnopqrst";return e[o]=7,r.split("").forEach(function(t){n[t]=t}),7!=t({},e)[o]||Object.keys(t({},n)).join("")!=r})?function(t,e){for(var n=r(t),s=arguments,a=s.length,u=1,c=o.getKeys,f=o.getSymbols,l=o.isEnum;a>u;)for(var p,d=i(s[u++]),h=f?c(d).concat(f(d)):c(d),v=h.length,g=0;v>g;)l.call(d,p=h[g++])&&(n[p]=d[p]);return n}:Object.assign},function(t,e,n){var o=n(7);t.exports=function(t){return Object(o(t))}},function(t,e,n){var o=n(8);o(o.S+o.F,"Object",{assign:n(13)})},function(t,e,n){e=t.exports=n(17)(),e.push([t.id,".vue-loading{top:0;left:0;z-index:1000;padding:0;width:100%;height:100%;border:none;background-color:hsla(0,0%,89%,.85);opacity:0;-webkit-transition:opacity .4s;transition:opacity .4s}.vue-loading,.vue-loading-msg{position:absolute;margin:0;cursor:wait}.vue-loading-msg{box-sizing:content-box!important;z-index:1001;padding:0 35px;height:40px;top:20%;left:50%;text-align:center;font-size:14px;line-height:40px;background-color:#f4f4f4;border-radius:4px;box-shadow:0 1px 8px rgba(0,0,0,.15);border:1px solid #bbb;-webkit-transform:translateX(-50%);transform:translateX(-50%)}",""])},function(t,e){t.exports=function(){var t=[];return t.toString=function(){for(var t=[],e=0;e<this.length;e++){var n=this[e];n[2]?t.push("@media "+n[2]+"{"+n[1]+"}"):t.push(n[1])}return t.join("")},t.i=function(e,n){"string"==typeof e&&(e=[[null,e,""]]);for(var o={},r=0;r<this.length;r++){var i=this[r][0];"number"==typeof i&&(o[i]=!0)}for(r=0;r<e.length;r++){var s=e[r];"number"==typeof s[0]&&o[s[0]]||(n&&!s[2]?s[2]=n:n&&(s[2]="("+s[2]+") and ("+n+")"),t.push(s))}},t}},function(t,e,n){function o(t,e){for(var n=0;n<t.length;n++){var o=t[n],r=d[o.id];if(r){r.refs++;for(var i=0;i<r.parts.length;i++)r.parts[i](o.parts[i]);for(;i<o.parts.length;i++)r.parts.push(c(o.parts[i],e))}else{for(var s=[],i=0;i<o.parts.length;i++)s.push(c(o.parts[i],e));d[o.id]={id:o.id,refs:1,parts:s}}}}function r(t){for(var e=[],n={},o=0;o<t.length;o++){var r=t[o],i=r[0],s=r[1],a=r[2],u=r[3],c={css:s,media:a,sourceMap:u};n[i]?n[i].parts.push(c):e.push(n[i]={id:i,parts:[c]})}return e}function i(t,e){var n=g(),o=b[b.length-1];if("top"===t.insertAt)o?o.nextSibling?n.insertBefore(e,o.nextSibling):n.appendChild(e):n.insertBefore(e,n.firstChild),b.push(e);else{if("bottom"!==t.insertAt)throw new Error("Invalid value for parameter 'insertAt'. Must be 'top' or 'bottom'.");n.appendChild(e)}}function s(t){t.parentNode.removeChild(t);var e=b.indexOf(t);e>=0&&b.splice(e,1)}function a(t){var e=document.createElement("style");return e.type="text/css",i(t,e),e}function u(t){var e=document.createElement("link");return e.rel="stylesheet",i(t,e),e}function c(t,e){var n,o,r;if(e.singleton){var i=y++;n=m||(m=a(e)),o=f.bind(null,n,i,!1),r=f.bind(null,n,i,!0)}else t.sourceMap&&"function"==typeof URL&&"function"==typeof URL.createObjectURL&&"function"==typeof URL.revokeObjectURL&&"function"==typeof Blob&&"function"==typeof btoa?(n=u(e),o=p.bind(null,n),r=function(){s(n),n.href&&URL.revokeObjectURL(n.href)}):(n=a(e),o=l.bind(null,n),r=function(){s(n)});return o(t),function(e){if(e){if(e.css===t.css&&e.media===t.media&&e.sourceMap===t.sourceMap)return;o(t=e)}else r()}}function f(t,e,n,o){var r=n?"":o.css;if(t.styleSheet)t.styleSheet.cssText=x(e,r);else{var i=document.createTextNode(r),s=t.childNodes;s[e]&&t.removeChild(s[e]),s.length?t.insertBefore(i,s[e]):t.appendChild(i)}}function l(t,e){var n=e.css,o=e.media;if(o&&t.setAttribute("media",o),t.styleSheet)t.styleSheet.cssText=n;else{for(;t.firstChild;)t.removeChild(t.firstChild);t.appendChild(document.createTextNode(n))}}function p(t,e){var n=e.css,o=e.sourceMap;o&&(n+="\n/*# sourceMappingURL=data:application/json;base64,"+btoa(unescape(encodeURIComponent(JSON.stringify(o))))+" */");var r=new Blob([n],{type:"text/css"}),i=t.href;t.href=URL.createObjectURL(r),i&&URL.revokeObjectURL(i)}var d={},h=function(t){var e;return function(){return"undefined"==typeof e&&(e=t.apply(this,arguments)),e}},v=h(function(){return/msie [6-9]\b/.test(window.navigator.userAgent.toLowerCase())}),g=h(function(){return document.head||document.getElementsByTagName("head")[0]}),m=null,y=0,b=[];t.exports=function(t,e){e=e||{},"undefined"==typeof e.singleton&&(e.singleton=v()),"undefined"==typeof e.insertAt&&(e.insertAt="bottom");var n=r(t);return o(n,e),function(t){for(var i=[],s=0;s<n.length;s++){var a=n[s],u=d[a.id];u.refs--,i.push(u)}if(t){var c=r(t);o(c,e)}for(var s=0;s<i.length;s++){var u=i[s];if(0===u.refs){for(var f=0;f<u.parts.length;f++)u.parts[f]();delete d[u.id]}}}};var x=function(){var t=[];return function(e,n){return t[e]=n,t.filter(Boolean).join("\n")}}()},function(t,e,n){var o=n(16);"string"==typeof o&&(o=[[t.id,o,""]]);n(18)(o,{});o.locals&&(t.exports=o.locals)}])});
 
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /*!
  * vue-resource v0.9.3
  * https://github.com/vuejs/vue-resource
@@ -3669,7 +3812,7 @@ if (typeof window !== 'undefined' && window.Vue) {
 }
 
 module.exports = plugin;
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 (function (process,global){
 /*!
  * Vue.js v1.0.26
@@ -13746,7 +13889,7 @@ setTimeout(function () {
 
 module.exports = Vue;
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":47}],53:[function(require,module,exports){
+},{"_process":49}],55:[function(require,module,exports){
 var inserted = exports.cache = {}
 
 exports.insert = function (css) {

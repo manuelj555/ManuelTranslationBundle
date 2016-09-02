@@ -18,14 +18,14 @@
 
 		<button type="button" v-show="editing" class="btn btn-primary" @click="updateValue()">{{ $t('label.save') }}</button>
 
-		<button type="button" v-show="editing" class="btn btn-danger btn-sm" @click="cancelEdition()">{{ $t('label.cancel') }}</button>
+		<button type="button" v-show="editing && !isNew" class="btn btn-danger btn-sm" @click="cancelEdition()">{{ $t('label.cancel') }}</button>
 
-		<button type="button" v-show="editing && active" class="btn btn-warning btn-xs" @click="deactivateTranslation()">
+		<button type="button" v-show="editing && active && !isNew" class="btn btn-warning btn-xs" @click="deactivateTranslation()">
 			<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
 			{{ $t('label.deactivate') }}
 		</button>
 
-		<button type="button" v-show="editing && !active" class="btn btn-success btn-xs" @click="activateTranslation()">
+		<button type="button" v-show="editing && !active && !isNew" class="btn btn-success btn-xs" @click="activateTranslation()">
 			<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
 			{{ $t('label.activate') }}
 		</button>
@@ -50,6 +50,7 @@ export default {
 		locales: {required: true, type: [Array, Object]},
 		editing: {required: true, type: [Boolean], twoWay: true},
 		active: {required: true, type: [Boolean]},
+		isNew: {required: true, type: [Boolean]},
 	},
 
 	data () {

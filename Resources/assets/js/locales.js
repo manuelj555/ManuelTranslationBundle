@@ -11,10 +11,13 @@ export default {
 			yes: 'Yes',
 			no: 'No',
 			loading: 'Loading',
+			empty_value: 'Empty Value',
+			cancel_reation: 'Cancel Creation',
 		},
 		alert: {
-			success: {
-				save: 'Save Successfull!',
+			save: {
+				success: 'Save Successfull!',
+				error: 'Save Error!',
 			}
 		}
 	},
@@ -30,10 +33,13 @@ export default {
 			yes: 'Si',
 			no: 'No',
 			loading: 'Cargando',
+			empty_value: 'Valor Vacío',
+			cancel_reation: 'Cancelar Creación',
 		},
 		alert: {
-			success: {
-				save: 'Guardado con éxito!',
+			save: {
+				success: 'Guardado con éxito!',
+				error: 'Error al Guardar!',
 			}
 		}
 	}
