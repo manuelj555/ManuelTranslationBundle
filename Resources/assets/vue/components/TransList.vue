@@ -37,19 +37,25 @@ export default {
             })
         },
 
-        save (item) {
+        save (item, success, error) {
             this.resource.save({id: item.id}, item).then(response => {
-                this.$dispatch('translation-saved', response.json())
-                this.getTranslations().then(() => {
-                    this.$broadcast('translation-saved.complete', response.json())                    
-                })
+                let data = response.json();
+                success && success(data);
+                //this.$dispatch('translation-saved', response.json())
+                // Por ahora no recargar listado.
+                // Creo que no hace falta :)
+                /*this.getTranslations().then(() => {
+                    //this.$broadcast('translation-saved.complete', response.json())                    
+                })*/
+            }, response => {
+                error && error(response)
             })
         },
     },
 
     events: {
-        'save-item' (item) {
-            this.save(item)
+        'save-item' (item, success, error) {
+            this.save(item, success, error)
         } 
     },
 

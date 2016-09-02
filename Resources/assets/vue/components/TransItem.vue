@@ -1,5 +1,5 @@
 <template>
-<div class="translation-item">
+<div class="translation-item" v-loading="isLoading">
 	<div class="panel panel-default" :class="{'panel-warning': !item.active}">
 		<div class="panel-heading">
 			<trans-item-header 
@@ -38,6 +38,7 @@ import TransItemValues from './TransItemValues.vue'
 import TransItemFiles from './TransItemFiles.vue'
 import TransItemHeader from './TransItemHeader.vue'
 import Alert from '../directives/Alert.vue'
+import Loading from 'vue-loading';
 
 export default {
 	props: {
@@ -65,6 +66,7 @@ export default {
 			editing: false,
 			visibleFiles: false,
 			message: {},
+			isLoading: false,
 		}
 	},
 
@@ -85,8 +87,13 @@ export default {
 			}
 		},
 		save () {
-			this.$dispatch('save-item', this.item)
+			this.isLoading = true
+			this.$dispatch('save-item', this.item, this.onSaveSuccess)
 		},
+		onSaveSuccess () {
+			this.isLoading = false
+			this.message = {message: 'Data Saved!', type: 'success', time: 2000}
+		}
 	},
 
 	events: {
@@ -94,11 +101,9 @@ export default {
 			// cuando se actualizen los valores, guardamos el registro
 			this.save()
 		},
-		'translation-saved.complete' (item) {
-			if (item.id == this.item.id){
-				this.message = {message: 'Data Saved!', type: 'success', time: 2000}
-			}
-		},
+		/*'translation-saved.complete' (item) {
+			
+		},*/
 		'activate-translation' () {
 			this.item.active = true
 			this.save()
@@ -110,7 +115,7 @@ export default {
 	},
 
 	components: {TransItemValues, TransItemFiles, TransItemHeader},
-	directives: {Alert},
+	directives: {Alert, Loading},
 }
 </script>
 

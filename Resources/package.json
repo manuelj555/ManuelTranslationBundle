@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "vue": "^1.0.26",
+    "vue-loading": "^0.1.4",
     "vue-resource": "^0.9.3"
   }
 }
