@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import TransList from '../vue/components/TransList.vue'
-import Alert from '../vue/directives/Alert.vue'
 
 Vue.filter('boolean', function(value) {
 	return value ? 'Yes' : 'No'
@@ -38,5 +37,4 @@ let app = new Vue({
 	},
 
 	components: {TransList},
-	directives: {Alert},
 })

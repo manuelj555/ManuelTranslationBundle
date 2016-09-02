@@ -3,7 +3,7 @@
 		<div class="col-sm-6">
 			<h3 class="panel-title">
 				{{ code }}
-				<!-- <small>{{ domain }}</small> -->
+				<slot name="message"></slot>
 			</h3>
 		</div>
 		<div class="col-sm-6 text-right">

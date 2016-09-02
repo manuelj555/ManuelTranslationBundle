@@ -66,7 +66,7 @@ export default {
 		updateValue (locale, value) {
 			this.$broadcast('update-values', this.values)
 			this.$dispatch('update-values', this.values)
-			this.editing = false
+			//this.editing = false
 			this.originalValues = null
 		},
 
