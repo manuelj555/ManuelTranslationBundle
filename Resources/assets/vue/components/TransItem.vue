@@ -1,6 +1,6 @@
 <template>
-<div class="translation-item" v-loading="isLoading">
-	<div class="panel panel-default" :class="{'panel-warning': !item.active}">
+<div class="translation-item" v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">
+	<div class="panel panel-default" :class="{'translation-inactive': !item.active}">
 		<div class="panel-heading">
 			<trans-item-header 
 			:code.once="item.code" :domain.once="item.domain"
@@ -9,7 +9,7 @@
 
 				<span slot="message">
 					<span class="glyphicon glyphicon-ok label label-success" v-alert-icon.literal="save-success">
-						Save Successfull!
+						{{ $t('alert.success.save') }}
 					</span>
 					<span class="glyphicon glyphicon-remove label label-danger" v-alert-icon.literal="save-error"></span>
 				</span>
@@ -130,5 +130,8 @@ export default {
 
 	.translation-item .alert{ padding: 5px; }
 	.translation-item .panel-warning .panel-heading .text-muted{ color: #FFFFFF; }
+
+	.translation-inactive .panel-heading{opacity: 0.4}
+	.translation-inactive .panel-body{opacity: 0.7}
 
 </style>

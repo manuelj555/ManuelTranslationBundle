@@ -8,7 +8,7 @@
 
 		<button type="button" v-show="!editing" class="btn btn-info btn-xs" @click="initEdition()">
 			<span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-			Edit
+			{{ $t('label.edit') }}
 		</button>
 
 		<!-- <button type="button" v-show="!editing" class="btn btn-default btn-xs" @click="editing = true">
@@ -16,18 +16,18 @@
 			Revitions
 		</button> -->
 
-		<button type="button" v-show="editing" class="btn btn-primary" @click="updateValue()">Save</button>
+		<button type="button" v-show="editing" class="btn btn-primary" @click="updateValue()">{{ $t('label.save') }}</button>
 
-		<button type="button" v-show="editing" class="btn btn-danger btn-sm" @click="cancelEdition()">Cancel</button>
+		<button type="button" v-show="editing" class="btn btn-danger btn-sm" @click="cancelEdition()">{{ $t('label.cancel') }}</button>
 
 		<button type="button" v-show="editing && active" class="btn btn-warning btn-xs" @click="deactivateTranslation()">
 			<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
-			Inactivate
+			{{ $t('label.deactivate') }}
 		</button>
 
 		<button type="button" v-show="editing && !active" class="btn btn-success btn-xs" @click="activateTranslation()">
 			<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
-			Activate
+			{{ $t('label.activate') }}
 		</button>
 
 		<slot name="extra-buttons"></slot>

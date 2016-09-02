@@ -1,8 +1,14 @@
 import Vue from 'vue'
 import TransList from '../vue/components/TransList.vue'
+import VueI18n from 'vue-i18n'
+import locales from './locales.js'
+
+Vue.use(VueI18n)
+Vue.config.lang = TranslationData.locale
+Vue.locale(TranslationData.locale, locales[TranslationData.locale])
 
 Vue.filter('boolean', function(value) {
-	return value ? 'Yes' : 'No'
+	return value ? Vue.t('label.yes') : Vue.t('label.no')
 })
 
 let app = new Vue({
@@ -17,23 +23,10 @@ let app = new Vue({
 		}, TranslationData)
 	},
 
-	computed: {
-	},
-
 	methods: {
 		addTranslation () {
 			//this.$dispatch('show-success-message', 'Hola Manuel')
 		},
-	},
-
-	events: {
-		/*'translation-saved' (row) {
-			this.message = {
-				message: 'Translation "%code%" saved!'.replace('%code%', row.code),
-				type: 'success',
-				time: 2000
-			};
-		}*/
 	},
 
 	components: {TransList},

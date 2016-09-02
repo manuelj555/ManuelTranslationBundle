@@ -71,7 +71,8 @@
     <script>
     var TranslationData = {
         baseUrlApi: '{{ path('manuel_translation_api_list') }}',
-        locales: {{ locales|json_encode|raw }}
+        locales: {{ locales|json_encode|raw }},
+        locale: '{{ app.request.locale }}'
     };
     </script>
 
