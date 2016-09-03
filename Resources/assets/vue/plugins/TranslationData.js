@@ -1,13 +1,13 @@
-export default function install (Vue, TranslationData) {
-	Vue.prototype.getTranslationApiUrl = () => {
-		return TranslationData.baseUrlApi
+export default function plugin (Vue, options = {}) {
+	Vue.prototype.getTranslationApiUrl = function () {
+		return options.baseUrlApi
 	}
 
-	Vue.prototype.getLocales = () => {
+	Vue.prototype.getLocales = function () {
 		return TranslationData.locales
 	}
 
-	Vue.prototype.getDomains = () => {
+	Vue.prototype.getDomains = function () {
 		return TranslationData.domains
 	}
 
@@ -17,4 +17,6 @@ export default function install (Vue, TranslationData) {
 			TranslationData.domains.push(domain)
 		}
 	}
+
+	return Vue
 }

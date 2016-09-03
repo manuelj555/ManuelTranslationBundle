@@ -1,5 +1,7 @@
 <template>
 
+<trans-filter  :domains="domains"></trans-filter>
+
 <trans-item v-for="item in items" :item="item" :locales.once="locales"></trans-item>
 
 </template>
@@ -7,6 +9,7 @@
 <script>
 import Vue from 'vue'
 import TransItem from './TransItem.vue'
+import TransFilter from './TransFilter.vue'
 import VueResource from 'vue-resource'
 
 Vue.use(VueResource)
@@ -15,12 +18,16 @@ export default {
 	data () {
 		return {
             items: {},
+            // locales: TranslationData.locales, //this.getLocales(),
+            // domains: TranslationData.domains, //this.getDomains(),
             locales: this.getLocales(),
+            domains: this.getDomains(),
         }
 	},
 
     ready () {
         this.resource = this.$resource(this.getTranslationApiUrl() + '{id}')
+        //this.resource = this.$resource(TranslationData.baseUrlApi + '{id}')
 
         this.getTranslations()
     },
@@ -82,6 +89,6 @@ export default {
         }
     },
 
-    components: {TransItem}
+    components: {TransItem, TransFilter}
 }
 </script>

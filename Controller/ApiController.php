@@ -39,7 +39,7 @@ class ApiController extends Controller
         $query = $this->get('manuel_translation.repository')
             ->getAllQueryBuilder();
 
-        $data = $query->getQuery()->getResult();
+        $data = $query/*->setMaxResults(3)*/->getQuery()->getResult();
         $data = $this->get('serializer')->normalize($data, 'array');
 
         return new JsonResponse($data);
