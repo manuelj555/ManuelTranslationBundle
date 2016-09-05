@@ -10,6 +10,7 @@ var browserify = require('browserify');
 var babelify = require('babelify');
 var vueify = require('vueify');
 var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 gulp.task('js', function () {
     /*return gulp.src([
@@ -27,7 +28,9 @@ gulp.task('js:vue', function () {
 	.transform(vueify)
 	.bundle().on("error", function(err){ gutil.log(err); this.emit('end'); })
 	.pipe(source("translations.js"))
-	.pipe(gulp.dest("./public/js/"));
+    .pipe(buffer())
+    .pipe(gulpif(gutil.env.env == 'prod', uglify()))
+    .pipe(gulp.dest("./public/js/"));
 });
 
 gulp.task('css', function () {

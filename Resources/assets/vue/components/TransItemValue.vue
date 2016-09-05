@@ -2,9 +2,9 @@
 	<div class="row">
 		<div class="col-sm-2 col-md-1 translation-item-locale">{{ locale }}</div>
 		<div class="col-sm-10 col-md-11">
-			<pre v-show="!editing" class="translation-item-value"
+			<pre v-if="!editing" class="translation-item-value"
 			:class="{'text-warning': isEmpty}">{{ value | defaultMessage }}</pre>
-			<textarea class="form-control" v-show="editing" v-model="value"></textarea>
+			<textarea class="form-control" v-else v-model="value"></textarea>
 		</div>
 	</div>
 </template>

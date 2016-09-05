@@ -31,84 +31,10 @@ class TranslationController extends Controller
      */
     public function indexAction(Request $request, $page = 1)
     {
-        $session = $this->get('session');
-        $filters = $session->get('manuel_translations.trans_filter', array(
-            'search' => null,
-            'inactive' => false,
-            'domains' => array('messages'),
-        ));
-
-        $formFilter = $this->createForm('translation_filter', $filters, array('method' => 'post'))
-            ->handleRequest($request);
-
-
-        if ($formFilter->isSubmitted()) {
-            $filters = $formFilter->getData();
-            $session->set('manuel_translations.trans_filter', $filters);
-        }
-
-        $query = $this->getDoctrine()
-            ->getRepository('ManuelTranslationBundle:Translation')
-            ->getAllQueryBuilder($filters['search'], $filters['domains'], $filters['inactive']);
-
-        $form = $this->createForm('manuel_translation', $this->getNewTranslationInstance());
-
-        $paginator = new Pagerfanta(new DoctrineORMAdapter($query, false));
-        $paginator->setMaxPerPage(50);
-        $paginator->setCurrentPage($page);
-
         return $this->render('@ManuelTranslation/Default/index.html.twig', array(
-            'translations' => $paginator,
-            'form' => $form->createView(),
             'locales' => $this->container->getParameter('manuel_translation.locales'),
-            'form_filter' => $formFilter->createView(),
+            'domains' => $this->get('manuel_translation.repository')->getExistentDomains(),
         ));
-    }
-
-    /**
-     * @Route("/remove-filters", name="manuel_translation_remove_filters")
-     */
-    public function clearFiltersAction()
-    {
-        $this->get('session')->remove('manuel_translations.trans_filter');
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    /**
-     * @Route("/form/{id}", name="manuel_translation_form", defaults={"id" = null})
-     */
-    public function editAction(Request $request, Translation $translation = null)
-    {
-        $translation = $translation ?: $this->getNewTranslationInstance();
-
-        $form = $this->createForm('manuel_translation', $translation)
-            ->handleRequest($request);
-
-        if ($form->isSubmitted() and $form->isValid()) {
-
-            $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
-
-            $filesystem = new Filesystem();
-            $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
-
-            foreach ($translation->getValues() as $locale => $value) {
-                $filename = sprintf($filenameTemplate, $locale);
-                $filesystem->dumpFile($filename, time());
-            }
-
-            $saved = true;
-        } else {
-            $saved = false;
-        }
-
-        $response = $this->render('@ManuelTranslation/Translation/form.html.twig', array(
-            'form' => $form->createView(),
-        ));
-
-        $response->headers->set('saved', $saved);
-
-        return $response;
     }
 
     /**

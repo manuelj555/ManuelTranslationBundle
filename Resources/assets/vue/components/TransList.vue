@@ -1,8 +1,10 @@
 <template>
 
-<trans-filter  :domains="domains"></trans-filter>
+<trans-filter :filters.sync="filters" :domains="domains"></trans-filter>
 
-<trans-item v-for="item in items" :item="item" :locales.once="locales"></trans-item>
+<div v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">
+    <trans-item v-for="item in items" :item="item" :locales.once="locales"></trans-item>
+</div>
 
 </template>
 
@@ -11,6 +13,7 @@ import Vue from 'vue'
 import TransItem from './TransItem.vue'
 import TransFilter from './TransFilter.vue'
 import VueResource from 'vue-resource'
+import Loading from 'vue-loading';
 
 Vue.use(VueResource)
 
@@ -22,6 +25,8 @@ export default {
             // domains: TranslationData.domains, //this.getDomains(),
             locales: this.getLocales(),
             domains: this.getDomains(),
+            filters: {},
+            isLoading: false,
         }
 	},
 
@@ -34,8 +39,10 @@ export default {
 
     methods: {
         getTranslations () {
-            return this.resource.get().then((res) => {
+            this.isLoading = true;
+            return this.resource.get(this.filters).then((res) => {
                 this.$set('items', res.json());
+                this.isLoading = false;
             })
         },
 
@@ -86,9 +93,13 @@ export default {
         },
         'remove-item' (item) {
             this.remove (item)
-        }
+        },
+        'filter:translations:submit' () {
+            this.getTranslations()
+        },
     },
 
-    components: {TransItem, TransFilter}
+    components: {TransItem, TransFilter},
+    directives: {Loading},
 }
 </script>

@@ -13,8 +13,14 @@ export default function plugin (Vue, options = {}) {
 
 	Vue.prototype.addDomain = (domain) => {
 
-		if(-1 === TranslationData.domains.indexOf(domain)){
-			TranslationData.domains.push(domain)
+		if (TranslationData.domains instanceof Array){
+			if(-1 === TranslationData.domains.indexOf(domain)){
+				TranslationData.domains.push(domain)
+			}
+		}else if (TranslationData.domains instanceof Object) {
+			if(!TranslationData.domains.hasOwnProperty(domain)){
+				TranslationData.domains[domain] = domain
+			}
 		}
 	}
 

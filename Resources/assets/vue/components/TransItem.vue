@@ -50,7 +50,7 @@ import TransItemValues from './TransItemValues.vue'
 import TransItemFiles from './TransItemFiles.vue'
 import TransItemHeader from './TransItemHeader.vue'
 import AlertIcon from '../directives/AlertIcon.vue'
-import Loading from 'vue-loading';
+import Loading from 'vue-loading'
 
 Vue.filter('defaultMessage', function(value) {
 	return value || '[' + Vue.t('label.empty_value') + ']'

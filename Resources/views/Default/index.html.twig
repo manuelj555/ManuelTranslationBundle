@@ -27,7 +27,7 @@
 {% endblock %}
 
 {% block page_header_right %}
-    <a href="{{ path('manuel_translation_form') }}" @click.prevent="addTranslation" 
+    <a href="#" @click.prevent="addTranslation" 
     class="btn btn-primary" id="add-translation">
         <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
     </a>
@@ -42,25 +42,13 @@
     {% endverbatim %}
 {% endblock %}
 
-{% block content_old %}
-
-    {{ include('@ManuelTranslation/translations_filter.html.twig') }}
-    {{ pagination_content }}
-
-    {{ include('@ManuelTranslation/Default/table_list.html.twig') }}
-
-    {{ pagination_content }}
-
-    {{ include('@ManuelTranslation/Default/translation_form.html.twig') }}
-{% endblock %}
-
 {% block javascripts %}
     <script>
     var TranslationData = {
         baseUrlApi: '{{ path('manuel_translation_api_list') }}',
         locales: {{ locales|json_encode|raw }},
         locale: '{{ app.request.locale }}',
-        domains: ['messages', 'test', 'otro'],
+        domains: {{ domains|json_encode|raw }},
     };
     </script>
 

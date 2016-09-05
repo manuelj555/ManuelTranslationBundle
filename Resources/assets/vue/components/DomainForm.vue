@@ -1,19 +1,19 @@
 <template>
 <div class="btn-group dropdown-translation-domains">
-	<button class="btn btn-default btn-sm">{{ domain }}</button>
-	<button class="btn btn-default dropdown-toggle btn-sm" type="button" data-toggle="dropdown">
+	<button class="btn btn-default btn-sm" tabindex="-1">{{ domain }}</button>
+	<button class="btn btn-default dropdown-toggle btn-sm" tabindex="-1" type="button" data-toggle="dropdown">
 		<span class="caret"></span>
 	</button>
-	<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+	<ul class="dropdown-menu">
 		<li v-for="value in domains">
 			<div class="checkbox">
 				<label>
-					<input type="radio" v-model="domain" value="{{ value }}"> {{ value }}
+					<input type="radio" v-model="domain" value="{{ value }}" tabindex="-1"> {{ value }}
 				</label>
 			</div>
 		</li>
 		<li>
-			<input type="text" class="form-control input-sm" 
+			<input type="text" class="form-control input-sm" tabindex="-1"
 			v-model="domainInput" @change="updateDomain(true)" @keyup="updateDomain()" 
 			@blur="updateDomain(true)" placeholder="New Domain">
 		</li>

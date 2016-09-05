@@ -13,6 +13,14 @@ export default {
 			loading: 'Loading',
 			empty_value: 'Empty Value',
 			cancel_reation: 'Cancel Creation',
+			search: 'Search',
+			domains: 'Domains',
+			filter_status: 'Status',
+			with_conflicts: 'With Conflicts',
+			with_changes: 'With Changes',
+			inactives: 'Inactives',
+			apply: 'Apply',
+			clear: 'Clear',
 		},
 		alert: {
 			save: {
@@ -35,6 +43,14 @@ export default {
 			loading: 'Cargando',
 			empty_value: 'Valor Vacío',
 			cancel_reation: 'Cancelar Creación',
+			search: 'Buscar',
+			domains: 'Dominios',
+			filter_status: 'Estatus',
+			with_conflicts: 'Con Conflictos',
+			with_changes: 'Con Cambios',
+			inactives: 'Inactivas',
+			apply: 'Aplicar',
+			clear: 'Limpiar',
 		},
 		alert: {
 			save: {

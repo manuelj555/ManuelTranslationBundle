@@ -36,8 +36,11 @@ class ApiController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $query = $this->get('manuel_translation.repository')
-            ->getAllQueryBuilder();
+        $query = $this->get('manuel_translation.repository')->getAllQueryBuilder(
+            $request->get('search'), 
+            $request->get('domains'), 
+            $request->get('inactive') && $request->get('inactive') !== 'false'
+        );
 
         $data = $query/*->setMaxResults(3)*/->getQuery()->getResult();
         $data = $this->get('serializer')->normalize($data, 'array');
@@ -83,5 +86,16 @@ class ApiController extends Controller
         return new JsonResponse(
             $this->get('serializer')->normalize($translation, 'array')
         );
+    }
+
+    /**
+     * @Route("/domains", name="manuel_translation_api_get_domains")
+     * @Method("GET")
+     */
+    public function getDomainsAction()
+    {
+        $domains = $this->get('manuel_translation.repository')->getExistentDomains();
+
+        return new JsonResponse($domains);
     }
 }

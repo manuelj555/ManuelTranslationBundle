@@ -17,7 +17,7 @@ class TranslationRepository extends EntityRepository
     {
         $query = $this->createQueryBuilder('translation')
             ->orderBy('translation.domain,translation.code, translation.active');
-
+dump($inactives);
         if ($inactives) {
             $query->andWhere('translation.active = false');
         }
