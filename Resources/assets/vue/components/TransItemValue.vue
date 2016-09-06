@@ -1,5 +1,5 @@
 <template>
-	<div class="row">
+	<div class="row translation-item-value-container">
 		<div class="col-sm-2 col-md-1 translation-item-locale">{{ locale }}</div>
 		<div class="col-sm-10 col-md-11">
 			<pre v-if="!editing" class="translation-item-value"
@@ -16,7 +16,8 @@ export default {
 	props: {
 		value: {
 			required: true,
-			type: String
+			type: String,
+			twoWay: true
 		},
 		locale: {
 			required: true,
@@ -34,14 +35,11 @@ export default {
 		}
 	},
 
-	events: {
-		'update-values' (values) {
-			Vue.set(values, this.locale, this.value)
-		},
-		'cancel-edition' (originalValues) {
+	/*events: {
+		/*'cancel-edition' (originalValues) {
 			this.value = originalValues[this.locale] || ''
-		}
-	}
+		}* /
+	}*/
 }
 </script>
 
@@ -56,5 +54,8 @@ export default {
 
 	.translation-item-value{
 		padding: 4px;
+	}
+	.translation-item-value-container textarea{
+		margin-bottom: 5px;
 	}
 </style>

@@ -1,5 +1,5 @@
 <template>
-<div class="translation-item" v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">
+<div class="translation-item col-xs-12" v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">
 	<div class="panel panel-default" :class="{'translation-inactive': !item.active}">
 		<div class="panel-heading">
 			<trans-item-header 
@@ -137,8 +137,7 @@ export default {
 	},
 
 	events: {
-		'update-values' () {
-			// cuando se actualizen los valores, guardamos el registro
+		'save-values' () {
 			this.save()
 		},
 		'activate-translation' () {
@@ -161,7 +160,11 @@ export default {
 	.glyphicon.label:empty { display: inline; }
 
 	.translation-item .alert{ padding: 5px; }
+	.translation-item .panel{ margin-bottom: 10px; }
 	.translation-item .panel-warning .panel-heading .text-muted{ color: #FFFFFF; }
+	.translation-item .panel-heading{ padding: 6px 15px; }
+	.translation-item .panel-body{ padding: 10px; }
+	.translation-item .translation-item-value{ margin-bottom: 5px; }
 
 	.translation-inactive .panel-heading{opacity: 0.4}
 	.translation-inactive .panel-body{opacity: 0.7}

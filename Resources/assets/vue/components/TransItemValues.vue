@@ -2,7 +2,7 @@
 <div class="row">
 	<div class="col-sm-9 col-md-10">
 		<trans-item-value v-for="locale in locales" 
-		:value="getValue(locale)" :locale="locale" :editing="editing"></trans-item-value>
+		:value.sync="values[locale]" :locale="locale" :editing="editing"></trans-item-value>
 	</div> 
 	<div class="col-sm-3 col-md-2 translation-item-actions">
 
@@ -16,7 +16,7 @@
 			Revitions
 		</button> -->
 
-		<button type="button" v-show="editing" class="btn btn-primary" @click="updateValue()">{{ $t('label.save') }}</button>
+		<button type="button" v-show="editing" class="btn btn-primary" @click="saveValues()">{{ $t('label.save') }}</button>
 
 		<button type="button" v-show="editing && !isNew" class="btn btn-danger btn-sm" @click="cancelEdition()">{{ $t('label.cancel') }}</button>
 
@@ -39,18 +39,26 @@
 <script>
 import Vue from 'vue'
 import TransItemValue from './TransItemValue.vue'
+import _ from 'lodash'
 
 export default {
 	props: {
 		values: {
 			required: true,
 			type: [Object, Array],
-			twoWay: true
+			twoWay: true,
 		},
 		locales: {required: true, type: [Array, Object]},
 		editing: {required: true, type: [Boolean], twoWay: true},
 		active: {required: true, type: [Boolean]},
 		isNew: {required: true, type: [Boolean]},
+	},
+
+	created () {
+		// establecemos los valores para los locales que no esten definidos aun.
+		for(let locale of this.locales){
+			this.values[locale] = this.values[locale] || ''
+		}
 	},
 
 	data () {
@@ -64,10 +72,14 @@ export default {
 			return this.values[locale] || ''
 		},
 
-		updateValue (locale, value) {
-			this.$broadcast('update-values', this.values)
-			this.$dispatch('update-values', this.values)
-			//this.editing = false
+		saveValues () {
+			if(this.hasChanges()){
+				//this.$broadcast('update-values', this.values)
+				this.$dispatch('save-values', this.values)
+			}else{
+				this.editing = false
+			}
+
 			this.originalValues = null
 		},
 
@@ -89,13 +101,14 @@ export default {
 
 		activateTranslation () {
 			this.$dispatch('activate-translation')
-		}
+		},
+
+		hasChanges () {
+			return !_.isEqual(this.values, this.originalValues) 
+		},
 	},
 
 	events: {
-		'update-value' (locale, value) {
-			//this.updateValue(locale, value)
-		},
 		'activate-edition' () {
 			this.initEdition()
 		},

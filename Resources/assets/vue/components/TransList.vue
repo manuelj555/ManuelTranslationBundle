@@ -3,7 +3,9 @@
 <trans-filter :filters.sync="filters" :domains="domains"></trans-filter>
 
 <div v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">
+<div class="row">
     <trans-item v-for="item in items" :item="item" :locales.once="locales"></trans-item>
+</div>
 </div>
 
 </template>
