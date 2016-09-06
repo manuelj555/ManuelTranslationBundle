@@ -2,7 +2,7 @@
 <nav aria-label="Page navigation">
   <ul class="pagination" v-if="pages > 0">
 
-	<li v-if="!dynamicPrevNext || previous" :class="{disabled: !previous}">
+    <li v-if="!dynamicPrevNext || previous" :class="{disabled: !previous}">
       <a href="#/{{ previous }}" aria-label="Previous" @click.prevent="click(previous)" v-if="previous">
         <span aria-hidden="true">&laquo;</span>
       </a>
@@ -20,7 +20,7 @@
       <a href="#/{{ next }}" aria-label="Next" @click.prevent="click(next)" v-if="next">
         <span aria-hidden="true">&raquo;</span>
       </a>
-	  <span aria-hidden="true" v-else>&raquo;</span>
+      <span aria-hidden="true" v-else>&raquo;</span>
     </li>
   </ul>
 </nav>
@@ -28,52 +28,52 @@
 
 <script>
 export default {
-	props: {
-		page: { type: Number, default: 1},
-		perPage: { type: Number, required: true},
-		count: { type: Number, required: true},
-		onClick: {type: Function, required: true},
-		dynamicPrevNext: {type: Boolean, default: false}
-	},
+    props: {
+        page: { type: Number, default: 1},
+        perPage: { type: Number, required: true},
+        count: { type: Number, required: true},
+        onClick: {type: Function, required: true},
+        dynamicPrevNext: {type: Boolean, default: false}
+    },
 
-	data () {
-		return {
-	        pages: 0,
-	        startRecord: 0,
-	        previous: false,
-	        next: false
-		}
-	},
+    data () {
+        return {
+            pages: 0,
+            startRecord: 0,
+            previous: false,
+            next: false
+        }
+    },
 
-	computed: {
-		pagesRange () {
-			return _.range(1, this.pages + 1)
-		},
+    computed: {
+        pagesRange () {
+            return _.range(1, this.pages + 1)
+        },
 
-		pages () {
-			return (this.count % this.perPage == 0) 
-	        	? this.count / this.perPage
-	            : Math.floor((this.count / this.perPage) + 1)
-		},
+        pages () {
+            return (this.count % this.perPage == 0) 
+                ? this.count / this.perPage
+                : Math.floor((this.count / this.perPage) + 1)
+        },
 
-		startRecord () {
-			return (this.page * this.perPage) - this.perPage
-		},
+        startRecord () {
+            return (this.page * this.perPage) - this.perPage
+        },
 
-		previous () {
-			return this.page > 1 ? this.page - 1 : false
-		},
+        previous () {
+            return this.page > 1 ? this.page - 1 : false
+        },
 
-		next () {
-			return this.page < this.pages ? this.page + 1 : false
-		},
-	},
+        next () {
+            return this.page < this.pages ? this.page + 1 : false
+        },
+    },
 
-	methods: {
-	    click (page) {
-			this.onClick(page)
-			this.page = page
-	    }
-	},
+    methods: {
+        click (page) {
+            this.onClick(page)
+            this.page = page
+        }
+    },
 }
 </script>

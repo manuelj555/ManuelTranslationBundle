@@ -35,8 +35,8 @@ import Paginator from './Paginator.vue'
 Vue.use(VueResource)
 
 export default {
-	data () {
-		return {
+    data () {
+        return {
             items: {},
             locales: this.getLocales(),
             domains: this.getDomains(),
@@ -46,7 +46,7 @@ export default {
             currentPage: 1,
             perPage: 50,
         }
-	},
+    },
 
     ready () {
         this.resource = this.$resource(this.getTranslationApiUrl() + '{id}')
