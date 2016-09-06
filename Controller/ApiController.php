@@ -42,10 +42,20 @@ class ApiController extends Controller
             $request->get('inactive') && $request->get('inactive') !== 'false'
         );
 
-        $data = $query/*->setMaxResults(3)*/->getQuery()->getResult();
+        if($page = $request->get('page', false) and $perPage = $request->get('perPage', false)){
+            $data = new Pagerfanta(new DoctrineORMAdapter($query, false));
+            $data->setMaxPerPage($perPage);
+            $data->setCurrentPage($page);
+        }else{
+            $data = $query->getQuery()->getResult();            
+        }
+
+        $totalCount = count($data);
         $data = $this->get('serializer')->normalize($data, 'array');
 
-        return new JsonResponse($data);
+        return new JsonResponse($data, Response::HTTP_OK, [
+            'X-Count' => $totalCount,
+        ]);
     }
 
     /**

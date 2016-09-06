@@ -22,6 +22,8 @@ export default function plugin (Vue, options = {}) {
 				TranslationData.domains[domain] = domain
 			}
 		}
+
+		return TranslationData.domains
 	}
 
 	return Vue

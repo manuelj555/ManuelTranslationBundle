@@ -2,10 +2,24 @@
 
 <trans-filter :filters.sync="filters" :domains="domains"></trans-filter>
 
-<div v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">
-<div class="row">
-    <trans-item v-for="item in items" :item="item" :locales.once="locales"></trans-item>
+<div class="row paginator-container">
+    <div class="col-sm-4 total-count"><b>Items:</b> {{ totalItemsCount }}</div>
+    <div class="col-sm-8 text-right">
+        <paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>            
+    </div>
 </div>
+
+<div v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">
+
+    <div class="row">
+        <trans-item v-for="item in items" :item="item" :locales.once="locales"></trans-item>        
+    </div>
+
+    <h3 v-if="0 === items.length">No Items Found!</h3>
+</div>
+
+<div class="text-right paginator-container">
+    <paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>
 </div>
 
 </template>
@@ -15,7 +29,8 @@ import Vue from 'vue'
 import TransItem from './TransItem.vue'
 import TransFilter from './TransFilter.vue'
 import VueResource from 'vue-resource'
-import Loading from 'vue-loading';
+import Loading from 'vue-loading'
+import Paginator from './Paginator.vue'
 
 Vue.use(VueResource)
 
@@ -23,18 +38,18 @@ export default {
 	data () {
 		return {
             items: {},
-            // locales: TranslationData.locales, //this.getLocales(),
-            // domains: TranslationData.domains, //this.getDomains(),
             locales: this.getLocales(),
             domains: this.getDomains(),
             filters: {},
             isLoading: false,
+            totalItemsCount: 1,
+            currentPage: 1,
+            perPage: 50,
         }
 	},
 
     ready () {
         this.resource = this.$resource(this.getTranslationApiUrl() + '{id}')
-        //this.resource = this.$resource(TranslationData.baseUrlApi + '{id}')
 
         this.getTranslations()
     },
@@ -42,9 +57,13 @@ export default {
     methods: {
         getTranslations () {
             this.isLoading = true;
-            return this.resource.get(this.filters).then((res) => {
+            return this.resource.get(Object.assign({
+                page: this.currentPage,
+                perPage: this.perPage,
+            }, this.filters)).then((res) => {
                 this.$set('items', res.json());
                 this.isLoading = false;
+                this.totalItemsCount = parseInt(res.headers['X-Count'])
             })
         },
 
@@ -61,7 +80,7 @@ export default {
                 this.items.$set(this.items.indexOf(item), data); // Actualizamos el item con la nueva data
                 success && success(data)
 
-                this.addDomain(data.domain)
+                this.domains = this.addDomain(data.domain)
             }, response => {
                 error && error(response)
             })
@@ -83,7 +102,12 @@ export default {
         remove (item) {
             this.items.$remove(item)
             // todo ver si se van a eliminar elementos de la bd
-        } 
+        },
+
+        changePage (page) {
+            this.currentPage = page
+            this.getTranslations()
+        },
     },
 
     events: {
@@ -97,11 +121,19 @@ export default {
             this.remove (item)
         },
         'filter:translations:submit' () {
+            this.currentPage = 1
             this.getTranslations()
         },
     },
 
-    components: {TransItem, TransFilter},
+    components: {TransItem, TransFilter, Paginator},
     directives: {Loading},
 }
 </script>
+
+<style>
+    .paginator-container .pagination{
+        margin: 0 0 5px 0;
+    }
+    .total-count{ padding-top: 10px; }
+</style>
