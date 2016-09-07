@@ -1,0 +1,14 @@
+services:
+    manuel_translation.serializer:
+        class: Symfony\Component\Serializer\Serializer
+        arguments:
+            - ["@manuel_translation.serializer.normalizer.object"]
+            - ["@manuel_translation.serializer.encoder.json"]
+
+    manuel_translation.serializer.normalizer.object:
+        public: false
+        class: Symfony\Component\Serializer\Normalizer\ObjectNormalizer
+
+    manuel_translation.serializer.encoder.json:
+        public: false
+        class: Symfony\Component\Serializer\Encoder\JsonEncoder

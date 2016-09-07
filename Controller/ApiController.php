@@ -11,6 +11,7 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
+use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -21,22 +22,44 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Symfony\Component\Serializer\Serializer;
 
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  * 
- * @Route("/api")
+ * @Route("/api", service="manuel_translation.controller.api")
  */
-class ApiController extends Controller
+class ApiController
 {
+    /**
+     * @var Serializer
+     */
+    private $serializer;
+
+    /**
+     * @var TranslationRepository
+     */
+    private $translationRepository;
+
+    /**
+     * ApiController constructor.
+     * @param Serializer $serializer
+     * @param TranslationRepository $translationRepository
+     */
+    public function __construct(Serializer $serializer, TranslationRepository $translationRepository)
+    {
+        $this->serializer = $serializer;
+        $this->translationRepository = $translationRepository;
+    }
+
     /**
      * @Route("/", name="manuel_translation_api_list")
      * @Method("GET")
      */
     public function indexAction(Request $request)
     {
-        $query = $this->get('manuel_translation.repository')->getAllQueryBuilder(
+        $query = $this->translationRepository->getAllQueryBuilder(
             $request->get('search'), 
             $request->get('domains'), 
             $request->get('inactive') && $request->get('inactive') !== 'false'
@@ -51,7 +74,7 @@ class ApiController extends Controller
         }
 
         $totalCount = count($data);
-        $data = $this->get('serializer')->normalize($data, 'array');
+        $data = $this->serializer->normalize($data);
 
         return new JsonResponse($data, Response::HTTP_OK, [
             'X-Count' => $totalCount,
@@ -64,17 +87,17 @@ class ApiController extends Controller
      */
     public function createAction(Request $request)
     {
-        $translation = $this->get('serializer')->deserialize(
+        $translation = $this->serializer->deserialize(
             $request->getContent(), 
             Translation::class, 
             'json' //, 
             //['object_to_populate' => $translation]
         );
 
-        $this->get('manuel_translation.repository')->saveTranslation($translation);
+        $this->translationRepository->saveTranslation($translation);
 
         return new JsonResponse(
-            $this->get('serializer')->normalize($translation, 'array')
+            $this->serializer->normalize($translation)
         );
     }
 
@@ -84,17 +107,17 @@ class ApiController extends Controller
      */
     public function updateAction(Request $request, Translation $translation)
     {
-        $translation = $this->get('serializer')->deserialize(
+        $translation = $this->serializer->deserialize(
             $request->getContent(), 
             Translation::class, 
             'json', 
             ['object_to_populate' => $translation]
         );
 
-        $this->get('manuel_translation.repository')->saveTranslation($translation);
+        $this->translationRepository->saveTranslation($translation);
 
         return new JsonResponse(
-            $this->get('serializer')->normalize($translation, 'array')
+            $this->serializer->normalize($translation)
         );
     }
 
@@ -104,7 +127,7 @@ class ApiController extends Controller
      */
     public function getDomainsAction()
     {
-        $domains = $this->get('manuel_translation.repository')->getExistentDomains();
+        $domains = $this->translationRepository->getExistentDomains();
 
         return new JsonResponse($domains);
     }
