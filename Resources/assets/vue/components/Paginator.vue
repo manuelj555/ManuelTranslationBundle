@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
     props: {
         page: { type: Number, default: 1},

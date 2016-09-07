@@ -1,4 +1,6 @@
 <script>
+import $ from "jquery";
+
 export default {
     params: ['time'],
     bind() {

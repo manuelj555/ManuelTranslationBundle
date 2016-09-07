@@ -43,6 +43,8 @@
 {% endblock %}
 
 {% block javascripts %}
+    {{ parent() }}
+
     <script>
     var TranslationData = {
         baseUrlApi: '{{ path('manuel_translation_api_list') }}',
@@ -51,19 +53,5 @@
         domains: {{ domains|json_encode|raw }},
     };
     </script>
-
-    {{ parent() }}
+    <script src="{{ asset('bundles/manueltranslation/js/translations.js') }}"></script>
 {% endblock %}
-
-{#% set pagination_content %}
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>
-                <b>{{ translations.nbResults }}</b> {{ 'label.items'|trans }}
-            </h4>
-        </div>
-        <div class="col-sm-9 text-right">
-            {{ include('@ManuelTranslation/_pagination.html.twig', {paginator: translations}) }}
-        </div>
-    </div>
-{% endset %#}

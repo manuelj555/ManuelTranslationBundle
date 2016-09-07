@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import $ from "jquery";
+
 export default {
     props: {
         domain: { required: true, twoWay: true },

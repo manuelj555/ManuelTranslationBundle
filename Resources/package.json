@@ -26,6 +26,7 @@
     "webpack": "^1.13.2"
   },
   "dependencies": {
+    "jquery": "^3.1.0",
     "lodash": "^4.15.0",
     "vue": "^1.0.26",
     "vue-i18n": "^4.4.0",
