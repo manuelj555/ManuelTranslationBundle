@@ -72,7 +72,11 @@ export default {
             if (item.id){
                 promise = this.resource.update({id: item.id}, item)
             }else{
-                promise = this.resource.save({id: item.id}, item)   
+                promise = this.resource.save({}, item)
+                promise.then(res => {
+                    // si se crea un nuevo registro, aumentamos el contador.
+                    this.totalItemsCount++
+                })
             }
 
             promise.then(response => {
