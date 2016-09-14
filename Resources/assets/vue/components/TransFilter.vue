@@ -95,7 +95,6 @@ export default {
             }
         },
         filter () {
-            console.debug(this.filters, this.selectedDomains)
             this.$dispatch('filter:translations:submit')
         },
         clear () {

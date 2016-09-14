@@ -8,29 +8,58 @@
         .translations-table textarea { width: 90% }
 
         .translations-table input { width: 95%; padding: 2px }
+
+        .translation-title a{ float: right; }
+        .translation-title a::after, .translation-title a::before{ content: " ";display: table; }
+        .translation-title a::after{ clear: both; }
     </style>
 {% endblock %}
 
 {% block toolbar %}
     {% set missings = collector.count %}
 
-    {% if missings > 0 %}
+    {#% if missings > 0 %#}
         {% set icon %}
         <img src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAQAAADVGmdYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAJiS0dEAP+Hj8y/AAAACXBIWXMAAABIAAAASABGyWs+AAAACXZwQWcAAAAaAAAAHABR6MGpAAAA9klEQVQ4y8WUvRXCIBSFv2NlR0dpmZY2dfr0OIATOAJDuAebOIXnWLoAFvL3Ekyo9FIkgfOR925ugH/JEghc0HlGcepBPmMCYCIQqi0a8hVUj01oxqOBUSCmtzeNIxBwDD921eDx/YUCDLE7v22J1CWbYgEOXdCc755tx+YGVOwf5YLKn9ZuQItIXasl2wepRXDMF0goBcdlp/Q+lIobIAbotg/dqv11tOS6Wl1AcjIlYMofowNKP18xxPZApcuP/actI1p9OlTeVqj1+tKJz+UKmeZpYAhiRD9Tyh/xehTQnbN4frGQNLnIfc94ssKtIFUdbLH4NyyRzUB/5UI/AAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDE1LTAxLTI4VDIzOjM2OjQ2LTA1OjAwj3ixFQAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxNS0wMS0yOFQyMzozNjo0Ni0wNTowMP4lCakAAAAXdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2Mi41vIfJ/gAAAABJRU5ErkJggg=="
              alt="Missing Translations">
-        <span class="sf-toolbar-status sf-toolbar-status-yellow">{{ missings }}</span>
+            {% if missings > 0 %}
+                <span class="sf-toolbar-status sf-toolbar-status-yellow">{{ missings }}</span>
+            {% endif %}
         {% endset %}
 
         {% set text %}
         <div class="sf-toolbar-info-piece">
-            <div>Missing Translations</div>
+            <b>Missing Translations</b>
+            <span class="sf-toolbar-status sf-toolbar-status-{{ missings > 0 ? 'yellow' }}">{{ missings }}</span>
         </div>
-        {#<img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" onload="var h = this.parentNode.innerHTML, rx=/<script>(.*?)<\/script>/g, s; while (s = rx.exec(h)) {eval(s[1]);};" />#}
+        {% if collector.localhost %}
+            <div class="sf-toolbar-info-piece">
+                <span>
+                    <a target="_blank" href="{{ path('manuel_translation_list') }}">
+                        Translation List
+                    </a>
+                </span>
+            </div>
+            {#<div class="sf-toolbar-info-piece">
+                <span>
+                    <a target="_blank" href="{{ path('manuel_translation_generate_file') }}">
+                        Update Translation File
+                    </a>
+                </span>
+            </div>
+            <div class="sf-toolbar-info-piece ">
+                <span>
+                    <a target="_blank" href="{{ path('manuel_translation_load_from_file') }}">
+                        Synchronize Translations
+                    </a>
+                </span>
+            </div>#}
+        {% endif %}
         {% endset %}
 
         {% include '@WebProfiler/Profiler/toolbar_item.html.twig' with { 'link': true } %}
-    {% endif %}
+    {#% endif %#}
 {% endblock %}
 
 {% block menu %}
@@ -48,7 +77,12 @@ iVBORw0KGgoAAAANSUhEUgAAABoAAAAcCAQAAADVGmdYAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7O
 {% endblock %}
 
 {% block panel %}
-    <h2>Missing Translations</h2>
+    <h2 class="translation-title">
+        Missing Translations
+        <a href="{{ path('manuel_translation_list') }}">
+            List
+        </a>
+    </h2>
 
     <table class="translations-table">
         <tr>

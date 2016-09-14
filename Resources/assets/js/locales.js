@@ -27,6 +27,14 @@ export default {
                 success: 'Save Successfull!',
                 error: 'Save Error!',
             }
+        },
+        error: {
+            translation: {
+                code: {
+                    required: 'Please enter a code',
+                    minlength: 'Minimum 3 characters required',
+                }
+            }
         }
     },
     es: {
@@ -56,6 +64,14 @@ export default {
             save: {
                 success: 'Guardado con éxito!',
                 error: 'Error al Guardar!',
+            }
+        },
+        error: {
+            translation: {
+                code: {
+                    required: 'Por favor escriba un código',
+                    minlength: 'Se requieren al menos 3 caracteres',
+                }
             }
         }
     }

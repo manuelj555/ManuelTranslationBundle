@@ -73,7 +73,8 @@ export default {
         },
 
         saveValues () {
-            if(this.hasChanges()){
+            console.log(this.hasChanges(), this.isNew)
+            if(this.hasChanges() || this.isNew){
                 //this.$broadcast('update-values', this.values)
                 this.$dispatch('save-values', this.values)
             }else{

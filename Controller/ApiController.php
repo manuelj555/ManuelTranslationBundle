@@ -10,125 +10,141 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
+use ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Serializer\Serializer;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
- * 
- * @Route("/api", service="manuel_translation.controller.api")
+ *
+ * @Route("/api", 
+ *     service="manuel_translation.controller.api",
+ *     requirements={"_format" = "xml|json"},
+ *     defaults={"_format" = "json"}
+ * )
  */
 class ApiController
 {
     /**
-     * @var Serializer
+     * @var ResponseGenerator
      */
-    private $serializer;
+    private $responseGenerator;
 
     /**
      * @var TranslationRepository
      */
+
     private $translationRepository;
+    
+    /**
+     * @var ValidatorInterface
+     */
+    private $validator;
+
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
 
     /**
      * ApiController constructor.
-     * @param Serializer $serializer
+     * @param ResponseGenerator $responseGenerator
      * @param TranslationRepository $translationRepository
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
      */
-    public function __construct(Serializer $serializer, TranslationRepository $translationRepository)
-    {
-        $this->serializer = $serializer;
+    public function __construct(
+        ResponseGenerator $responseGenerator,
+        TranslationRepository $translationRepository,
+        SerializerInterface $serializer,
+        ValidatorInterface $validator
+    ) {
+        $this->responseGenerator = $responseGenerator;
         $this->translationRepository = $translationRepository;
+        $this->serializer = $serializer;
+        $this->validator = $validator;
     }
 
     /**
-     * @Route("/", name="manuel_translation_api_list")
+     * @Route(".{_format}", name="manuel_translation_api_list")
      * @Method("GET")
      */
     public function indexAction(Request $request)
     {
         $query = $this->translationRepository->getAllQueryBuilder(
-            $request->get('search'), 
-            $request->get('domains'), 
+            $request->get('search'),
+            $request->get('domains'),
             $request->get('inactive') && $request->get('inactive') !== 'false'
         );
 
-        if($page = $request->get('page', false) and $perPage = $request->get('perPage', false)){
+        if ($page = $request->get('page', false) and $perPage = $request->get('perPage', false)) {
             $data = new Pagerfanta(new DoctrineORMAdapter($query, false));
             $data->setMaxPerPage($perPage);
             $data->setCurrentPage($page);
-        }else{
-            $data = $query->getQuery()->getResult();            
+        } else {
+            $data = $query->getQuery()->getResult();
         }
 
-        $totalCount = count($data);
-        $data = $this->serializer->normalize($data);
-
-        return new JsonResponse($data, Response::HTTP_OK, [
-            'X-Count' => $totalCount,
+        return $this->responseGenerator->forAll($request, $data, [
+            'X-Count' => count($data),
         ]);
     }
 
     /**
-     * @Route("/", name="manuel_translation_api_create")
+     * @Route(".{_format}", name="manuel_translation_api_create")
      * @Method("POST")
      */
     public function createAction(Request $request)
     {
         $translation = $this->serializer->deserialize(
-            $request->getContent(), 
-            Translation::class, 
-            'json' //, 
-            //['object_to_populate' => $translation]
+            $request->getContent(),
+            Translation::class,
+            'json'
         );
 
-        $this->translationRepository->saveTranslation($translation);
+        if (!count($errors = $this->validator->validate($translation))) {
+            $this->translationRepository->saveTranslation($translation);
+        }
 
-        return new JsonResponse(
-            $this->serializer->normalize($translation)
-        );
+        return $this->responseGenerator->forOne($request, $translation, $errors);
     }
 
     /**
-     * @Route("/{id}", name="manuel_translation_api_update")
+     * @Route("/{id}.{_format}", name="manuel_translation_api_update")
      * @Method("PUT")
      */
     public function updateAction(Request $request, Translation $translation)
     {
         $translation = $this->serializer->deserialize(
-            $request->getContent(), 
-            Translation::class, 
-            'json', 
+            $request->getContent(),
+            Translation::class,
+            'json',
             ['object_to_populate' => $translation]
         );
 
-        $this->translationRepository->saveTranslation($translation);
+        if (!count($errors = $this->validator->validate($translation))) {
+            $this->translationRepository->saveTranslation($translation);
+        }
 
-        return new JsonResponse(
-            $this->serializer->normalize($translation)
-        );
+        return $this->responseGenerator->forOne($request, $translation, $errors);
     }
 
     /**
-     * @Route("/domains", name="manuel_translation_api_get_domains")
+     * @Route("/domains.{_format}", name="manuel_translation_api_get_domains")
      * @Method("GET")
      */
-    public function getDomainsAction()
+    public function getDomainsAction(Request $request)
     {
         $domains = $this->translationRepository->getExistentDomains();
 
-        return new JsonResponse($domains);
+        return $this->responseGenerator->forOne($request, $domains);
     }
 }

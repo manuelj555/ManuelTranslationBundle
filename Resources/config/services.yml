@@ -26,5 +26,12 @@ services:
     manuel_translation.controller.api:
         class: ManuelAguirre\Bundle\TranslationBundle\Controller\ApiController
         arguments:
-            - "@manuel_translation.serializer"
+            - "@manuel_translation.http.response.json"
             - "@manuel_translation.repository"
+            - "@manuel_translation.serializer"
+            - "@validator"
+
+    manuel_translation.http.response.json:
+        class: ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator
+        arguments: ["@manuel_translation.serializer"]
+        public: false
