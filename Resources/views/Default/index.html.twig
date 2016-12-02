@@ -27,31 +27,32 @@
 {% endblock %}
 
 {% block page_header_right %}
-    <a href="#" @click.prevent="addTranslation" 
-    class="btn btn-primary" id="add-translation">
+    <a href="#" @click.prevent="addTranslation"
+       class="btn btn-primary" id="add-translation">
         <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
     </a>
     {{ include('@ManuelTranslation/Default/dropdown_options.html.twig') }}
 {% endblock %}
 
 {% block content %}
-    {% verbatim %}
-        
-        <trans-list></trans-list>
-
-    {% endverbatim %}
+    <trans-list
+            api-url="{{ path('manuel_translation_api_list') }}"
+            :locales='{{ locales|json_encode|raw }}'
+            :domains='{{ domains|json_encode|raw }}'
+            locale="{{ app.request.locale }}"
+    ></trans-list>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
 
     <script>
-    var TranslationData = {
-        baseUrlApi: '{{ path('manuel_translation_api_list') }}',
-        locales: {{ locales|json_encode|raw }},
-        locale: '{{ app.request.locale }}',
-        domains: {{ domains|json_encode|raw }},
-    };
+        var TranslationData = {
+            baseUrlApi: '{{ path('manuel_translation_api_list') }}',
+            locales: {{ locales|json_encode|raw }},
+            locale: '{{ app.request.locale }}',
+            domains: {{ domains|json_encode|raw }},
+        };
     </script>
     <script src="{{ asset('bundles/manueltranslation/js/translations.js') }}"></script>
 {% endblock %}

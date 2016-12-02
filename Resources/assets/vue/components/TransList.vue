@@ -1,143 +1,138 @@
 <template>
+    <div>
+        <!--<trans-filter :filters.sync="filters" :domains="domains"></trans-filter>-->
 
-<trans-filter :filters.sync="filters" :domains="domains"></trans-filter>
+        <!--<div class="row paginator-container">-->
+        <!--<div class="col-sm-4 total-count"><b>Items:</b> {{ totalItemsCount }}</div>-->
+        <!--<div class="col-sm-8 text-right">-->
+        <!--<paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>-->
+        <!--</div>-->
+        <!--</div>-->
 
-<div class="row paginator-container">
-    <div class="col-sm-4 total-count"><b>Items:</b> {{ totalItemsCount }}</div>
-    <div class="col-sm-8 text-right">
-        <paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>            
+        <!--<div v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">-->
+        <div class="row">
+            <trans-item
+                    v-for="(item, index) in translationList"
+                    :index="index"
+                    :translation="item"
+                    :locales="locales"
+                    :domains="domains"
+                    :changeData="change"
+                    :activate="activate"
+                    :deactivate="deactivate"
+                    :save="save"
+            ></trans-item>
+        </div>
+        <h3 v-if="0 === translationList.length">No Items Found!</h3>
+        <!--</div>-->
+
+        <!--<div class="text-right paginator-container">-->
+        <!--<paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>-->
+        <!--</div>-->
     </div>
-</div>
-
-<div v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">
-
-    <div class="row">
-        <trans-item v-for="item in items" :item="item" :locales.once="locales"></trans-item>        
-    </div>
-
-    <h3 v-if="0 === items.length">No Items Found!</h3>
-</div>
-
-<div class="text-right paginator-container">
-    <paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>
-</div>
-
 </template>
 
 <script>
-import Vue from 'vue'
-import TransItem from './TransItem.vue'
-import TransFilter from './TransFilter.vue'
-import VueResource from 'vue-resource'
-import Loading from 'vue-loading'
-import Paginator from './Paginator.vue'
+    import Vue from 'vue'
+    import VueResource from 'vue-resource'
+    import TransItem from './TransItem.vue'
+    //    import Loading from 'vue-loading'
+    /*
+     import TransFilter from './TransFilter.vue'
+     import Paginator from './Paginator.vue'*/
 
-Vue.use(VueResource)
+    Vue.use(VueResource)
 
-export default {
-    data () {
-        return {
-            items: {},
-            locales: this.getLocales(),
-            domains: this.getDomains(),
-            filters: {},
-            isLoading: false,
-            totalItemsCount: 1,
-            currentPage: 1,
-            perPage: 50,
-        }
-    },
-
-    ready () {
-        this.resource = this.$resource(this.getTranslationApiUrl() + '{/id}.json')
-
-        this.getTranslations()
-    },
-
-    methods: {
-        getTranslations () {
-            this.isLoading = true;
-            return this.resource.get(Object.assign({
-                page: this.currentPage,
-                perPage: this.perPage,
-            }, this.filters)).then((res) => {
-                this.$set('items', res.json());
-                this.isLoading = false;
-                this.totalItemsCount = parseInt(res.headers['X-Count'])
-            })
+    export default {
+        props: {
+            apiUrl: {type: String, required: true},
+            locales: {type: [Array, Object], required: true},
+            domains: {type: [Array, Object], required: true},
+            locale: {type: String, required: true},
         },
 
-        save (item, success, error, complete) {
-            let promise = null
-            if (item.id){
-                promise = this.resource.update({id: item.id}, item)
-            }else{
-                promise = this.resource.save({}, item)
-                promise.then(res => {
-                    // si se crea un nuevo registro, aumentamos el contador.
-                    this.totalItemsCount++
-                })
+        data () {
+            return {
+                translationList: [],
+                isLoading: false,
+//                locales: this.getLocales(),
+//                 domains: this.getDomains(),
+//                 filters: {},
+                totalItemsCount: 1,
+                currentPage: 1,
+                perPage: 50,
             }
-
-            promise.then(response => {
-                let data = response.json()
-                this.items.$set(this.items.indexOf(item), data); // Actualizamos el item con la nueva data
-                success && success(data)
-
-                this.domains = this.addDomain(data.domain)
-            }, response => {
-                error && error(response)
-            })
         },
 
-        add () {
-            this.items.unshift({
-                id: null,
-                active: true,
-                autogenerated: false,
-                code: null,
-                domain: 'messages',
-                files: [],
-                values: {},
-                new: false,
-            })
-        },
-
-        remove (item) {
-            this.items.$remove(item)
-            // todo ver si se van a eliminar elementos de la bd
-        },
-
-        changePage (page) {
-            this.currentPage = page
+        created () {
+            this.resource = this.$resource(this.apiUrl + '{/id}.json')
             this.getTranslations()
         },
-    },
 
-    events: {
-        'save-item' (item, success, error) {
-            this.save(item, success, error)
-        },
-        'add-item' () {
-            this.add()
-        },
-        'remove-item' (item) {
-            this.remove (item)
-        },
-        'filter:translations:submit' () {
-            this.currentPage = 1
-            this.getTranslations()
-        },
-    },
+        methods: {
+            getTranslations () {
+                this.isLoading = true;
+                return this.resource.get(Object.assign({
+                    page: this.currentPage,
+                    perPage: this.perPage,
+                }, this.filters)).then((res) => {
+                    this.translationList = res.body;
+                    this.isLoading = false;
+                    this.totalItemsCount = parseInt(res.headers['X-Count'])
+                })
+            },
+            activate(index) {
+                this.change(index, {active: true})
+            },
+            deactivate(index) {
+                this.change(index, {active: false})
+            },
+            change(index, data) {
+                let translation = this.translationList[index]
 
-    components: {TransItem, TransFilter, Paginator},
-    directives: {Loading},
-}
+                translation = Object.assign(translation, data)
+
+                this.$set(this.translationList, index, translation)
+            },
+            save (index) {
+                let promise = null
+
+                let translation = this.translationList[index]
+
+                if (!translation) {
+                    return
+                }
+
+                if (translation.id) {
+                    promise = this.resource.update({id: translation.id}, translation)
+                } else {
+                    promise = this.resource.save({}, translation)
+                    promise.then(() => this.totalItemsCount++)
+                }
+
+                promise.then(response => {
+                    let data = response.body
+                    this.change(index, data)
+//                    this.domains = this.addDomain(data.domain)
+                })
+
+                return promise
+            },
+        },
+
+        components: {TransItem, /*TransFilter, Paginator*/},
+//        directives: {Loading},
+    }
 </script>
 
 <style>
-    .paginator-container .pagination{
+    .paginator-container .pagination {
         margin: 0 0 5px 0;
     }
-    .total-count{ padding-top: 10px; }
+
+    .total-count {
+        padding-top: 10px;
+    }
+
+
 </style>

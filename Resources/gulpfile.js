@@ -13,20 +13,13 @@ var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 
 gulp.task('js', function () {
-    /*return gulp.src([
-     
-    ])
-        //.pipe(babel())
-        .pipe(gulpif(gutil.env.env == 'prod',uglify()))
-        .pipe(concat('app_head.js'))
-        .pipe(gulp.dest('web/compiled/js'));*/
-});
-
-gulp.task('js:vue', function () {
-	return browserify('./assets/js/app.js')
-	.transform(babelify, { presets: ['es2015'], plugins: ["transform-runtime"] })
+	return browserify('./assets/js/main.js')
+	.transform(babelify, { presets: ['es2015'], plugins: ["transform-runtime", "transform-vue-jsx"] })
 	.transform(vueify)
-	.bundle().on("error", function(err){ gutil.log(err); this.emit('end'); })
+	.bundle().on("error", function(err){
+	    err.stream = null;
+	    gutil.log(err); this.emit('end');
+	})
 	.pipe(source("translations.js"))
     .pipe(buffer())
     .pipe(gulpif(gutil.env.env == 'prod', uglify()))
@@ -52,8 +45,8 @@ gulp.task('watch', function(){
         'js/**/*.js',
         'vue/**/*.vue',
         'vue/**/*.js'
-    ], { cwd: './assets'}, ['js:vue']);
+    ], { cwd: './assets'}, ['js']);
 });
 
-gulp.task('default', ['css', 'js', 'js:vue']);
+gulp.task('default', ['css', 'js']);
 

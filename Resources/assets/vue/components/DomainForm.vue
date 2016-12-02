@@ -8,7 +8,7 @@
         <li v-for="value in domains">
             <div class="checkbox">
                 <label>
-                    <input type="radio" v-model="domain" value="{{ value }}" tabindex="-1"> {{ value }}
+                    <input type="radio" v-model="domain" :value="value" tabindex="-1"> {{ value }}
                 </label>
             </div>
         </li>
