@@ -11,33 +11,54 @@ var babelify = require('babelify');
 var vueify = require('vueify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var watchify = require('watchify');
 
 gulp.task('js', function () {
-	return browserify('./assets/js/main.js')
-	.transform(babelify, { presets: ['es2015'], plugins: ["transform-runtime", "transform-vue-jsx"] })
-	.transform(vueify)
-	.bundle().on("error", function(err){
-	    err.stream = null;
-	    gutil.log(err); this.emit('end');
-	})
-	.pipe(source("translations.js"))
-    .pipe(buffer())
-    .pipe(gulpif(gutil.env.env == 'prod', uglify()))
-    .pipe(gulp.dest("./public/js/"));
+    var bundler = watchify(browserify({
+        entries: "assets/js/main.js",
+        paths: ['./node_modules','./assets/js/', ,'./assets/vue/'],
+        debug: true,
+        cache: {},
+        packageCache: {},
+    }).transform(babelify, {
+        presets: ['es2015'], plugins: ["transform-runtime"/*, "transform-vue-jsx"*/]
+    }).transform(vueify));
+
+    function rebundle() {
+        return bundler.bundle().on('error', function (err) {
+            err.stream = null; // Quitamos contenido no leible
+            console.log('     #########  ERROR   ###########');
+            console.log(err);
+            this.emit('end');
+        })
+            .pipe(source("translations.js"))
+            .pipe(buffer())
+            .pipe(gulpif(gutil.env.env == 'prod', uglify()))
+            .pipe(gulp.dest("./public/js/"))
+    }
+
+    bundler.on('update', function () {
+        rebundle();
+        gutil.log('Compilando Archivos de Vue...');
+    }).on('time', function (time) {
+        gutil.log('Listo en: ', gutil.colors.cyan(time + ' ms'));
+    })
+
+    return rebundle();
 });
 
 gulp.task('css', function () {
     /*var dest = './web/compiled/css';
 
-    return gulp.src([
-       
-    ])
-        .pipe(concat('styles.css'))
-        .pipe(gulpif(gutil.env.env == 'prod',uglifycss()))
-        .pipe(gulp.dest(dest));*/
+     return gulp.src([
+
+     ])
+     .pipe(concat('styles.css'))
+     .pipe(gulpif(gutil.env.env == 'prod',uglifycss()))
+     .pipe(gulp.dest(dest));*/
 });
 
-gulp.task('watch', function(){
+gulp.task('watch', function () {
     //gulp.watch(['**/*.{css,scss}'], { cwd: './app/Resources/assets/'}, ['css', 'admin:css']);
     //gulp.watch(['**/*.{css,scss}'], { cwd: './web/css/'}, ['css', 'admin:css']);
     gulp.watch([
@@ -45,7 +66,7 @@ gulp.task('watch', function(){
         'js/**/*.js',
         'vue/**/*.vue',
         'vue/**/*.js'
-    ], { cwd: './assets'}, ['js']);
+    ], {cwd: './assets'}, ['js']);
 });
 
 gulp.task('default', ['css', 'js']);

@@ -21,6 +21,8 @@ export default {
             inactives: 'Inactives',
             apply: 'Apply',
             clear: 'Clear',
+            remove: 'Remove',
+            saved: 'Saved !',
         },
         alert: {
             save: {
@@ -59,6 +61,8 @@ export default {
             inactives: 'Inactivas',
             apply: 'Aplicar',
             clear: 'Limpiar',
+            remove: 'Remover',
+            saved: 'Guardado !',
         },
         alert: {
             save: {

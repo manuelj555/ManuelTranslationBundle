@@ -1,5 +1,6 @@
 <template>
     <div>
+        <TopProgress ref="loading"></TopProgress>
         <!--<trans-filter :filters.sync="filters" :domains="domains"></trans-filter>-->
 
         <!--<div class="row paginator-container">-->
@@ -9,22 +10,22 @@
         <!--</div>-->
         <!--</div>-->
 
-        <!--<div v-loading="isLoading" :loading-options="{text: $t('label.loading') + '...'}">-->
         <div class="row">
-            <trans-item
+            <TransItem
+                    :key="item._key"
                     v-for="(item, index) in translationList"
                     :index="index"
                     :translation="item"
                     :locales="locales"
-                    :domains="domains"
+                    :domains="existentDomains"
                     :changeData="change"
                     :activate="activate"
                     :deactivate="deactivate"
                     :save="save"
-            ></trans-item>
+                    :remove="remove"
+            ></TransItem>
         </div>
         <h3 v-if="0 === translationList.length">No Items Found!</h3>
-        <!--</div>-->
 
         <!--<div class="text-right paginator-container">-->
         <!--<paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>-->
@@ -35,7 +36,9 @@
 <script>
     import Vue from 'vue'
     import VueResource from 'vue-resource'
-    import TransItem from './TransItem.vue'
+    import TransItem from './TransItem/TransItem.vue'
+    import TopProgress from 'vue-top-progress'
+
     //    import Loading from 'vue-loading'
     /*
      import TransFilter from './TransFilter.vue'
@@ -44,6 +47,7 @@
     Vue.use(VueResource)
 
     export default {
+        name: 'trans-list',
         props: {
             apiUrl: {type: String, required: true},
             locales: {type: [Array, Object], required: true},
@@ -54,13 +58,11 @@
         data () {
             return {
                 translationList: [],
-                isLoading: false,
-//                locales: this.getLocales(),
-//                 domains: this.getDomains(),
 //                 filters: {},
                 totalItemsCount: 1,
                 currentPage: 1,
                 perPage: 50,
+                existentDomains: this.domains,
             }
         },
 
@@ -70,29 +72,51 @@
         },
 
         methods: {
+            loading(action) {
+                let loading = this.$refs.loading
+
+                if (!loading) {
+                    return
+                }
+
+                switch (action) {
+                    case 'start':
+                        loading.start()
+                        break
+                    case 'done':
+                        loading.done()
+                        break
+                    case 'error':
+                        loading.error()
+                        break
+                }
+            },
             getTranslations () {
-                this.isLoading = true;
+                this.loading('start');
                 return this.resource.get(Object.assign({
                     page: this.currentPage,
                     perPage: this.perPage,
                 }, this.filters)).then((res) => {
-                    this.translationList = res.body;
-                    this.isLoading = false;
+                    this.translationList = res.body.map(t => {
+                        t._key = new Date().getTime()
+                        return t
+                    });
+                    this.loading('done');
                     this.totalItemsCount = parseInt(res.headers['X-Count'])
                 })
             },
             activate(index) {
-                this.change(index, {active: true})
+                return this.change(index, {active: true}).save(index)
             },
             deactivate(index) {
-                this.change(index, {active: false})
+                return this.change(index, {active: false}).save(index)
             },
             change(index, data) {
-                let translation = this.translationList[index]
-
-                translation = Object.assign(translation, data)
+                let translation = Object.assign({}, this.translationList[index], data)
 
                 this.$set(this.translationList, index, translation)
+
+                return this
             },
             save (index) {
                 let promise = null
@@ -102,6 +126,8 @@
                 if (!translation) {
                     return
                 }
+
+                this.loading('start');
 
                 if (translation.id) {
                     promise = this.resource.update({id: translation.id}, translation)
@@ -113,14 +139,40 @@
                 promise.then(response => {
                     let data = response.body
                     this.change(index, data)
-//                    this.domains = this.addDomain(data.domain)
+                    this.loading('done');
+                    this.addDomain(data.domain)
+                }, () => {
+                    this.loading('error');
                 })
 
                 return promise
             },
+            add () {
+                this.translationList.unshift({
+                    _key: new Date().getTime(),
+                    id: null,
+                    code: '',
+                    domain: 'messages',
+                    values: {},
+                    files: [],
+                    active: true,
+                    autogenerated: false,
+                    'new': false,
+                })
+            },
+            remove (index) {
+                this.translationList.splice(index, 1)
+            },
+            addDomain (name) {
+                if (this.existentDomains[name] !== undefined) {
+                    return
+                }
+
+                Vue.set(this.existentDomains, name, name)
+            },
         },
 
-        components: {TransItem, /*TransFilter, Paginator*/},
+        components: {TransItem, TopProgress, /*TransFilter, Paginator*/},
 //        directives: {Loading},
     }
 </script>

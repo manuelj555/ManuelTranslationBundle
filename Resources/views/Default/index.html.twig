@@ -27,7 +27,7 @@
 {% endblock %}
 
 {% block page_header_right %}
-    <a href="#" @click.prevent="addTranslation"
+    <a href="#" @click.prevent="add"
        class="btn btn-primary" id="add-translation">
         <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
     </a>
@@ -36,6 +36,7 @@
 
 {% block content %}
     <trans-list
+            ref="list"
             api-url="{{ path('manuel_translation_api_list') }}"
             :locales='{{ locales|json_encode|raw }}'
             :domains='{{ domains|json_encode|raw }}'

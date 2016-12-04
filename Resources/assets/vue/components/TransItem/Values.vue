@@ -15,8 +15,6 @@
 </template>
 
 <script>
-    import Vue from 'vue'
-    import TransItemValue from './TransItemValue.vue'
     import _ from 'lodash'
 
     export default {
@@ -25,7 +23,6 @@
             locales: {required: true, type: [Array, Object]},
             editing: {required: true, type: [Boolean]},
             active: {required: true, type: [Boolean]},
-            isNew: {required: true, type: [Boolean]},
             onChangeData: {required: true, type: Function},
         },
 
@@ -47,8 +44,6 @@
                 this.onChangeData({values})
             },
         },
-
-        components: {TransItemValue}
     }
 </script>
 
