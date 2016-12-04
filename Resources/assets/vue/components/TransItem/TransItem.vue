@@ -102,7 +102,7 @@
         },
 
         created () {
-            console.log('Creado Componente TransItem', this.index)
+//            console.log('Creado Componente TransItem', this.index)
             if (this.isNew) {
                 this.initEdition()
             }

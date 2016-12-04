@@ -3,12 +3,16 @@
         <TopProgress ref="loading"></TopProgress>
         <!--<trans-filter :filters.sync="filters" :domains="domains"></trans-filter>-->
 
-        <!--<div class="row paginator-container">-->
-        <!--<div class="col-sm-4 total-count"><b>Items:</b> {{ totalItemsCount }}</div>-->
-        <!--<div class="col-sm-8 text-right">-->
-        <!--<paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>-->
-        <!--</div>-->
-        <!--</div>-->
+        <div class="row paginator-container">
+            <div class="col-sm-4 total-count"><b>Items:</b> {{ totalItemsCount }}</div>
+            <div class="col-sm-8 text-right">
+                <Paginator :page="currentPage"
+                           :per-page="perPage"
+                           :count="totalItemsCount"
+                           :on-click="changePage"
+                ></Paginator>
+            </div>
+        </div>
 
         <div class="row">
             <TransItem
@@ -27,22 +31,27 @@
         </div>
         <h3 v-if="0 === translationList.length">No Items Found!</h3>
 
-        <!--<div class="text-right paginator-container">-->
-        <!--<paginator :page="currentPage" :per-page="perPage" :count="totalItemsCount", :on-click="changePage"></paginator>-->
-        <!--</div>-->
+        <div class="text-right paginator-container">
+            <Paginator :page="currentPage"
+                       :per-page="perPage"
+                       :count="totalItemsCount"
+                       :on-click="changePage"
+            ></Paginator>
+        </div>
     </div>
 </template>
 
 <script>
     import Vue from 'vue'
     import VueResource from 'vue-resource'
-    import TransItem from './TransItem/TransItem.vue'
+    import TransItem from 'components/TransItem/TransItem.vue'
     import TopProgress from 'vue-top-progress'
+    import Paginator from 'components/Paginator.vue'
 
     //    import Loading from 'vue-loading'
     /*
      import TransFilter from './TransFilter.vue'
-     import Paginator from './Paginator.vue'*/
+     */
 
     Vue.use(VueResource)
 
@@ -97,12 +106,12 @@
                     page: this.currentPage,
                     perPage: this.perPage,
                 }, this.filters)).then((res) => {
-                    this.translationList = res.body.map(t => {
+                    this.translationList = res.data.map(t => {
                         t._key = new Date().getTime()
                         return t
                     });
                     this.loading('done');
-                    this.totalItemsCount = parseInt(res.headers['X-Count'])
+                    this.totalItemsCount = parseInt(res.headers.get('X-Count'))
                 })
             },
             activate(index) {
@@ -170,9 +179,13 @@
 
                 Vue.set(this.existentDomains, name, name)
             },
+            changePage(page) {
+                this.currentPage = page
+                this.getTranslations()
+            },
         },
 
-        components: {TransItem, TopProgress, /*TransFilter, Paginator*/},
+        components: {TransItem, TopProgress, /*TransFilter,*/ Paginator},
 //        directives: {Loading},
     }
 </script>
