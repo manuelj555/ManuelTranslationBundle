@@ -1,8 +1,8 @@
 <template>
     <div class="translation-item col-xs-12">
-        <div class="panel panel-default" :class="{'translation-inactive': !translation.active}">
-            <div class="panel-heading">
-
+        <!--<div class="panel panel-default" :class="{'translation-inactive': !translation.active}">-->
+        <Panel>
+            <div slot="header">
                 <ItemHeader
                         :code="translation.code"
                         :domain="translation.domain"
@@ -12,9 +12,8 @@
                         :editing="editing"
                         :onChangeData="updateData"
                 ></ItemHeader>
-
             </div>
-            <div class="panel-body">
+            <div slot="body">
                 <div class="row">
                     <div class="col-sm-9 col-md-10">
                         <ItemValues
@@ -52,7 +51,7 @@
                     <!--<trans-item-files :files="item.files"></trans-item-files>-->
                 </div>
             </div>
-        </div>
+        </Panel>
     </div>
 </template>
 
@@ -61,6 +60,7 @@
     import ItemHeader from './Header.vue'
     import ItemValues from './Values.vue'
     import ItemButtons from './Buttons.vue'
+    import Panel from 'components/Generic/Panel.vue'
 
     /*
      import TransItemFiles from './TransItemFiles.vue'
@@ -154,7 +154,7 @@
             },
         },
 
-        components: {ItemValues, ItemButtons, /*ItemFiles,*/ ItemHeader},
+        components: {ItemValues, ItemButtons, /*ItemFiles,*/ ItemHeader, Panel},
         //directives: {Loading, AlertIcon},
 
     }
