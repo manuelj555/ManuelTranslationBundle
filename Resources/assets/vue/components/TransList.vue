@@ -1,7 +1,11 @@
 <template>
     <div>
         <TopProgress ref="loading"></TopProgress>
-        <!--<trans-filter :filters.sync="filters" :domains="domains"></trans-filter>-->
+
+        <TransFilter :filters="filters"
+                     :domains="domains"
+                     :onApplyFilters="applyFilters"
+        ></TransFilter>
 
         <div class="row paginator-container">
             <div class="col-sm-4 total-count"><b>Items:</b> {{ totalItemsCount }}</div>
@@ -47,11 +51,7 @@
     import TransItem from 'components/TransItem/TransItem.vue'
     import TopProgress from 'vue-top-progress'
     import Paginator from 'components/Paginator.vue'
-
-    //    import Loading from 'vue-loading'
-    /*
-     import TransFilter from './TransFilter.vue'
-     */
+    import TransFilter from 'components/TransFilter.vue'
 
     Vue.use(VueResource)
 
@@ -67,7 +67,11 @@
         data () {
             return {
                 translationList: [],
-//                 filters: {},
+                filters: {
+                    search: null,
+                    domains: [],
+                    inactive: false,
+                },
                 totalItemsCount: 1,
                 currentPage: 1,
                 perPage: 50,
@@ -183,10 +187,13 @@
                 this.currentPage = page
                 this.getTranslations()
             },
+            applyFilters(filters){
+                this.filters = filters
+                this.getTranslations()
+            },
         },
 
-        components: {TransItem, TopProgress, /*TransFilter,*/ Paginator},
-//        directives: {Loading},
+        components: {TransItem, TopProgress, TransFilter, Paginator},
     }
 </script>
 
