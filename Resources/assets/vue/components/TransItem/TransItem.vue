@@ -23,6 +23,8 @@
                                 :active="translation.active"
                                 :onChangeData="updateData"
                         ></ItemValues>
+
+                        <ItemFiles :files="translation.files" v-if="visibleFiles"></ItemFiles>
                     </div>
 
                     <div class="col-sm-3 col-md-2">
@@ -36,19 +38,17 @@
                                 :onEdit="initEdition"
                                 :onCancelEdit="cancelEdition"
                                 :onActivate="handleActivate"
-                                :onDeactivate="handleDeactivate"
-                        ></ItemButtons>
+                                :onDeactivate="handleDeactivate">
+
+                            <Btn size="xs" v-show="showFilesVisible" @click.prevent.native="visibleFiles = true">
+                                {{ $t('label.show_files') }}
+                            </Btn>
+                            <Btn size="xs" v-show="hideFilesVisible" @click.prevent.native="visibleFiles = false">
+                                {{ $t('label.hide_files') }}
+                            </Btn>
+
+                        </ItemButtons>
                     </div>
-
-                    <!--<div slot="extra-buttons">-->
-                    <!--<button type="button" v-show="editing && isNew" class="btn btn-danger btn-xs" @click="remove()">{{ $t('label.cancel_reation') }}</button>-->
-
-                    <!--<button type="button" v-show="showFilesVisible" class="btn btn-default btn-xs" @click="visibleFiles = true">Show Files</button>-->
-
-                    <!--<button type="button" v-show="hideFilesVisible" class="btn btn-default btn-xs" @click="visibleFiles = false">Hide Files</button>-->
-                    <!--</div>-->
-                    <!--<div class="col-sm-12" v-if="hasFiles" v-show="editing || visibleFiles">-->
-                    <!--<trans-item-files :files="item.files"></trans-item-files>-->
                 </div>
             </div>
         </Panel>
@@ -57,13 +57,14 @@
 
 <script>
     import Vue from 'vue'
-    import ItemHeader from './Header.vue'
-    import ItemValues from './Values.vue'
-    import ItemButtons from './Buttons.vue'
+    import ItemHeader from 'components/TransItem/Header.vue'
+    import ItemValues from 'components/TransItem/Values.vue'
+    import ItemButtons from 'components/TransItem/Buttons.vue'
+    import ItemFiles from 'components/TransItem/Files.vue'
     import Panel from 'components/Generic/Panel.vue'
+    import Btn from 'components/Generic/Button.vue'
 
     /*
-     import TransItemFiles from './TransItemFiles.vue'
      import AlertIcon from '../directives/AlertIcon.vue'
      import Loading from 'vue-loading'
      import TransValidation from '../../js/TransValidation.js'
@@ -98,6 +99,12 @@
         computed: {
             isNew () {
                 return null == this.translation.id
+            },
+            showFilesVisible() {
+                return !this.visibleFiles && this.translation.files.length > 0
+            },
+            hideFilesVisible() {
+                return this.visibleFiles
             },
         },
 
@@ -154,9 +161,7 @@
             },
         },
 
-        components: {ItemValues, ItemButtons, /*ItemFiles,*/ ItemHeader, Panel},
-        //directives: {Loading, AlertIcon},
-
+        components: {ItemValues, ItemButtons, ItemFiles, ItemHeader, Panel, Btn},
     }
 
 </script>

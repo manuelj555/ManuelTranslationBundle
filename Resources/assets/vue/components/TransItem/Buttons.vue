@@ -1,7 +1,7 @@
 <template>
     <div class="translation-item-actions">
 
-        <Btn v-show="!editing" type="info" size="xs" icon="edit" @click.native.prevent="onEdit">
+        <Btn v-show="!editing" type="info" size="sm" icon="edit" @click.native.prevent="onEdit">
             {{ $t('label.edit') }}
         </Btn>
 
@@ -23,7 +23,7 @@
             {{ $t('label.activate') }}
         </Btn>
 
-        <slot name="extra-buttons"></slot>
+        <slot></slot>
     </div>
 </template>
 

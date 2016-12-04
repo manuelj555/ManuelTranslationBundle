@@ -23,6 +23,8 @@ export default {
             clear: 'Clear',
             remove: 'Remove',
             saved: 'Saved !',
+            show_files: 'Show files',
+            hide_files: 'Hide files',
         },
         alert: {
             save: {
@@ -63,6 +65,8 @@ export default {
             clear: 'Limpiar',
             remove: 'Remover',
             saved: 'Guardado !',
+            show_files: 'Mostrar archivos',
+            hide_files: 'Ocultar archivos',
         },
         alert: {
             save: {
