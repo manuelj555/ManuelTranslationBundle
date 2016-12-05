@@ -16,6 +16,7 @@
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.0",
     "gulp-if": "^2.0.1",
+    "gulp-sourcemaps": "^1.9.1",
     "gulp-uglify": "^2.0.0",
     "gulp-uglifycss": "^1.0.6",
     "gulp-util": "^3.0.7",
@@ -42,8 +43,8 @@
     "vue-resource": "^1.0.3",
     "vue-spinner": "^1.0.2",
     "vue-top-progress": "^0.4.0",
-    "vue-validator": "^2.1.6",
-    "vueify": "^9.3.0"
+    "vueify": "^9.3.0",
+    "vuelidate": "^0.1.1"
   },
   "browser": {
     "vue": "vue/dist/vue.common"

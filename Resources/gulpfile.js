@@ -12,11 +12,14 @@ var vueify = require('vueify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var watchify = require('watchify');
+var sourcemaps = require('gulp-sourcemaps');
+
+var isProd = gutil.env.env == 'prod';
 
 gulp.task('js', function () {
     var bundler = watchify(browserify({
         entries: "assets/js/main.js",
-        paths: ['./node_modules','./assets/js/', ,'./assets/vue/'],
+        paths: ['./node_modules', './assets/js/', , './assets/vue/'],
         debug: true,
         cache: {},
         packageCache: {},
@@ -33,7 +36,9 @@ gulp.task('js', function () {
         })
             .pipe(source("translations.js"))
             .pipe(buffer())
-            .pipe(gulpif(gutil.env.env == 'prod', uglify()))
+            .pipe(gulpif(!isProd, sourcemaps.init({loadMaps: true})))
+            .pipe(gulpif(isProd, uglify()))
+            .pipe(gulpif(!isProd, sourcemaps.write('.')))
             .pipe(gulp.dest("./public/js/"))
     }
 
