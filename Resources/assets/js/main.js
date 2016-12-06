@@ -2,7 +2,6 @@ import Vue from "vue";
 import TransList from "../vue/components/TransList.vue";
 import VueI18n from "vue-i18n";
 import locales from "./locales.js";
-// import TranslationDataPlugin from '../vue/plugins/TranslationData.js'
 
 Vue.use(VueI18n)
 Vue.config.lang = TranslationData.locale

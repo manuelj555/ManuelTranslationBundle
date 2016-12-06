@@ -7,7 +7,7 @@
                  :class="{'text-warning': isEmpty}">{{ values[locale] | defaultMessage }}</pre>
                 <textarea class="form-control"
                           v-else :value="getValue(locale)"
-                          @blur="updateValue(locale, $event)"
+                          @change.lazy="updateValue(locale, $event)"
                 ></textarea>
             </div>
         </div>

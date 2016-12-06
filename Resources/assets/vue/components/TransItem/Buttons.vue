@@ -1,28 +1,38 @@
 <template>
     <div class="translation-item-actions">
 
-        <Btn v-show="!editing" type="info" size="sm" icon="edit" @click.native.prevent="onEdit">
-            {{ $t('label.edit') }}
-        </Btn>
+        <div v-show="!editing">
+            <Btn type="info" size="sm" icon="edit" @click.native.prevent="onEdit">
+                {{ $t('label.edit') }}
+            </Btn>
+        </div>
+        <div v-show="editing">
 
-        <Btn v-btn-loading="{value: saving, done: $t('label.saved')}" v-show="editing" type="primary" icon="save" @click.native.prevent="save">
-            {{ $t('label.save') }}
-        </Btn>
+            <Btn v-btn-loading="{value: saving, done: $t('label.saved')}"
+                 :disabled="hasErrors"
+                 type="primary"
+                 icon="save"
+                 @click.native.prevent="save">
+                {{ $t('label.save') }}
+            </Btn>
 
-        <Btn v-show="editing" type="danger" size="sm" icon="remove" @click.native.prevent="onCancelEdit">
-            {{ $t(isNew ? 'label.remove' : 'label.cancel') }}
-        </Btn>
+            <Btn type="danger" size="sm" icon="remove" @click.native.prevent="onCancelEdit">
+                {{ $t(isNew ? 'label.remove' : 'label.cancel') }}
+            </Btn>
 
-        <Btn v-btn-loading="deactivating" v-show="editing && (active || deactivating) && !isNew && !activating" type="warning"
-             size="xs" icon="ban-circle" @click.native.prevent="deactivate">
-            {{ $t('label.deactivate') }}
-        </Btn>
+            <Btn v-btn-loading="deactivating" v-show="(active || deactivating) && !isNew && !activating"
+                 type="warning"
+                 size="xs" icon="ban-circle" @click.native.prevent="deactivate">
+                {{ $t('label.deactivate') }}
+            </Btn>
 
-        <Btn v-btn-loading="activating" v-show="editing && (!active || activating) && !isNew && !deactivating" type="success"
-             size="xs" icon="ok" @click.native.prevent="activate">
-            {{ $t('label.activate') }}
-        </Btn>
+            <Btn v-btn-loading="activating" v-show="(!active || activating) && !isNew && !deactivating"
+                 type="success"
+                 size="xs" icon="ok" @click.native.prevent="activate">
+                {{ $t('label.activate') }}
+            </Btn>
 
+        </div>
         <slot></slot>
     </div>
 </template>
@@ -34,6 +44,7 @@
 
     export default {
         props: {
+            hasErrors: {required: true, type: [Boolean]},
             editing: {required: true, type: [Boolean]},
             active: {required: true, type: [Boolean]},
             isNew: {required: true, type: [Boolean]},
@@ -54,6 +65,8 @@
             save () {
                 this.saving = true
                 this.onSave().then(() => {
+                    this.saving = false
+                }, () => {
                     this.saving = false
                 })
             },

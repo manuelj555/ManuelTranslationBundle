@@ -1,7 +1,6 @@
 <template>
     <button :type="buttonType"
-            :class="buttonClass"
-    >
+            :class="buttonClass">
         <span v-if="icon !== false" :class="iconClass" aria-hidden="true"></span>
         <slot></slot>
     </button>
@@ -14,6 +13,7 @@
             type: {type: String, default: 'default'},
             icon: {type: [String, Boolean], default: false},
             size: {type: String, default: null},
+            disabled: {type: Boolean, default: false},
         },
         computed: {
             buttonClass () {
@@ -23,8 +23,14 @@
             },
 
             iconClass () {
-                return ('glyphicon glyphicon-'+this.icon)
+                return ('glyphicon glyphicon-' + this.icon)
             }
+        },
+        mounted() {
+            this.$el.disabled = this.disabled
+        },
+        beforeUpdate() {
+            this.$el.disabled = this.disabled
         },
     }
 </script>

@@ -16,6 +16,16 @@
             <div slot="body">
                 <div class="row">
                     <div class="col-sm-9 col-md-10">
+
+                        <div v-if="editing && hasErrors">
+                            <p v-show="hasError('code.required')" class="text-danger">
+                                {{ $t('error.translation.code.required') }}
+                            </p>
+                            <p v-show="hasError('code.minlength')" class="text-danger">
+                                {{ $t('error.translation.code.minlength') }}
+                            </p>
+                        </div>
+
                         <ItemValues
                                 :values="translation.values"
                                 :locales="locales"
@@ -25,10 +35,11 @@
                         ></ItemValues>
 
                         <ItemFiles :files="translation.files" v-if="visibleFiles"></ItemFiles>
-                    </div>
+                    </div> 
 
                     <div class="col-sm-3 col-md-2">
                         <ItemButtons
+                                :hasErrors="hasErrors"
                                 :values="translation.values"
                                 :locales="locales"
                                 :editing="editing"
@@ -57,18 +68,15 @@
 
 <script>
     import Vue from 'vue'
+    import _ from 'lodash'
     import ItemHeader from 'components/TransItem/Header.vue'
     import ItemValues from 'components/TransItem/Values.vue'
     import ItemButtons from 'components/TransItem/Buttons.vue'
     import ItemFiles from 'components/TransItem/Files.vue'
     import Panel from 'components/Generic/Panel.vue'
     import Btn from 'components/Generic/Button.vue'
+    import TransValidation from 'TransValidation'
 
-    /*
-     import AlertIcon from '../directives/AlertIcon.vue'
-     import Loading from 'vue-loading'
-     import TransValidation from '../../js/TransValidation.js'
-     */
     Vue.filter('defaultMessage', function (value) {
         return value || '[' + Vue.t('label.empty_value') + ']'
     })
@@ -92,7 +100,7 @@
                 visibleFiles: false,
                 originalValues: {},
                 originalCode: '',
-//            validator: new TransValidation(this.item),
+                errors: {},
             }
         },
 
@@ -106,6 +114,22 @@
             hideFilesVisible() {
                 return this.visibleFiles
             },
+            validator () {
+                return new TransValidation(this.translation)
+            },
+            hasErrors () {
+                return !_.isEmpty(this.errors)
+            },
+        },
+
+        watch: {
+            translation() {
+                this.validate()
+            }
+        },
+
+        beforeUpdated () {
+            this.validate()
         },
 
         created () {
@@ -124,6 +148,8 @@
                 this.editing = true
                 this.originalValues = Object.assign({}, this.translation.values)
                 this.originalCode = this.translation.code
+
+                this.validate()
             },
             cancelEdition () {
                 if (this.isNew) {
@@ -147,7 +173,10 @@
                 return this.deactivate(this.index)
             },
             handleSave() {
-                let isNew = this.isNew
+                if(this.hasErrors){
+                    return Promise.reject()
+                }
+
                 let promise = this.save(this.index);
 
                 promise.then(() => {
@@ -159,8 +188,13 @@
             updateData(data) {
                 this.changeData(this.index, data)
             },
+            hasError(path) {
+                return _.get(this.errors, path, false)
+            },
+            validate() {
+                this.errors = this.validator.validate()
+            }
         },
-
         components: {ItemValues, ItemButtons, ItemFiles, ItemHeader, Panel, Btn},
     }
 
