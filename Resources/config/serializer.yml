@@ -2,7 +2,9 @@ services:
     manuel_translation.serializer:
         class: Symfony\Component\Serializer\Serializer
         arguments:
-            - ["@manuel_translation.serializer.normalizer.object"]
+            -
+                - "@manuel_translation.serializer.normalizer.translation"
+                - "@manuel_translation.serializer.normalizer.object"
             -
                 - "@manuel_translation.serializer.encoder.json"
                 - "@manuel_translation.serializer.encoder.xml"
@@ -18,3 +20,8 @@ services:
     manuel_translation.serializer.encoder.xml:
         public: false
         class: Symfony\Component\Serializer\Encoder\XmlEncoder
+
+    manuel_translation.serializer.normalizer.translation:
+        class: ManuelAguirre\Bundle\TranslationBundle\Serializer\Normalizer\TranslationNormalizer
+        public: false
+        arguments: ["@property_accessor"]
