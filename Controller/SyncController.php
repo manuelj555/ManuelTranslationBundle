@@ -45,11 +45,6 @@ class SyncController extends Controller
 
         $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
 
-        foreach ($this->container->getParameter('manuel_translation.locales') as $locale) {
-            $filename = sprintf($filenameTemplate, $locale);
-            $this->get('filesystem')->dumpFile($filename, time());
-        }
-
         return $this->render('@ManuelTranslation/Sync/resolve_conflicts.html.twig', array(
             'news' => $result->getNews(),
             'updates' => $result->getUpdated(),
