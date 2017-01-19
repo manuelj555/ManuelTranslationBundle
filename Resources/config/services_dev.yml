@@ -33,6 +33,17 @@ services:
             - { name: doctrine.event_listener, event: preUpdate }
             - { name: doctrine.event_listener, event: postFlush }
 
+    manuel_translation.doctrine.dump_files_listener:
+        class: ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\DumpFilesListener
+        arguments:
+            - "@filesystem"
+            - "%manuel_translation.locales%"
+            - "%manuel_translation.filename_template%"
+        tags:
+            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: postFlush }
+
     manuel_translation.translation_manager:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\TranslationManager
         arguments:
