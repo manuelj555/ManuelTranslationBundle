@@ -32,6 +32,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->scalarNode('backup_dir')->defaultValue('%kernel.root_dir%/Resources/translations/backup/')->end()
                 ->scalarNode('filename_sync')->defaultValue('%kernel.root_dir%/Resources/translations/translations.txt')->end()
+                ->scalarNode('catalogues_path')->defaultValue('%kernel.root_dir%/Resources/translations/')->end()
             ->end();
 
         return $treeBuilder;
