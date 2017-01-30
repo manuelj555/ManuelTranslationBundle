@@ -34,8 +34,10 @@ class ManuelTranslationExtension extends Extension
         }
 
         $container->setParameter('manuel_translation.locales', $config['locales']);
-        $container->setParameter('manuel_translation.filename_template',
-            $container->getParameter('kernel.root_dir') . '/Resources/translations/messages.%s.doctrine');
+        $container->setParameter(
+            'manuel_translation.filename_template',
+            rtrim($config['catalogues_path'], '/') .'/messages.%s.doctrine'
+        );
         $container->setParameter('manuel_translation.translations_backup_dir', $config['backup_dir']);
         $container->setParameter('manuel_translation.filename_sync', $config['filename_sync']);
 
