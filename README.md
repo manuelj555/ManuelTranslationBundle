@@ -25,7 +25,7 @@ Agregar al composer.json:
 
 ```json
 "require" : {
-    "manuelj555/manuel-translation-bundle": "dev-master"
+    "manuelj555/manuel-translation-bundle": "dev-1.0-vue"
 }
 ```
 
@@ -55,16 +55,12 @@ En el **app/config/routing.yml** agregar:
 manuel_translation:
     resource: "@ManuelTranslationBundle/Controller/"
     type:     annotation
-    prefix:   /{_locale}/_trans
-
-# Solo para el servidor
-manuel_translation_api:
-    resource: "@ManuelTranslationBundle/Controller/Api"
-    type:     annotation
-    prefix:   /api
+    prefix:   /{_locale}/admin/trans
+#    requirements:
+#        _locale: "%locales_pattern%"
 ``` 
 
-Por ultimo se debe crear la base de datos (si no se ha hecho aun) y agregar a la bd las tablas competentes al bundle, por lo que se deben ejecutar los siguientes comandos de consola:
+Por último se debe crear la base de datos (si no se ha hecho aun) y agregar a la bd las tablas competentes al bundle, por lo que se deben ejecutar los siguientes comandos de consola:
 
     php app/console doctrine:database:create
     php app/console doctrine:schema:update --force
