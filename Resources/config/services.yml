@@ -5,6 +5,11 @@ services:
         factory: ["@doctrine.orm.entity_manager", "getRepository"]
         arguments: ['ManuelTranslationBundle:Translation']
 
+    manuel_translation.translations_repository.backup:
+        class: ManuelAguirre\Bundle\TranslationBundle\BackupTranslationRepository
+        arguments: ["%manuel_translation.translations_backup_dir%"]
+        public: false
+
     manuel_translation.translations_doctrine_loader:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader
         arguments: ["@manuel_translation.translations_repository", "%manuel_translation.filename_template%"]

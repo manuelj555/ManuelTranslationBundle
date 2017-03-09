@@ -10,7 +10,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation\Loader;
 
-use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
+use ManuelAguirre\Bundle\TranslationBundle\TranslationRepository;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Translation\Exception\InvalidResourceException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
