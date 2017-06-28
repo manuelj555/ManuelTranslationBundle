@@ -17,9 +17,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
@@ -121,5 +122,19 @@ class TranslationController extends Controller
         $this->get('manuel_translation.local_synchronizator')->toFile();
 
         return $this->redirectToRoute('manuel_translation_list');
+    }
+
+    /**
+     * @Route("/download.php", name="manuel_translation_download_backup_file")
+     */
+    public function downloadBackupAction()
+    {
+        $response = new BinaryFileResponse(
+            $this->container->getParameter('kernel.root_dir') . '/Resources/translations/backup/translations.php'
+        );
+
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+
+        return $response;
     }
 }

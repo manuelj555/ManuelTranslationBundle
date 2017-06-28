@@ -243,6 +243,10 @@
                 <source>local_hash_update_of_range</source>
                 <target>You need synchronize first, before generate or update the file backup</target>
             </trans-unit>
+            <trans-unit id="label.download_generated_file">
+                <source>label.download_generated_file</source>
+                <target>Download Generated File Backup</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
