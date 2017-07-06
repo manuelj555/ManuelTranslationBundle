@@ -32,7 +32,8 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->scalarNode('backup_dir')->defaultValue('%kernel.root_dir%/Resources/translations/backup/')->end()
                 ->scalarNode('filename_sync')->defaultValue('%kernel.root_dir%/Resources/translations/translations.txt')->end()
-                ->scalarNode('catalogues_path')->defaultValue('%kernel.root_dir%/Resources/translations/')->end()
+                //->scalarNode('catalogues_path')->defaultValue('%kernel.root_dir%/Resources/translations/')->end()
+                ->scalarNode('catalogues_path')->defaultValue('%kernel.root_dir%/cache/translations/')->end()
                 ->booleanNode('use_database')->defaultTrue()->end()
             ->end();
 
