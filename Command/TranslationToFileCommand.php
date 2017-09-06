@@ -15,7 +15,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
@@ -24,7 +23,8 @@ class TranslationToFileCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('manuel:translation:generate')
-            ->setDescription("Copia todas las traducciones que están en la Base de datos a un archivo de texto");
+            ->setDescription("Copia todas las traducciones que están en la Base de datos a un archivo de texto")
+            ->setAliases(['manuel:translation:update']);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -35,9 +35,9 @@ class TranslationToFileCommand extends ContainerAwareCommand
 
         $result = $this->getContainer()->get('manuel_translation.synchronizator')->generateFile();
 
-        if($result){
+        if ($result) {
             $io->success("El archivo de traducciones se ha creado/actualizado con exito");
-        }else{
+        } else {
             $io->error("No se pudo actualizar el archivo, debe sincronizar su base de datos antes");
         }
 
