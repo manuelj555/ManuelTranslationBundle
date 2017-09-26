@@ -18,9 +18,7 @@ class AddTranslatorResourcesPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('translator.default')
-            OR $container->getParameter('kernel.environment') == 'prod'
-        ) {
+        if (!$container->hasDefinition('translator.default')) {
             return;
         }
 
