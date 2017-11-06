@@ -13,6 +13,7 @@
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.0",
     "gulp-if": "^2.0.1",
+    "gulp-sourcemaps": "^2.6.1",
     "gulp-uglify": "^2.0.0",
     "gulp-uglifycss": "^1.0.6",
     "gulp-util": "^3.0.7",
@@ -23,6 +24,7 @@
     "vue-loader": "^8.5.2",
     "vue-style-loader": "^1.0.0",
     "vueify": "^8.7.0",
+    "watchify": "^3.9.0",
     "webpack": "^1.13.2"
   },
   "dependencies": {

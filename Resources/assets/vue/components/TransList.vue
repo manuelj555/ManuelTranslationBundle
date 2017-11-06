@@ -63,7 +63,7 @@ export default {
             }, this.filters)).then((res) => {
                 this.$set('items', res.json());
                 this.isLoading = false;
-                this.totalItemsCount = parseInt(res.headers['X-Count'])
+                this.totalItemsCount = parseInt(res.headers['x-count']);
             })
         },
 

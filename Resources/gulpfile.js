@@ -11,6 +11,16 @@ var babelify = require('babelify');
 var vueify = require('vueify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
+var sourcemaps = require('gulp-sourcemaps');
+var watchify = require('watchify');
+
+var config = {
+    isProd: gutil.env.env == 'prod',
+    resourcesPath: './assets/',
+    targetPath: './public/',
+    jsTarget: './public/js/',
+    cssTarget: './public/css/',
+};
 
 gulp.task('js', function () {
     /*return gulp.src([
@@ -23,14 +33,50 @@ gulp.task('js', function () {
 });
 
 gulp.task('js:vue', function () {
-	return browserify('./assets/js/app.js')
-	.transform(babelify, { presets: ['es2015'], plugins: ["transform-runtime"] })
-	.transform(vueify)
-	.bundle().on("error", function(err){ gutil.log(err); this.emit('end'); })
-	.pipe(source("translations.js"))
-    .pipe(buffer())
-    .pipe(gulpif(gutil.env.env == 'prod', uglify()))
-    .pipe(gulp.dest("./public/js/"));
+
+    var bundler = browserify({
+        entries: config.resourcesPath + "js/app.js",
+        paths: [
+            './node_modules',
+            config.resourcesPath + 'js',
+            config.resourcesPath + 'vue',
+        ],
+        debug: true,
+        cache: {},
+        packageCache: {},
+    }).transform(babelify, {
+        presets: ['es2015'], plugins: ["transform-runtime"],
+        sourceMaps: true,
+    }).transform(vueify);
+
+    function rebundle() {
+        return bundler.bundle().on('error', function (err) {
+            err.stream = null; // Quitamos contenido no leible
+            console.log('     #########  ERROR   ###########');
+            console.log(err);
+            this.emit('end');
+        })
+            .pipe(source("translations.js"))
+            .pipe(buffer())
+            .pipe(gulpif(!config.isProd, sourcemaps.init({loadMaps: true})))
+            .pipe(gulpif(config.isProd, uglify()))
+            .pipe(gulpif(!config.isProd, sourcemaps.write('.')))
+            .pipe(gulp.dest(config.jsTarget))
+    }
+
+    if (gutil.env.watch) {
+        bundler.plugin(watchify);
+
+        bundler.on('update', function () {
+            rebundle();
+            gutil.log('Compilando Archivos de Vue...');
+        }).on('time', function (time) {
+            gutil.log('Listo en: ', gutil.colors.cyan(time + ' ms'));
+        });
+    }
+
+
+    return rebundle();
 });
 
 gulp.task('css', function () {
