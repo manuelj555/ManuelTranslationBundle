@@ -247,6 +247,10 @@
                 <source>label.download_generated_file</source>
                 <target>Download Generated File Backup</target>
             </trans-unit>
+            <trans-unit id="label.generate_and_download_cache_file">
+                <source>label.generate_and_download_cache_file</source>
+                <target>Generate and Download a cache Backup</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

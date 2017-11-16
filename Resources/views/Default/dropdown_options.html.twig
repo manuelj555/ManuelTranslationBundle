@@ -23,6 +23,12 @@
                 {{ 'label.download_generated_file'|trans }}
             </a>
         </li>
+        <li>
+            <a href="{{ path('manuel_translation_download_live_backup_file') }}">
+                <span aria-hidden="true" class="glyphicon glyphicon-download"></span>
+                {{ 'label.generate_and_download_cache_file'|trans }}
+            </a>
+        </li>
         {% if app.environment != 'prod' %}
             <li class="divider"></li>
             <li>

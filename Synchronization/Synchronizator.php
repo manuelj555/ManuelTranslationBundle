@@ -74,7 +74,7 @@ class Synchronizator
         $this->backupDir = $backupDir;
     }
 
-    public function generateFile()
+    public function generateFile($path = null)
     {
         $fileHash = $this->getFileHash();
         $localHash = $this->getLocalHash();
@@ -85,7 +85,10 @@ class Synchronizator
 
         $newHash = $this->generateHashNumber();
 
-        $path = rtrim($this->backupDir, '/') . '/translations.php';
+        if (null === $path) {
+            $path = rtrim($this->backupDir, '/') . '/translations.php';
+        }
+
         $translations = $this->translationRepository->getAll();
 
         $export = $this->getFileData();

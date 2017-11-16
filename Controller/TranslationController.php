@@ -105,26 +105,6 @@ class TranslationController extends Controller
     }
 
     /**
-     * @Route("/local/load", name="manuel_translation_local_load")
-     */
-    public function loadFromFileAction()
-    {
-        $this->get('manuel_translation.local_synchronizator')->fromFile();
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    /**
-     * @Route("/local/write", name="manuel_translation_local_write")
-     */
-    public function writeToFileAction()
-    {
-        $this->get('manuel_translation.local_synchronizator')->toFile();
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    /**
      * @Route("/download.php", name="manuel_translation_download_backup_file")
      */
     public function downloadBackupAction()
@@ -133,6 +113,25 @@ class TranslationController extends Controller
             $this->container->getParameter('kernel.root_dir') . '/Resources/translations/backup/translations.php'
         );
 
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/live-download.php", name="manuel_translation_download_live_backup_file")
+     */
+    public function liveDownloadBackupAction()
+    {
+        $path = $this->getParameter('kernel.cache_dir') . '/translations.php';
+
+        if(!$this->get('manuel_translation.synchronizator')->generateFile($path)){
+            $this->addFlash('warning', $this->get('translator')->trans('local_hash_update_of_range', array(), 'ManuelTranslationBundle'));
+
+            return $this->redirectToRoute('manuel_translation_list');
+        }
+
+        $response = new BinaryFileResponse($path);
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
 
         return $response;
