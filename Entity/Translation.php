@@ -151,7 +151,7 @@ class Translation implements \Serializable
      */
     public function setCode($code)
     {
-        $this->code = $code;
+        $this->code = trim($code);
 
         return $this;
     }
@@ -163,7 +163,7 @@ class Translation implements \Serializable
      */
     public function getCode()
     {
-        return $this->code;
+        return trim($this->code);
     }
 
     /**
