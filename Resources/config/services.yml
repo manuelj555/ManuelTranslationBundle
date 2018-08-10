@@ -40,3 +40,8 @@ services:
         class: ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator
         arguments: ["@manuel_translation.serializer"]
         public: false
+
+    manuel_translation.cache_remover:
+        class: ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover
+        arguments: ["@filesystem", "%kernel.cache_dir%"]
+        public: false
