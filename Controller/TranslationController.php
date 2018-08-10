@@ -66,7 +66,6 @@ class TranslationController extends Controller
             $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
         }
 
-
         return new Response('Ok');
     }
 
@@ -110,7 +109,7 @@ class TranslationController extends Controller
     public function downloadBackupAction()
     {
         $response = new BinaryFileResponse(
-            $this->container->getParameter('kernel.root_dir') . '/Resources/translations/backup/translations.php'
+            $this->container->getParameter('kernel.root_dir').'/Resources/translations/backup/translations.php'
         );
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
@@ -123,10 +122,11 @@ class TranslationController extends Controller
      */
     public function liveDownloadBackupAction()
     {
-        $path = $this->getParameter('kernel.cache_dir') . '/translations.php';
+        $path = $this->getParameter('kernel.cache_dir').'/translations.php';
 
-        if(!$this->get('manuel_translation.synchronizator')->generateFile($path)){
-            $this->addFlash('warning', $this->get('translator')->trans('local_hash_update_of_range', array(), 'ManuelTranslationBundle'));
+        if (!$this->get('manuel_translation.synchronizator')->generateFile($path)) {
+            $this->addFlash('warning',
+                $this->get('translator')->trans('local_hash_update_of_range', array(), 'ManuelTranslationBundle'));
 
             return $this->redirectToRoute('manuel_translation_list');
         }
@@ -135,5 +135,19 @@ class TranslationController extends Controller
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
 
         return $response;
+    }
+
+    /**
+     * @Route("/clear-cache", name="manuel_translation_clear_cache")
+     */
+    public function clearCacheAction()
+    {
+        if (false !== $this->get('manuel_translation.cache_remover')->clear()) {
+            $this->addFlash('success', 'Caché limpiada con éxito');
+        } else {
+            $this->addFlash('warning', 'No se pudo limpiar la caché de traducciones');
+        }
+
+        return $this->redirectToRoute('manuel_translation_list');
     }
 }

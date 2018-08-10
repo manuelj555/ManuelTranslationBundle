@@ -44,4 +44,4 @@ services:
     manuel_translation.cache_remover:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover
         arguments: ["@filesystem", "%kernel.cache_dir%"]
-        public: false
+        public: true

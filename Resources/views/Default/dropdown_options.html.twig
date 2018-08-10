@@ -29,6 +29,13 @@
                 {{ 'label.generate_and_download_cache_file'|trans }}
             </a>
         </li>
+        <li class="divider"></li>
+        <li>
+            <a href="{{ path('manuel_translation_clear_cache') }}">
+                <span aria-hidden="true" class="glyphicon glyphicon-random"></span>
+                {{ 'label.clear_translation_cache'|trans }}
+            </a>
+        </li>
         {% if app.environment != 'prod' %}
             <li class="divider"></li>
             <li>

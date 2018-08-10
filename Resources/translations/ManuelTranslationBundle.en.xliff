@@ -251,6 +251,10 @@
                 <source>label.generate_and_download_cache_file</source>
                 <target>Generate and Download a cache Backup</target>
             </trans-unit>
+            <trans-unit id="label.clear_translation_cache">
+                <source>label.clear_translation_cache</source>
+                <target>Regenerate Translation cache</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
