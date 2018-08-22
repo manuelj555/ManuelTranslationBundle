@@ -12,6 +12,7 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\CataloguesDumper;
 use Symfony\Component\Filesystem\Filesystem;
 
 /**
@@ -20,24 +21,15 @@ use Symfony\Component\Filesystem\Filesystem;
 class DumpFilesListener
 {
     /**
-     * @var Filesystem
-     */
-    private $filesystem;
-    /**
-     * @var array
-     */
-    private $locales;
-
-    /**
-     * @var string
-     */
-    private $filenameTemplate;
-
-    /**
      * @var bool
      * @internal
      */
     private $translationChanged = false;
+
+    /**
+     * @var CataloguesDumper
+     */
+    private $cataloguesDumper;
 
     /**
      * DumpFilesListener constructor.
@@ -46,11 +38,9 @@ class DumpFilesListener
      * @param array $locales
      * @param string $filenameTemplate
      */
-    public function __construct(Filesystem $filesystem, array $locales, $filenameTemplate)
+    public function __construct(CataloguesDumper $cataloguesDumper)
     {
-        $this->filesystem = $filesystem;
-        $this->locales = $locales;
-        $this->filenameTemplate = $filenameTemplate;
+        $this->cataloguesDumper = $cataloguesDumper;
     }
 
     public function postPersist(LifecycleEventArgs $event)
@@ -73,11 +63,8 @@ class DumpFilesListener
     public function postFlush()
     {
         if ($this->translationChanged) {
-            foreach ($this->locales as $locale) {
-                $filename = sprintf($this->filenameTemplate, $locale);
-                $this->filesystem->dumpFile($filename, time());
-            }
-            
+            $this->cataloguesDumper->dump();
+
             $this->translationChanged = false;
         }
     }

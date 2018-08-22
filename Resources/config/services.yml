@@ -45,3 +45,10 @@ services:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover
         arguments: ["@filesystem", "%kernel.cache_dir%"]
         public: true
+
+    manuel_translation.dumper.catalogues:
+        class: ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\CataloguesDumper
+        arguments: ["@filesystem", "%manuel_translation.filename_template%", "%manuel_translation.locales%"]
+        public: false
+        tags:
+            - { name: "kernel.cache_warmer", priority: 1000 }
