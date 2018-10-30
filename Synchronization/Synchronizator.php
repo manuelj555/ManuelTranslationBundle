@@ -252,7 +252,10 @@ class Synchronizator
 
             foreach ($fileValues as $locale => $value) {
                 if (isset($dbValues[$locale])) {
-                    if ($dbValues[$locale] !== $value) {
+                    $one = str_replace("\r\n", "\n", $dbValues[$locale]);
+                    $two = str_replace("\r\n", "\n", $value);
+
+                    if ($one !== $two) {
                         return false;
                     }
                 }
