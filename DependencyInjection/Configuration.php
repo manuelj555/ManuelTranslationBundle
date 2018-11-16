@@ -24,7 +24,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('locales')
                     ->isRequired()
-                    ->cannotBeEmpty()
+                    ->requiresAtLeastOneElement()
                     ->prototype('scalar')->end()
                 ->end()
                 ->arrayNode('bundles')
