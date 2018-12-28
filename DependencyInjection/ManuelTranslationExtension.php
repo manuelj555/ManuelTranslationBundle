@@ -100,5 +100,16 @@ class ManuelTranslationExtension extends Extension
         $container->setParameter('manuel_translation.extract_dirs', $extractDirs);
         $container->setParameter('manuel_translation.translations_files_dirs', $translationFilesDirs);
         $container->setParameter('manuel_translation.files_prefix', $filesPrefixs);
+	
+		if (!class_exists(Kernel::class)) {
+			return;
+		}
+	
+		if (Kernel::MAJOR_VERSION >= 4 || (Kernel::MAJOR_VERSION == 3 && Kernel::MINOR_VERSION >= 4)) {
+			$container->setAlias(
+				'ManuelAguirre\Bundle\TranslationBundle\Controller\ApiController',
+				'manuel_translation.controller.api'
+			)->setPublic(true);
+		}
     }
 }
