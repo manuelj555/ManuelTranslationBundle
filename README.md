@@ -25,7 +25,7 @@ Agregar al composer.json:
 
 ```json
 "require" : {
-    "manuelj555/manuel-translation-bundle": "dev-1.0-vue"
+    "manuelj555/manuel-translation-bundle": "~2.0@dev"
 }
 ```
 
