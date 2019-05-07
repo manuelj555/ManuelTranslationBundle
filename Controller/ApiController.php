@@ -15,7 +15,6 @@ use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -74,8 +73,7 @@ class ApiController
     }
 
     /**
-     * @Route(".{_format}", name="manuel_translation_api_list")
-     * @Method("GET")
+     * @Route(".{_format}", name="manuel_translation_api_list", methods={"GET"})
      */
     public function indexAction(Request $request)
     {
@@ -99,8 +97,7 @@ class ApiController
     }
 
     /**
-     * @Route(".{_format}", name="manuel_translation_api_create")
-     * @Method("POST")
+     * @Route(".{_format}", name="manuel_translation_api_create", methods={"POST"})
      */
     public function createAction(Request $request)
     {
@@ -118,8 +115,7 @@ class ApiController
     }
 
     /**
-     * @Route("/{id}.{_format}", name="manuel_translation_api_update")
-     * @Method("PUT")
+     * @Route("/{id}.{_format}", name="manuel_translation_api_update", methods={"PUT"})
      */
     public function updateAction(Request $request, Translation $translation)
     {
@@ -138,8 +134,7 @@ class ApiController
     }
 
     /**
-     * @Route("/domains.{_format}", name="manuel_translation_api_get_domains")
-     * @Method("GET")
+     * @Route("/domains.{_format}", name="manuel_translation_api_get_domains", methods={"GET"})
      */
     public function getDomainsAction(Request $request)
     {
