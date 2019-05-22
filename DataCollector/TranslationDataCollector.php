@@ -98,4 +98,9 @@ class TranslationDataCollector extends DataCollector
             && php_sapi_name() !== 'cli-server';   
     }
 
+    public function reset()
+    {
+        $this->data = [];
+    }
+
 }
