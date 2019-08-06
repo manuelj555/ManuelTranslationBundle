@@ -15,7 +15,7 @@ class ManuelTranslationBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new AddTranslatorLoadersPass());
-        $container->addCompilerPass(new ConfigureExtractorsPass());
+//        $container->addCompilerPass(new ConfigureExtractorsPass());
         $container->addCompilerPass(new AddTranslatorResourcesPass(), PassConfig::TYPE_OPTIMIZE);
 
 //        if ($container->getParameter('kernel.debug')) {
