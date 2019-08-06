@@ -109,7 +109,7 @@ class TranslationController extends Controller
     public function downloadBackupAction()
     {
         $response = new BinaryFileResponse(
-            $this->container->getParameter('kernel.root_dir').'/Resources/translations/backup/translations.php'
+            $this->container->getParameter('manuel_translation.translations_backup_dir').'translations.php'
         );
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);

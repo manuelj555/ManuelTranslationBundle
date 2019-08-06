@@ -1,5 +1,8 @@
 services:
     manuel_translation.synchronizator:
+        alias: "manuel_translation.synchronizer"
+        public: true
+    manuel_translation.synchronizer:
         class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator
         arguments:
             - "@doctrine.orm.entity_manager"
