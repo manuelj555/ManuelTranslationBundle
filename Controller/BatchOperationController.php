@@ -10,41 +10,45 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
+use ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\TranslationLogListener;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
-use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationLogRepository;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\TranslationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Translation\Catalogue\DiffOperation;
-use Symfony\Component\Translation\Catalogue\MergeOperation;
-use Symfony\Component\Translation\MessageCatalogue;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/batch-process")
  */
-class BatchOperationController extends Controller
+class BatchOperationController extends AbstractController
 {
     /**
      * La idea es pasar las traducciones de los archivos a la base de datos
      *
      * @Route("/files-to-bd", name="manuel_translation_transfer_files_to_bd")
      */
-    public function transferFilesToBdAction()
-    {
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $this->getDoctrine()->getManager();
-
-        $this->get('manuel_translation.doctrine.translation_log_listener')->setActiveLoggin(false);
+    public function transferFilesToBdAction(
+        EntityManagerInterface $em,
+        TranslationLogListener $translationLogListener,
+        TranslationManager $translationManager,
+        TranslatorInterface $translator
+    ) {
+        $translationLogListener->setActiveLoggin(false);
 
         $em->beginTransaction();
-        $this->get('manuel_translation.translation_manager')->extractToDatabase();
+        $translationManager->extractToDatabase();
         $em->flush();
         $em->commit();
 
-        $this->get('manuel_translation.doctrine.translation_log_listener')->setActiveLoggin(true);
+        $translationLogListener->setActiveLoggin(false);
 
-        $this->addFlash('success', $this->get('translator')
-            ->trans('flash.database_loaded', array(), 'ManuelTranslationBundle'));
+        $this->addFlash('success', $translator
+            ->trans('flash.database_loaded', array(), 'ManuelTranslationBundle')
+        );
 
         return $this->redirectToRoute('manuel_translation_list');
     }
@@ -52,17 +56,17 @@ class BatchOperationController extends Controller
     /**
      * @Route("/inactive-unused-translations", name="manuel_translation_inactive_unused")
      */
-    public function inactiveUnusedTranslationsAction()
-    {
-        /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $this->getDoctrine()->getManager();
-
+    public function inactiveUnusedTranslationsAction(
+        EntityManagerInterface $em,
+        TranslationManager $translationManager,
+        TranslatorInterface $translator
+    ) {
         $em->beginTransaction();
-        $this->get('manuel_translation.translation_manager')->inactiveUnused();
+        $translationManager->inactiveUnused();
         $em->flush();
         $em->commit();
 
-        $this->addFlash('success', $this->get('translator')
+        $this->addFlash('success', $translator
             ->trans('flash.database_purged_complete', array(), 'ManuelTranslationBundle'));
 
         return $this->redirectToRoute('manuel_translation_list');
@@ -74,10 +78,13 @@ class BatchOperationController extends Controller
      *  requirements={"status" = "active|inactive"}
      * )
      */
-    public function changeStatusAction(Translation $translation, $status)
-    {
+    public function changeStatusAction(
+        Translation $translation,
+        $status,
+        TranslationLogRepository $repository
+    ) {
         $translation->setActive($status === 'active');
-        $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
+        $repository->saveTranslation($translation);
 
         return $this->redirectToRoute('manuel_translation_list');
     }

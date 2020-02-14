@@ -11,12 +11,10 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-use Pagerfanta\Pagerfanta;
+use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,16 +23,19 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
-class TranslationController extends Controller
+class TranslationController extends AbstractController
 {
     /**
      * @Route("/list/{page}", name="manuel_translation_list", defaults={"page" = 1})
      */
-    public function indexAction(Request $request, $page = 1)
-    {
+    public function indexAction(
+        Request $request,
+        TranslationRepository $repository,
+        $page = 1
+    ) {
         return $this->render('@ManuelTranslation/Default/index.html.twig', array(
             'locales' => $this->container->getParameter('manuel_translation.locales'),
-            'domains' => $this->get('manuel_translation.repository')->getExistentDomains(),
+            'domains' => $repository->getExistentDomains(),
         ));
     }
 
@@ -109,7 +110,7 @@ class TranslationController extends Controller
     public function downloadBackupAction()
     {
         $response = new BinaryFileResponse(
-            $this->container->getParameter('manuel_translation.translations_backup_dir').'translations.php'
+            $this->container->getParameter('manuel_translation.translations_backup_dir') . 'translations.php'
         );
 
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
@@ -122,7 +123,7 @@ class TranslationController extends Controller
      */
     public function liveDownloadBackupAction()
     {
-        $path = $this->getParameter('kernel.cache_dir').'/translations.php';
+        $path = $this->getParameter('kernel.cache_dir') . '/translations.php';
 
         if (!$this->get('manuel_translation.synchronizator')->generateFile($path)) {
             $this->addFlash('warning',

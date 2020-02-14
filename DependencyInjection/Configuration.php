@@ -17,8 +17,8 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('manuel_translation');
+        $treeBuilder = new TreeBuilder('manuel_translation');
+        $rootNode    = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
@@ -30,10 +30,10 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('bundles')
                     ->prototype('scalar')->end()
                 ->end()
-                ->scalarNode('backup_dir')->defaultValue('%kernel.root_dir%/Resources/translations/backup/')->end()
-                ->scalarNode('filename_sync')->defaultValue('%kernel.root_dir%/Resources/translations/translations.txt')->end()
+                ->scalarNode('backup_dir')->defaultValue('%kernel.project_dir%/translations/backup/')->end()
+                ->scalarNode('filename_sync')->defaultValue('%kernel.project_dir%/translations/translations.txt')->end()
                 //->scalarNode('catalogues_path')->defaultValue('%kernel.root_dir%/Resources/translations/')->end()
-                ->scalarNode('catalogues_path')->defaultValue('%kernel.root_dir%/cache/translations/')->end()
+                ->scalarNode('catalogues_path')->defaultValue('%kernel.project_dir%/var/translations/')->end()
                 ->booleanNode('use_database')->defaultTrue()->end()
             ->end();
 

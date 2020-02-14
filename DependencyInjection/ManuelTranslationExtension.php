@@ -56,17 +56,16 @@ class ManuelTranslationExtension extends Extension
     private function registerTranslatorResources($config, ContainerBuilder $container)
     {
         // Discover translation directories
-        $filesPrefixs = array($container->getParameter('kernel.root_dir').'/Resources/views' => 'views');
-        $extractDirs = array($container->getParameter('kernel.root_dir').'/Resources/views');
+        $filesPrefixs = array($container->getParameter('kernel.project_dir').'/templates' => 'views');
+        $extractDirs = array($container->getParameter('kernel.project_dir').'/templates');
 
-        if (is_dir($container->getParameter('kernel.root_dir').'/Resources/translations')) {
-            $translationFilesDirs = array($container->getParameter('kernel.root_dir').'/Resources/translations');
+        if (is_dir($container->getParameter('kernel.project_dir').'/translations')) {
+            $translationFilesDirs = array($container->getParameter('kernel.project_dir').'/translations');
         } else {
             $translationFilesDirs = array();
         }
 
-        $overrideViewsPath = $container->getParameter('kernel.root_dir').'/Resources/%s/views';
-        $overrideTransPath = $container->getParameter('kernel.root_dir').'/Resources/%s/translations';
+        $overrideViewsPath = $container->getParameter('kernel.project_dir').'/templates/bundles/%s/Resources/views';
 
         $bundles = $container->getParameter('kernel.bundles');
 
@@ -91,10 +90,6 @@ class ManuelTranslationExtension extends Extension
             if (is_dir($d = sprintf($overrideViewsPath, $bundle))) {
                 $extractDirs[] = $d;
                 $filesPrefixs[$d] = $bundle;
-            }
-
-            if (is_dir($d = sprintf($overrideTransPath, $bundle))) {
-                $translationFilesDirs[] = $d;
             }
         }
 

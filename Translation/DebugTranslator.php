@@ -11,7 +11,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation;
 
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @author Abdellatif Ait boudad <a.aitboudad@gmail.com>

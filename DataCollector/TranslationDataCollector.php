@@ -33,16 +33,7 @@ class TranslationDataCollector extends DataCollector
         $this->locales = $locales;
     }
 
-    /**
-     * Collects data for the given Request and Response.
-     *
-     * @param Request    $request   A Request instance
-     * @param Response   $response  A Response instance
-     * @param \Exception $exception An Exception instance
-     *
-     * @api
-     */
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
         $total = 0;
 
