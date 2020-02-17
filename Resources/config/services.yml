@@ -1,4 +1,12 @@
 services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true #
+
+    ManuelAguirre\Bundle\TranslationBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments', 'container.service_subscriber']
+
     manuel_translation.repository:
         alias: "manuel_translation.translations_repository"
         public: true
@@ -6,6 +14,8 @@ services:
         class: ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository
         factory: ["@doctrine.orm.entity_manager", "getRepository"]
         arguments: ['ManuelTranslationBundle:Translation']
+
+    ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository: "@manuel_translation.translations_repository"
 
     manuel_translation.translations_repository.backup:
         class: ManuelAguirre\Bundle\TranslationBundle\BackupTranslationRepository
@@ -43,10 +53,8 @@ services:
         arguments: ["@manuel_translation.serializer"]
         public: false
 
-    manuel_translation.cache_remover:
-        class: ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover
+    ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover:
         arguments: ["@filesystem", "%kernel.cache_dir%"]
-        public: true
 
     manuel_translation.dumper.catalogues:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\CataloguesDumper

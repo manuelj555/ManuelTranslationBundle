@@ -16,6 +16,8 @@ use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -25,6 +27,16 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class SyncController extends AbstractController
 {
+    /**
+     * @var ParameterBagInterface
+     */
+    private $parameters;
+
+    public function __construct(ParameterBagInterface $parameters)
+    {
+        $this->parameters = $parameters;
+    }
+
     /**
      * @Route("/generate-file", name="manuel_translation_generate_file")
      */
@@ -49,9 +61,9 @@ class SyncController extends AbstractController
     public function syncAction(
         Synchronizator $synchronizator
     ) {
-        $synchronizator->sync();
+        $result = $synchronizator->sync();
 
-        $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
+        $filenameTemplate = $this->parameters->get('manuel_translation.filename_template');
 
         return $this->render('@ManuelTranslation/Sync/resolve_conflicts.html.twig', array(
             'news' => $result->getNews(),

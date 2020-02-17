@@ -1,4 +1,5 @@
 services:
+    ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator: "@manuel_translation.synchronizer"
     manuel_translation.synchronizator:
         alias: "manuel_translation.synchronizer"
         public: true
