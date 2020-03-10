@@ -62,3 +62,8 @@ services:
         public: false
         tags:
             - { name: "kernel.cache_warmer", priority: 1000 }
+
+    ManuelAguirre\Bundle\TranslationBundle\Provider\TranslationsProvider:
+        arguments:
+            - "@Symfony\\Contracts\\Translation\\TranslatorInterface"
+            - "@ManuelAguirre\\Bundle\\TranslationBundle\\Entity\\TranslationRepository"
