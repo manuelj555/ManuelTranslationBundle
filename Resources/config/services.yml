@@ -10,6 +10,9 @@ services:
     ManuelAguirre\Bundle\TranslationBundle\Command\:
         resource: '../../Command'
 
+    ManuelAguirre\Bundle\TranslationBundle\Twig\:
+        resource: '../../Twig'
+
     ManuelAguirre\Bundle\TranslationBundle\Command\TranslationToDbCommand:
         arguments:
             - ""
