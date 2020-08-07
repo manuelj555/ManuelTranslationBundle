@@ -10,7 +10,8 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -18,11 +19,24 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
-class TranslationToFileCommand extends ContainerAwareCommand
+class TranslationToFileCommand extends Command
 {
+    protected static $defaultName = 'manuel:translation:generate';
+    /**
+     * @var Synchronizator
+     */
+    private $synchronizator;
+
+    public function __construct(Synchronizator $synchronizator)
+    {
+        parent::__construct();
+
+        $this->synchronizator = $synchronizator;
+    }
+
     protected function configure()
     {
-        $this->setName('manuel:translation:generate')
+        $this
             ->setDescription("Copia todas las traducciones que están en la Base de datos a un archivo de texto")
             ->setAliases(['manuel:translation:update']);
     }
@@ -33,7 +47,7 @@ class TranslationToFileCommand extends ContainerAwareCommand
 
         $io->writeln("Copiando traducciones al archivo");
 
-        $result = $this->getContainer()->get('manuel_translation.synchronizator')->generateFile();
+        $result = $this->synchronizator->generateFile();
 
         if ($result) {
             $io->success("El archivo de traducciones se ha creado/actualizado con exito");
@@ -41,6 +55,7 @@ class TranslationToFileCommand extends ContainerAwareCommand
             $io->error("No se pudo actualizar el archivo, debe sincronizar su base de datos antes");
         }
 
+        return 0;
     }
 
 }
