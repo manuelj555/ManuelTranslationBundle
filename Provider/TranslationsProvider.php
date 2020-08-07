@@ -34,7 +34,7 @@ class TranslationsProvider
         $this->repository = $repository;
     }
 
-    public function byLocalAndDomain($locale, $domain): array
+    public function byLocaleAndDomain($locale, $domain): array
     {
         if ($this->translator instanceof TranslatorBagInterface) {
             return $this->translator->getCatalogue($locale)->all($domain);
