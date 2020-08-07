@@ -12,8 +12,8 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationLogRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @ autor Manuel Aguirre <programador.manuel@gmail.com>

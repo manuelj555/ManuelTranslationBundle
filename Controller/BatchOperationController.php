@@ -15,10 +15,8 @@ use ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\TranslationLogListe
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationLogRepository;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\TranslationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Translation\Catalogue\DiffOperation;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**

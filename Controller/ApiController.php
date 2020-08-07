@@ -10,22 +10,21 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
-use ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
+use ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  *
- * @Route("/api", 
- *     service="manuel_translation.controller.api",
+ * @Route("/api",
  *     requirements={"_format" = "xml|json"},
  *     defaults={"_format" = "json"}
  * )

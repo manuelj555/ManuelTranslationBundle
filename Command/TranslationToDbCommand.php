@@ -10,24 +10,55 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Command;
 
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
 use ManuelAguirre\Bundle\TranslationBundle\Synchronization\SyncResult;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
-class TranslationToDbCommand extends ContainerAwareCommand
+class TranslationToDbCommand extends Command
 {
+    protected static $defaultName = 'manuel:translation:sync';
+    /**
+     * @var Synchronizator
+     */
+    private $synchronizator;
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+    /**
+     * @var string
+     */
+    private $filenameTemplate;
+    /**
+     * @var array
+     */
+    private $locales;
+
+    public function __construct(
+        Synchronizator $synchronizator,
+        Filesystem $filesystem,
+        string $filenameTemplate,
+        array $locales
+    ) {
+        parent::__construct();
+
+        $this->synchronizator = $synchronizator;
+        $this->filesystem = $filesystem;
+        $this->filenameTemplate = $filenameTemplate;
+        $this->locales = $locales;
+    }
+
     protected function configure()
     {
-        $this->setName('manuel:translation:sync')
+        $this
             ->setDescription("Sincroniza las traducciones que están en el archivo con la Base de datos")
             ->addOption('show-conflicts', null, InputOption::VALUE_NONE,
                 'Muestra las etiquetas con conflictos si las hay');
@@ -39,12 +70,11 @@ class TranslationToDbCommand extends ContainerAwareCommand
 
         $io->writeln("Sincronizando...");
 
-        $result = $this->getContainer()->get('manuel_translation.synchronizator')->sync();
-        $filenameTemplate = $this->getContainer()->getParameter('manuel_translation.filename_template');
+        $result = $this->synchronizator->sync();
 
-        foreach ($this->getContainer()->getParameter('manuel_translation.locales') as $locale) {
-            $filename = sprintf($filenameTemplate, $locale);
-            $this->getContainer()->get('filesystem')->dumpFile($filename, time());
+        foreach ($this->locales as $locale) {
+            $filename = sprintf($this->filenameTemplate, $locale);
+            $this->filesystem->dumpFile($filename, time());
         }
 
         if (0 === $numConflicts = count($result->getConflictItems())) {
@@ -71,6 +101,8 @@ class TranslationToDbCommand extends ContainerAwareCommand
             $io->newLine();
             $io->writeln("Debe sincronizar desde el navegador para poder resolver los conflictos generados!!!");
         }
+
+        return 0;
     }
 
     private function getConflictedCodes(SyncResult $result)

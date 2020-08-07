@@ -7,6 +7,16 @@ services:
         resource: '../../Controller'
         tags: ['controller.service_arguments', 'container.service_subscriber']
 
+    ManuelAguirre\Bundle\TranslationBundle\Command\:
+        resource: '../../Command'
+
+    ManuelAguirre\Bundle\TranslationBundle\Command\TranslationToDbCommand:
+        arguments:
+            - ""
+            - ""
+            - "%manuel_translation.filename_template%"
+            - "%manuel_translation.locales%"
+
     manuel_translation.repository:
         alias: "manuel_translation.translations_repository"
         public: true
