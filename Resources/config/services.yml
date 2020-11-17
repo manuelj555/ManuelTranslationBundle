@@ -80,3 +80,9 @@ services:
         arguments:
             - "@Symfony\\Contracts\\Translation\\TranslatorInterface"
             - "@ManuelAguirre\\Bundle\\TranslationBundle\\Entity\\TranslationRepository"
+
+    ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\ChangeTableNameListener:
+        arguments:
+            - ""
+        tags:
+            - { name: doctrine.event_listener, event: loadClassMetadata }

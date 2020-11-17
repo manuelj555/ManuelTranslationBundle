@@ -35,6 +35,7 @@ class Configuration implements ConfigurationInterface
                 //->scalarNode('catalogues_path')->defaultValue('%kernel.root_dir%/Resources/translations/')->end()
                 ->scalarNode('catalogues_path')->defaultValue('%kernel.project_dir%/var/translations/')->end()
                 ->booleanNode('use_database')->defaultTrue()->end()
+                ->scalarNode('tables_prefix')->end()
             ->end();
 
         return $treeBuilder;
