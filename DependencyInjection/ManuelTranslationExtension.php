@@ -53,7 +53,7 @@ class ManuelTranslationExtension extends Extension
                 );
         }
 
-        if ($config['tables_prefix']) {
+        if (isset($config['tables_prefix']) && $config['tables_prefix']) {
             $container->findDefinition(ChangeTableNameListener::class)
                 ->replaceArgument(0, $config['tables_prefix']);
         } else {
