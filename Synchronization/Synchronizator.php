@@ -123,10 +123,6 @@ class Synchronizator
 
         $output = "<?php\n\nreturn " . var_export($export, true) . ";\n";
 
-        if (is_file($path)) {
-            $this->filesystem->copy($path, $path . '~', true);
-        }
-
         $this->filesystem->dumpFile($path, $output);
         $this->updateLocalHash($newHash);
 
