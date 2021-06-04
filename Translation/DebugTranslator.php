@@ -14,11 +14,12 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Translation;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Contracts\Translation\LocaleAwareInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorInterface as DeprecatedTranslatorInterface;
 
 /**
  * @author Abdellatif Ait boudad <a.aitboudad@gmail.com>
  */
-class DebugTranslator implements TranslatorInterface, TranslatorBagInterface, LocaleAwareInterface
+class DebugTranslator implements TranslatorInterface, TranslatorBagInterface, LocaleAwareInterface, DeprecatedTranslatorInterface
 {
     /**
      * @var TranslatorInterface
@@ -133,7 +134,7 @@ class DebugTranslator implements TranslatorInterface, TranslatorBagInterface, Lo
         return $this->missingTranslations;
     }
 
-    public function getCatalogue(string $locale = null)
+    public function getCatalogue($locale = null)
     {
         if (!$this->translator instanceof TranslatorBagInterface) {
             throw new \LogicException("Se esperaba que el traductor implementara 'TranslatorBagInterface'");
