@@ -2,7 +2,7 @@
 /**
  */
 
-namespace ManuelAguirre\Bundle\TranslationBundle\Test\Translation;
+namespace ManuelAguirre\Bundle\TranslationBundle\Tests\Translation;
 
 use ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover;
 use Prophecy\Argument;
