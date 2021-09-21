@@ -58,9 +58,10 @@ class SyncController extends AbstractController
      * @Route("/sync", name="manuel_translation_load_from_file")
      */
     public function syncAction(
-        Synchronizator $synchronizator
+        Synchronizator $synchronizator,
+        Request $request
     ) {
-        $result = $synchronizator->sync();
+        $result = $synchronizator->sync($request->query->getBoolean('forced'));
 
         $filenameTemplate = $this->parameters->get('manuel_translation.filename_template');
 

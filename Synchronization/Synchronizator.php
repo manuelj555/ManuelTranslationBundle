@@ -129,12 +129,12 @@ class Synchronizator
         return true;
     }
 
-    public function sync()
+    public function sync($forced = false)
     {
         list($fileHash, $fileTranslations) = $this->createTranslationsFromFile();
         $localHash = $this->getLocalHash();
 
-        if (false !== $fileHash and $fileHash !== $localHash) {
+        if ($forced || (false !== $fileHash and $fileHash !== $localHash)) {
             $result = $this->doSync($fileTranslations);
 
             if (count($result->getConflictItems()) == 0) {
@@ -227,7 +227,12 @@ class Synchronizator
                         );
                         ++$numUpdates;
                     } else {
-                        $conflicts[] = array('file' => $t, 'database' => $dbT, 'hash' => $t->getHash());
+                        $conflicts[] = [
+                            'file' => $t,
+                            'database' => $dbT,
+                            'hash' => $t->getHash(),
+                            'database_hash' => $dbT->getHash(),
+                        ];
                     }
                 } else {
                     //La creamos de una vez
