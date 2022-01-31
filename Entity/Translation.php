@@ -4,6 +4,7 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Entity;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
+use ManuelAguirre\Bundle\TranslationBundle\Model\TranslationLastEdit;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -51,8 +52,14 @@ class Translation implements \Serializable
      * Posibles valores: local, file
      * @todo Convertir a un enum
      */
-    #[ORM\Column(name: "last_changed", length: 10, nullable: true)]
-    private string $lastChanged = 'local';
+    #[ORM\Column(
+        name: "last_changed",
+        type: 'string',
+        length: 10,
+        nullable: true,
+        enumType: TranslationLastEdit::class,
+    )]
+    private TranslationLastEdit $lastChanged;
 
     /**
      * Indica si se ha establecido un valor para el atributo $lastChanged, para que los callback
@@ -73,6 +80,7 @@ class Translation implements \Serializable
     {
         $this->setCode($code);
         $this->setDomain($domain);
+        $this->lastChanged = TranslationLastEdit::LOCAL;
     }
 
     public function getId(): ?int
@@ -215,19 +223,14 @@ class Translation implements \Serializable
         $this->setHash(uniqid(md5(serialize($this->getValues()))));
     }
 
-    public function getLastChanged(): string
+    public function getLastChanged(): TranslationLastEdit
     {
-        return $this->lastChanged ?? 'local';
+        return $this->lastChanged ??= TranslationLastEdit::LOCAL;
     }
 
-    public function setLastChanged(string $lastChanged): void
+    public function setLastChanged(TranslationLastEdit $lastChanged): void
     {
-        if ($lastChanged == 'file') {
-            $this->lastChanged = 'file';
-        } else {
-            $this->lastChanged = 'local';
-        }
-
+        $this->lastChanged = $lastChanged;
         $this->updatedLastChanged = true;
     }
 
@@ -235,7 +238,7 @@ class Translation implements \Serializable
     public function setLastChangedOnSave(): void
     {
         if (!$this->updatedLastChanged) {
-            $this->lastChanged = 'local';
+            $this->lastChanged = TranslationLastEdit::LOCAL;
         }
     }
 }
