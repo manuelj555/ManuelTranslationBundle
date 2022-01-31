@@ -10,46 +10,106 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\SyncResult;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
-
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
-class TranslationToDbCommand extends ContainerAwareCommand
+class TranslationToDbCommand extends Command
 {
+    protected static $defaultName = 'manuel:translation:sync';
+    /**
+     * @var Synchronizator
+     */
+    private $synchronizator;
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
+    /**
+     * @var string
+     */
+    private $filenameTemplate;
+    /**
+     * @var array
+     */
+    private $locales;
+
+    public function __construct(
+        Synchronizator $synchronizator,
+        Filesystem $filesystem,
+        string $filenameTemplate,
+        array $locales
+    ) {
+        parent::__construct();
+
+        $this->synchronizator = $synchronizator;
+        $this->filesystem = $filesystem;
+        $this->filenameTemplate = $filenameTemplate;
+        $this->locales = $locales;
+    }
+
     protected function configure()
     {
-        $this->setName('manuel:translation:load')
-            ->setDescription("Copia todas las traducciones que están en el archivo a la Base de datos");
+        $this
+            ->setDescription("Sincroniza las traducciones que están en el archivo con la Base de datos")
+            ->addOption('show-conflicts', null, InputOption::VALUE_NONE,
+                'Muestra las etiquetas con conflictos si las hay');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $sync = $this->getContainer()->get('manuel_translation.local_synchronizator');
+        $io = new SymfonyStyle($input, $output);
 
-        $output->writeln("Este proceso Modificará las traducciones sin verificar modificaciones en la base de datos");
-        $helper = $this->getHelper('question');
+        $io->writeln("Sincronizando...");
 
-        $question = new ConfirmationQuestion('¿Está seguro de querer actualizar las traducciones? [y/N] ', false);
+        $result = $this->synchronizator->sync();
 
-        if (!$helper->ask($input, $output, $question)) {
-            return;
+        foreach ($this->locales as $locale) {
+            $filename = sprintf($this->filenameTemplate, $locale);
+            $this->filesystem->dumpFile($filename, time());
         }
 
-        $output->writeln("Copiando las traducciones a la Base de datos");
-
-        if(!$backupName = $sync->fromFile()){
-            $output->writeln("No se pudo completar la operación");
-            $output->writeln("Verifique que el archivo exista y se encuentre en el directorio correcto");
-            return 1;
+        if (0 === $numConflicts = count($result->getConflictItems())) {
+            $io->success("La base de datos ha sido actualizada correctamente");
+        } else {
+            $io->warning("La base de datos ha sido actualizada, pero no se pudieron actualizar todas las traducciones");
         }
 
-        $output->writeln("La base de datos ha sido actualizada correctamente");
-        $output->writeln(sprintf("Además se ha generado el archivo de backup <comment>%s</comment>", $backupName));
+        $io->table([], [
+            ['Items Creados', sprintf('<fg=green>%d</>', $result->getNews())],
+            ['Items Actualizados', sprintf('<fg=blue>%d</>', $result->getUpdated())],
+            ['Items con conflictos', sprintf('<fg=red>%d</>', $numConflicts)],
+        ]);
+
+        if (0 !== $numConflicts) {
+            if ($input->getOption('show-conflicts')) {
+                $io->section("Traducciones en conflicto:");
+
+                $io->write('<options=bold;fg=yellow>');
+                $io->listing(iterator_to_array($this->getConflictedCodes($result)));
+                $io->write('</>');
+            }
+
+            $io->newLine();
+            $io->writeln("Debe sincronizar desde el navegador para poder resolver los conflictos generados!!!");
+        }
+
+        return 0;
+    }
+
+    private function getConflictedCodes(SyncResult $result)
+    {
+        foreach ($result->getConflictItems() as $conflictItem) {
+            yield $conflictItem['file']->getCode();
+        }
     }
 
 }

@@ -187,14 +187,6 @@
                 <source>label.items</source>
                 <target>Items</target>
             </trans-unit>
-            <trans-unit id="label.generate_backup">
-                <source>label.generate_backup</source>
-                <target>Generate Backup</target>
-            </trans-unit>
-            <trans-unit id="label.restore_backup">
-                <source>label.restore_backup</source>
-                <target>Restore Backup</target>
-            </trans-unit>
             <trans-unit id="label.edit">
                 <source>label.edit</source>
                 <target>Edit</target>
@@ -202,6 +194,66 @@
             <trans-unit id="label.inactive">
                 <source>label.inactive</source>
                 <target>Inactive</target>
+            </trans-unit>
+            <trans-unit id="label.update_file">
+                <source>label.update_file</source>
+                <target>Update/Generate Translation File</target>
+            </trans-unit>
+            <trans-unit id="label.load_from_file">
+                <source>label.load_from_file</source>
+                <target>Synchronize Translations From File</target>
+            </trans-unit>
+            <trans-unit id="update_file_complete_flash">
+                <source>update_file_complete_flash</source>
+                <target>File Successfull Updated</target>
+            </trans-unit>
+            <trans-unit id="label.sync_results">
+                <source>label.sync_results</source>
+                <target>Synchronization Results</target>
+            </trans-unit>
+            <trans-unit id="label.new_items">
+                <source>label.new_items</source>
+                <target>New Items</target>
+            </trans-unit>
+            <trans-unit id="label.updated_items">
+                <source>label.updated_items</source>
+                <target>Updated Items</target>
+            </trans-unit>
+            <trans-unit id="label.conflicted_items">
+                <source>label.conflicted_items</source>
+                <target>Conflicted Items</target>
+            </trans-unit>
+            <trans-unit id="label.to_inactivate_items">
+                <source>label.to_inactivate_items</source>
+                <target>Inactivated Items</target>
+            </trans-unit>
+            <trans-unit id="label.database_values">
+                <source>label.database_values</source>
+                <target>Database Values</target>
+            </trans-unit>
+            <trans-unit id="label.file_values">
+                <source>label.file_values</source>
+                <target>File Values</target>
+            </trans-unit>
+            <trans-unit id="label.conflict_items">
+                <source>label.conflict_items</source>
+                <target>Conflict Items</target>
+            </trans-unit>
+            <trans-unit id="local_hash_update_of_range">
+                <source>local_hash_update_of_range</source>
+                <target>You need synchronize first, before generate or update the file backup</target>
+            </trans-unit>
+            <trans-unit id="label.download_generated_file">
+                <source>label.download_generated_file</source>
+                <target>Download Generated File Backup</target>
+            </trans-unit>
+            <trans-unit id="label.generate_and_download_cache_file">
+                <source>label.generate_and_download_cache_file</source>
+                <target>Generate and Download a cache Backup</target>
+            </trans-unit>
+            <trans-unit id="label.clear_translation_cache">
+                <source>label.clear_translation_cache</source>
+                <target>Regenerate Translation cache</target>
             </trans-unit>
         </body>
     </file>

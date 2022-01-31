@@ -2,35 +2,29 @@ services:
     manuel_translation.translations_doctrine_dumper:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\DoctrineDumper
         arguments:
-            - @doctrine.orm.entity_manager
-            - @manuel_translation.translations_repository
-            - %manuel_translation.locales%
+            - "@doctrine.orm.entity_manager"
+            - "@manuel_translation.translations_repository"
+            - "%manuel_translation.locales%"
         tags:
             - { name: translation.dumper, alias: doctrine }
-
-    manuel_translation.translation_form_filter_type:
-        class: ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationFilterType
-        arguments: [@manuel_translation.translations_repository]
-        tags:
-            - { name: form.type, alias: translation_filter }
 
     manuel_translation.translation_loader:
         class: Symfony\Bundle\FrameworkBundle\Translation\TranslationLoader
 
     manuel_translation.debug_translator:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator
-        arguments: [@manuel_translation.debug_translator.inner]
+        arguments: ["@manuel_translation.debug_translator.inner"]
         decorates: translator
 
     manuel_translation.translations_data_collector:
         class: ManuelAguirre\Bundle\TranslationBundle\DataCollector\TranslationDataCollector
         arguments:
-            - @manuel_translation.debug_translator
-            - %manuel_translation.locales%
+            - "@manuel_translation.debug_translator"
+            - "%manuel_translation.locales%"
         tags:
             -
                 name: data_collector
-                template: @ManuelTranslation/DataCollector/translations.html.twig
+                template: "@ManuelTranslation/DataCollector/translations.html.twig"
                 id: manuel_translations
 
     manuel_translation.doctrine.translation_log_listener:
@@ -39,43 +33,35 @@ services:
             - { name: doctrine.event_listener, event: preUpdate }
             - { name: doctrine.event_listener, event: postFlush }
 
+    manuel_translation.doctrine.dump_files_listener:
+        class: ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\DumpFilesListener
+        arguments:
+            - "@manuel_translation.dumper.catalogues"
+        tags:
+            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: postFlush }
 
     manuel_translation.translation_manager:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\TranslationManager
         arguments:
-            - @translation.extractor
-            - @manuel_translation.translation_loader
-            - @manuel_translation.translations_doctrine_loader
-            - @manuel_translation.translations_doctrine_dumper
-            - @manuel_translation.translations_repository
-            - %manuel_translation.locales%
-            - %manuel_translation.extract_dirs%
-            - %manuel_translation.translations_files_dirs%
+            - "@translation.extractor"
+            - "@manuel_translation.translation_loader"
+            - "@manuel_translation.translations_doctrine_loader"
+            - "@manuel_translation.translations_doctrine_dumper"
+            - "@manuel_translation.translations_repository"
+            - "%manuel_translation.locales%"
+            - "%manuel_translation.extract_dirs%"
+            - "%manuel_translation.translations_files_dirs%"
         calls:
-            - ['setFilesPrefix', [%manuel_translation.files_prefix%]]
+            - ['setFilesPrefix', ["%manuel_translation.files_prefix%"]]
 
     manuel_translation.backup_manager:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\BackupManager
         arguments:
-            - @manuel_translation.translations_doctrine_loader
-            - @manuel_translation.translations_doctrine_dumper
-            - %manuel_translation.locales%
+            - "@manuel_translation.translations_doctrine_loader"
+            - "@manuel_translation.translations_doctrine_dumper"
+            - "%manuel_translation.locales%"
         calls:
-            - ['setBackupDumper', [@translation.dumper.php]]
-            - ['setBackupDir', [%manuel_translation.translations_backup_dir%]]
-
-
-    manuel_translation.translation_type:
-        class: ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationType
-        arguments: [@manuel_translation.translations_repository]
-        tags:
-            - { name: form.type , alias: manuel_translation }
-
-    manuel_translation.local_synchronizator:
-        class: ManuelAguirre\Bundle\TranslationBundle\Synchronization\LocalSynchronizator
-        arguments:
-            - @doctrine.orm.entity_manager
-            - @manuel_translation.translations_repository
-            - @manuel_translation.backup_manager
-            - @filesystem
-            - %manuel_translation.filename_sync%
+            - ['setBackupDumper', ["@translation.dumper.php"]]
+            - ['setBackupDir', ["%manuel_translation.translations_backup_dir%"]]

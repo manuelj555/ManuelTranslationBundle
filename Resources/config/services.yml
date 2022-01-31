@@ -1,11 +1,88 @@
 services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true #
+
+    ManuelAguirre\Bundle\TranslationBundle\Controller\:
+        resource: '../../Controller'
+        tags: ['controller.service_arguments', 'container.service_subscriber']
+
+    ManuelAguirre\Bundle\TranslationBundle\Command\:
+        resource: '../../Command'
+
+    ManuelAguirre\Bundle\TranslationBundle\Twig\:
+        resource: '../../Twig'
+
+    ManuelAguirre\Bundle\TranslationBundle\Command\TranslationToDbCommand:
+        arguments:
+            - ""
+            - ""
+            - "%manuel_translation.filename_template%"
+            - "%manuel_translation.locales%"
+
+    manuel_translation.repository:
+        alias: "manuel_translation.translations_repository"
+        public: true
     manuel_translation.translations_repository:
         class: ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository
-        factory: [@doctrine.orm.entity_manager, getRepository]
+        factory: ["@doctrine.orm.entity_manager", "getRepository"]
         arguments: ['ManuelTranslationBundle:Translation']
+
+    ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository: "@manuel_translation.translations_repository"
+
+    manuel_translation.translations_repository.backup:
+        class: ManuelAguirre\Bundle\TranslationBundle\BackupTranslationRepository
+        arguments: ["%manuel_translation.translations_backup_dir%"]
+        public: false
 
     manuel_translation.translations_doctrine_loader:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader
-        arguments: [@manuel_translation.translations_repository, %manuel_translation.filename_template%]
+        arguments: ["@manuel_translation.translations_repository", "%manuel_translation.filename_template%"]
         tags:
             - { name: translation.loader, alias: doctrine }
+
+    manuel_translation.translation_form_filter_type:
+        class: ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationFilterType
+        arguments: ["@manuel_translation.translations_repository"]
+        tags:
+            - { name: form.type, alias: translation_filter }
+
+    manuel_translation.translation_type:
+        class: ManuelAguirre\Bundle\TranslationBundle\Form\Type\TranslationType
+        arguments: ["@manuel_translation.translations_repository", "%manuel_translation.locales%"]
+        tags:
+            - { name: form.type , alias: manuel_translation }
+
+    manuel_translation.controller.api:
+        class: ManuelAguirre\Bundle\TranslationBundle\Controller\ApiController
+        arguments:
+            - "@manuel_translation.http.response.json"
+            - "@manuel_translation.repository"
+            - "@manuel_translation.serializer"
+            - "@validator"
+
+    manuel_translation.http.response.json:
+        class: ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator
+        arguments: ["@manuel_translation.serializer"]
+        public: false
+
+    ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover:
+        arguments: ["@filesystem", "%kernel.cache_dir%"]
+
+    manuel_translation.dumper.catalogues:
+        class: ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\CataloguesDumper
+        arguments: ["@filesystem", "%manuel_translation.filename_template%", "%manuel_translation.locales%"]
+        public: false
+        tags:
+            - { name: "kernel.cache_warmer", priority: 1000 }
+
+    ManuelAguirre\Bundle\TranslationBundle\Provider\TranslationsProvider:
+        arguments:
+            - "@Symfony\\Contracts\\Translation\\TranslatorInterface"
+            - "@ManuelAguirre\\Bundle\\TranslationBundle\\Entity\\TranslationRepository"
+
+    ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\ChangeTableNameListener:
+        arguments:
+            - ""
+        tags:
+            - { name: doctrine.event_listener, event: loadClassMetadata }

@@ -2,6 +2,10 @@
 
 {% trans_default_domain "ManuelTranslationBundle" %}
 
+{% block body %}
+    <div id="translations-container">{{ parent() }}</div>
+{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
@@ -18,153 +22,36 @@
     </style>
 {% endblock %}
 
-{% block page_header %}{{ 'label.translation_list'|trans }}{% endblock %}
-
-{% block page_header_rigth %}
-    <a href="{{ path('manuel_translation_form') }}" class="btn btn-primary" id="add-translation">
-        <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
-    </a>
-    <div class="btn-group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            <span aria-hidden="true" class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-right" role="menu">
-            {% if enable_sync %}
-                <li>
-                    <a href="{{ path('manuel_translation_synchronize_up') }}">
-                        <span aria-hidden="true" class="glyphicon glyphicon-upload"></span>
-                        {{ 'label.upload_translations'|trans }}
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ path('manuel_translation_synchronize_down') }}">
-                        <span aria-hidden="true" class="glyphicon glyphicon-download"></span>
-                        {{ 'label.download_translations'|trans }}
-                    </a>
-                </li>
-                <li class="divider"></li>
-                <li>
-                    <a href="{{ path('manuel_translation_show_conflicts') }}">
-                        <span aria-hidden="true" class="glyphicon glyphicon-eye-open"></span>
-                        {{ 'label.show_conflicts'|trans }}
-                    </a>
-                </li>
-                <li class="divider"></li>
-            {% endif %}
-            <li><a href="{{ path('manuel_translation_transfer_files_to_bd') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
-                    {{ 'label.load_trans_in_bd'|trans }}
-                </a></li>
-            <li><a href="{{ path('manuel_translation_inactive_unused') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
-                    {{ 'label.inactive_unused_trans'|trans }}
-                </a></li>
-            <li class="divider"></li>
-            <li><a href="{{ path('manuel_translation_generate_backup') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-tasks"></span>
-                    {{ 'label.generate_backup'|trans }}
-                </a></li>
-            <li><a href="{{ path('manuel_translation_backup_list') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-floppy-open"></span>
-                    {{ 'label.restore_backup'|trans }}
-                </a></li>
-        </ul>
-    </div>
+{% block page_header %}
+    {{ 'label.translation_list'|trans }}
 {% endblock %}
 
-{% set pagination_content %}
-<div class="row">
-    <div class="col-sm-3">
-        <h4>
-            <b>{{ translations.nbResults }}</b> {{ 'label.items'|trans }}
-        </h4>
-    </div>
-    <div class="col-sm-9 text-right">
-        {{ include('@ManuelTranslation/_pagination.html.twig', {paginator: translations}) }}
-    </div>
-</div>
-{% endset %}
+{% block page_header_right %}
+    <a href="#" @click.prevent="addTranslation" 
+    class="btn btn-primary" id="add-translation">
+        <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
+    </a>
+    {{ include('@ManuelTranslation/Default/dropdown_options.html.twig') }}
+{% endblock %}
 
 {% block content %}
+    {% verbatim %}
+        
+        <trans-list></trans-list>
 
-    {{ include('@ManuelTranslation/translations_filter.html.twig') }}
-    {{ pagination_content }}
-
-    <table class="table table-bordered table-condensed translation-list">
-        <thead>
-            <tr>
-                {#<th class="col-sm-1"></th>#}
-                <th class="col-sm-5">{{ 'label.code'|trans }}</th>
-                <th class="col-sm-7">{{ 'label.translation_values'|trans }}</th>
-                {#{% for locale in locales %}#}
-                {#<th>{{ locale }}</th>#}
-                {#{% endfor %}#}
-                {#<th class="col-sm-1">{{ 'label.actions'|trans }}</th>#}
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in translations %}
-                {{ include('@ManuelTranslation/Translation/_row.html.twig', {translation: item}) }}
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {{ pagination_content }}
-
-    {{ include('@ManuelTranslation/Default/translation_form.html.twig') }}
+    {% endverbatim %}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            var $modal = $('#translation-form-modal');
-            var $form = $modal.find('form');
-            var $currentRow = null;
-            var $buttonAdd = $("#add-translation");
 
-            $buttonAdd.on('click', function (e) {
-                e.preventDefault();
-                $currentRow = null;
-                $form.attr('action', this.href).attr('novalidate', 'novalidate');
-                $modal.find('.modal-body').load(this.href + ' .form-content', function () {
-                    $modal.modal('show');
-                });
-            });
-
-            $form.on('submit', function (e) {
-                e.preventDefault();
-                $.post(this.action, $form.serializeArray(), function (res, status, request) {
-                    $form.find('.form-content').replaceWith($(res).find('.form-content'));
-                    if (request.getResponseHeader('saved')) {
-                        $modal.modal('hide');
-                        if ($currentRow) {
-                            $.get($currentRow.data('refresh-url'), function (tr) {
-                                $currentRow.replaceWith(tr);
-                            })
-                        }
-                    }
-                });
-            });
-
-            $modal.on('show.bs.modal', function () {
-                $(".existen-domains :radio").attr('checked', false);
-            }).on('shown.bs.modal', function () {
-                $(this).find(':input:not(:disabled,:button):first').focus();
-            });
-
-            $('.translation-list').on('click', '.edit-translation', function (e) {
-                e.preventDefault();
-                $currentRow = $(this).closest('tr');
-                $form.attr('action', this.href);
-                $modal.find('.modal-body').load(this.href + ' .form-content', function () {
-                    $modal.modal('show');
-                });
-            });
-
-            $form.on('click', ".existen-domains :radio", function (e) {
-                $("#{{ form.domain.vars.id }}").val($(this).val());
-            });
-        });
+    <script>
+    var TranslationData = {
+        baseUrlApi: '{{ path('manuel_translation_api_list') }}',
+        locales: {{ locales|json_encode|raw }},
+        locale: '{{ app.request.locale }}',
+        domains: {{ domains|json_encode|raw }},
+    };
     </script>
+    <script src="{{ asset('bundles/manueltranslation/js/translations.js') }}"></script>
 {% endblock %}

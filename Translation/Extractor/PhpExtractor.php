@@ -29,7 +29,7 @@ class PhpExtractor extends BaseExtrator
 
             $catalog->addCatalogue($fileCatalog);
 
-            if($catalog instanceof FileMessageCatalogue){
+            if ($catalog instanceof FileMessageCatalogue) {
                 $catalog->addInFile($file, $fileCatalog->all());
             }
         }

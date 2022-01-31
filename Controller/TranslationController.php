@@ -11,129 +11,48 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-use Pagerfanta\Pagerfanta;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\Filesystem\Filesystem;
+use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Translation\Dumper\XliffFileDumper;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
-class TranslationController extends Controller
+class TranslationController extends AbstractController
 {
-    protected $isServer = false;
-    protected $hasServer = false;
+    /**
+     * @var ParameterBagInterface
+     */
+    private $parameters;
 
-    public function setContainer(ContainerInterface $container = null)
+    public function __construct(ParameterBagInterface $parameters)
     {
-        parent::setContainer($container);
-
-        if ($container->hasParameter('manuel_translation.server.api_key')) {
-            $this->isServer = true;
-        }
-
-        if ($container->has('manuel_translation.server_sync')) {
-            $this->hasServer = true;
-        }
+        $this->parameters = $parameters;
     }
 
     /**
      * @Route("/list/{page}", name="manuel_translation_list", defaults={"page" = 1})
      */
-    public function indexAction(Request $request, $page = 1)
-    {
-        $session = $this->get('session');
-        $filters = $session->get('manuel_translations.trans_filter', array(
-            'search' => null,
-            'conflicts' => null,
-            'changed' => null,
-            'inactive' => false,
-            'domains' => array('messages'),
-        ));
-
-        $formFilter = $this->createForm('translation_filter', $filters, array('method' => 'post'))
-            ->handleRequest($request);
-
-
-        if ($formFilter->isSubmitted()) {
-            $filters = $formFilter->getData();
-            $session->set('manuel_translations.trans_filter', $filters);
-        }
-
-        $query = $this->getDoctrine()
-            ->getRepository('ManuelTranslationBundle:Translation')
-            ->getAllQueryBuilder($filters['search'], $filters['domains']
-                , $filters['conflicts'], $filters['changed'], $filters['inactive']);
-
-        $form = $this->createForm('manuel_translation', $this->getNewTranslationInstance());
-
-        $paginator = new Pagerfanta(new DoctrineORMAdapter($query, false));
-        $paginator->setMaxPerPage(50);
-        $paginator->setCurrentPage($page);
-
+    public function indexAction(
+        Request $request,
+        TranslationRepository $repository,
+        $page = 1
+    ) {
         return $this->render('@ManuelTranslation/Default/index.html.twig', array(
-            'translations' => $paginator,
-            'form' => $form->createView(),
-            'locales' => $this->container->getParameter('manuel_translation.locales'),
-            'form_filter' => $formFilter->createView(),
-            'enable_sync' => $this->hasServer,
+            'locales' => $this->parameters->get('manuel_translation.locales'),
+            'domains' => $repository->getExistentDomains(),
         ));
-    }
-
-    /**
-     * @Route("/remove-filters", name="manuel_translation_remove_filters")
-     */
-    public function clearFiltersAction()
-    {
-        $this->get('session')->remove('manuel_translations.trans_filter');
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    /**
-     * @Route("/form/{id}", name="manuel_translation_form", defaults={"id" = null})
-     */
-    public function editAction(Request $request, Translation $translation = null)
-    {
-        $translation = $translation ?: $this->getNewTranslationInstance();
-
-        $form = $this->createForm('manuel_translation', $translation)
-            ->handleRequest($request);
-
-        if ($form->isSubmitted() and $form->isValid()) {
-
-            if ($this->isServer) {
-                //cuando somos un servidor, cada cambio debe notarse para los clientes.
-                $translation->setServerEditions($translation->getServerEditions() + 1);
-            }
-
-            $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
-
-            $filesystem = new Filesystem();
-            $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
-
-            foreach ($translation->getValues() as $locale => $value) {
-                $filename = sprintf($filenameTemplate, $locale);
-                $filesystem->dumpFile($filename, time());
-            }
-
-            $saved = true;
-        } else {
-            $saved = false;
-        }
-
-        $response = $this->render('@ManuelTranslation/Translation/form.html.twig', array(
-            'form' => $form->createView(),
-        ));
-
-        $response->headers->set('saved', $saved);
-
-        return $response;
     }
 
     /**
@@ -143,15 +62,18 @@ class TranslationController extends Controller
     {
         return $this->render('@ManuelTranslation/Translation/_row.html.twig', array(
             'translation' => $translation,
-            'locales' => $this->container->getParameter('manuel_translation.locales'),
+            'locales' => $this->parameters->get('manuel_translation.locales'),
         ));
     }
 
     /**
      * @Route("/save-from-profiler", name="manuel_translation_save_from_profiler")
      */
-    public function saveFromProfilerAction(Request $request)
-    {
+    public function saveFromProfilerAction(
+        Request $request,
+        ValidatorInterface $validator,
+        TranslationRepository $repository
+    ) {
         $translation = $this->getNewTranslationInstance();
         $translation->setCode($request->request->get('code'));
         $translation->setDomain($request->request->get('domain'));
@@ -160,18 +82,9 @@ class TranslationController extends Controller
             $translation->setValue($locale, $value);
         }
 
-        if (count($this->get('validator')->validate($translation)) == 0) {
-            $this->get('manuel_translation.translations_repository')->saveTranslation($translation);
-
-            $filesystem = new Filesystem();
-            $filenameTemplate = $this->container->getParameter('manuel_translation.filename_template');
-
-            foreach ($translation->getValues() as $locale => $value) {
-                $filename = sprintf($filenameTemplate, $locale);
-                $filesystem->dumpFile($filename, time());
-            }
+        if (count($validator->validate($translation)) == 0) {
+            $repository->saveTranslation($translation);
         }
-
 
         return new Response('Ok');
     }
@@ -186,7 +99,7 @@ class TranslationController extends Controller
         $translation->setAutogenerated(false);
         $translation->setActive(true);
 
-        foreach ($this->container->getParameter('manuel_translation.locales') as $locale) {
+        foreach ($this->parameters->get('manuel_translation.locales') as $locale) {
             $translation->setValue($locale, null);
         }
 
@@ -196,14 +109,15 @@ class TranslationController extends Controller
     /**
      * @Route("/update_all", name="manuel_translation_export")
      */
-    public function updateXliffAction($_locale)
-    {
-        $catalogue = $this->get('manuel_translation.translations_doctrine_loader')
-            ->load('', $_locale);
+    public function updateXliffAction(
+        $_locale,
+        DoctrineLoader $doctrineLoader,
+        XliffFileDumper $xliffFileDumper
+    ) {
+        $catalogue = $doctrineLoader->load('', $_locale);
+        $path = $this->parameters->get('manuel_translation.translations_update_dir');
 
-        $path = $this->container->getParameter('manuel_translation.translations_update_dir');
-
-        $this->get('translation.dumper.xliff')->dump($catalogue, array(
+        $xliffFileDumper->dump($catalogue, array(
             'path' => $path,
         ));
 
@@ -211,21 +125,52 @@ class TranslationController extends Controller
     }
 
     /**
-     * @Route("/local/load", name="manuel_translation_local_load")
+     * @Route("/download.php", name="manuel_translation_download_backup_file")
      */
-    public function loadFromFileAction()
+    public function downloadBackupAction()
     {
-        $this->get('manuel_translation.local_synchronizator')->fromFile();
+        $response = new BinaryFileResponse(
+            $this->parameters->get('manuel_translation.translations_backup_dir') . 'translations.php'
+        );
 
-        return $this->redirectToRoute('manuel_translation_list');
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+
+        return $response;
     }
 
     /**
-     * @Route("/local/write", name="manuel_translation_local_write")
+     * @Route("/live-download.php", name="manuel_translation_download_live_backup_file")
      */
-    public function writeToFileAction()
-    {
-        $this->get('manuel_translation.local_synchronizator')->toFile();
+    public function liveDownloadBackupAction(
+        Synchronizator $synchronizator,
+        TranslatorInterface $translator
+    ) {
+        $path = $this->getParameter('kernel.cache_dir') . '/translations.php';
+
+        if (!$synchronizator->generateFile($path)) {
+            $this->addFlash('warning',
+                $translator->trans('local_hash_update_of_range', array(), 'ManuelTranslationBundle'));
+
+            return $this->redirectToRoute('manuel_translation_list');
+        }
+
+        $response = new BinaryFileResponse($path);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/clear-cache", name="manuel_translation_clear_cache")
+     */
+    public function clearCacheAction(
+        CacheRemover $cacheRemover
+    ) {
+        if (false !== $cacheRemover->clear()) {
+            $this->addFlash('success', 'Caché limpiada con éxito');
+        } else {
+            $this->addFlash('warning', 'No se pudo limpiar la caché de traducciones');
+        }
 
         return $this->redirectToRoute('manuel_translation_list');
     }

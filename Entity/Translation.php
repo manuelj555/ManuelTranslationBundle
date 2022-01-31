@@ -45,27 +45,6 @@ class Translation implements \Serializable
     private $domain = 'messages';
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="server_editions", type="integer")
-     */
-    private $serverEditions = 0;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="local_editions", type="integer")
-     */
-    private $localEditions = 0;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="version", type="integer")
-     */
-    private $version = 0;
-
-    /**
      * @var boolean
      *
      * @ORM\Column(name="new", type="boolean")
@@ -84,24 +63,12 @@ class Translation implements \Serializable
      *
      * @ORM\Column(name="active", type="boolean")
      */
-    private $active;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(name="is_changed", type="boolean")
-     */
-    private $isChanged = true;
+    private $active = true;
 
     /**
      * @ORM\Column(name="trans_values", type="array", nullable=true)
      */
     private $values;
-
-    /**
-     * @ORM\Column(name="conflicts", type="boolean", nullable=true)
-     */
-    private $conflicts = false;
 
     /**
      * @ORM\Column(name="files", type="array", nullable=true)
@@ -117,6 +84,29 @@ class Translation implements \Serializable
      * @ORM\Column(name="updated_at", type="datetime", nullable=true)
      */
     private $updatedAt;
+
+    /**
+     * Posibles valores: local, file
+     * @ORM\Column(name="last_changed", type="string", nullable=true)
+     */
+    private $lastChanged = 'local';
+    /**
+     * Indica si se ha establecido un valor para el atributo $lastChanged, para que los callback
+     * de doctrine no reemplaze el valor de dicho atributo en ese caso.
+     * @var bool
+     */
+    private $updatedLastChanged = false;
+
+    /**
+     * @ORM\Column(name="hash", type="string", nullable=true)
+     */
+    private $hash;
+    /**
+     * Indica si se ha establecido un valor para el atributo $hash, para que los callback
+     * de doctrine no reemplaze el valor de dicho atributo en ese caso.
+     * @var bool
+     */
+    private $updatedHash = false;
 
     /**
      * Get id
@@ -161,7 +151,7 @@ class Translation implements \Serializable
      */
     public function setCode($code)
     {
-        $this->code = $code;
+        $this->code = trim($code);
 
         return $this;
     }
@@ -173,7 +163,7 @@ class Translation implements \Serializable
      */
     public function getCode()
     {
-        return $this->code;
+        return trim($this->code);
     }
 
     /**
@@ -265,126 +255,6 @@ class Translation implements \Serializable
     }
 
     /**
-     * Set conflicts
-     *
-     * @param boolean $conflicts
-     *
-     * @return Translation
-     */
-    public function setConflicts($conflicts)
-    {
-        $this->conflicts = $conflicts;
-
-        return $this;
-    }
-
-    /**
-     * Get conflicts
-     *
-     * @return boolean
-     */
-    public function getConflicts()
-    {
-        return $this->conflicts;
-    }
-
-    /**
-     * Set serverEditions
-     *
-     * @param integer $serverEditions
-     *
-     * @return Translation
-     */
-    public function setServerEditions($serverEditions)
-    {
-        $this->serverEditions = $serverEditions;
-
-        return $this;
-    }
-
-    /**
-     * Get serverEditions
-     *
-     * @return integer
-     */
-    public function getServerEditions()
-    {
-        return $this->serverEditions;
-    }
-
-    /**
-     * Set version
-     *
-     * @param integer $version
-     *
-     * @return Translation
-     */
-    public function setVersion($version)
-    {
-        $this->version = $version;
-
-        return $this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return integer
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
-
-    /**
-     * Set isChanged
-     *
-     * @param boolean $isChanged
-     *
-     * @return Translation
-     */
-    public function setIsChanged($isChanged)
-    {
-        $this->isChanged = $isChanged;
-
-        return $this;
-    }
-
-    /**
-     * Get isChanged
-     *
-     * @return boolean
-     */
-    public function getIsChanged()
-    {
-        return $this->isChanged;
-    }
-
-    /**
-     * Set localEditions
-     *
-     * @param integer $localEditions
-     *
-     * @return Translation
-     */
-    public function setLocalEditions($localEditions)
-    {
-        $this->localEditions = $localEditions;
-
-        return $this;
-    }
-
-    /**
-     * Get localEditions
-     *
-     * @return integer
-     */
-    public function getLocalEditions()
-    {
-        return $this->localEditions;
-    }
-
-    /**
      * Set files
      *
      * @param array $files
@@ -444,15 +314,10 @@ class Translation implements \Serializable
         return serialize(array(
             $this->code,
             $this->domain,
-            $this->serverEditions,
-            $this->localEditions,
-            $this->version,
             $this->new,
             $this->autogenerated,
             $this->active,
-            $this->isChanged,
             $this->values,
-            $this->conflicts,
             $this->files,
         ));
     }
@@ -473,15 +338,10 @@ class Translation implements \Serializable
     {
         list($this->code,
             $this->domain,
-            $this->serverEditions,
-            $this->localEditions,
-            $this->version,
             $this->new,
             $this->autogenerated,
             $this->active,
-            $this->isChanged,
             $this->values,
-            $this->conflicts,
             $this->files,)
             = unserialize($serialized);
     }
@@ -517,5 +377,69 @@ class Translation implements \Serializable
     public function getUpdatedAt()
     {
         return $this->updatedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHash()
+    {
+        return $this->hash;
+    }
+
+    /**
+     * @param mixed $hash
+     */
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+        $this->updatedHash = true;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function setHashValue()
+    {
+        if ($this->updatedHash) {
+            //Si se hizo una actualización del hash, no lo actualizamos acá
+            return;
+        }
+
+        $this->setHash(uniqid(md5(serialize($this->getValues()))));
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastChanged()
+    {
+        return $this->lastChanged ?: 'local';
+    }
+
+    /**
+     * @param mixed $lastChanged
+     */
+    public function setLastChanged($lastChanged)
+    {
+        if ($lastChanged == 'file') {
+            $this->lastChanged = 'file';
+        } else {
+            $this->lastChanged = 'local';
+        }
+
+        $this->updatedLastChanged = true;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function setLastChangedOnSave()
+    {
+        if (!$this->updatedLastChanged) {
+            $this->lastChanged = 'local';
+        }
     }
 }

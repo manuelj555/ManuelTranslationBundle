@@ -11,12 +11,14 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation;
 
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Translation\TranslatorBagInterface;
+use Symfony\Contracts\Translation\LocaleAwareInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @author Abdellatif Ait boudad <a.aitboudad@gmail.com>
  */
-class DebugTranslator implements TranslatorInterface
+class DebugTranslator implements TranslatorInterface, TranslatorBagInterface, LocaleAwareInterface
 {
     /**
      * @var TranslatorInterface
@@ -31,7 +33,8 @@ class DebugTranslator implements TranslatorInterface
     public function __construct($translator)
     {
         if (!$translator instanceof TranslatorInterface) {
-            throw new \InvalidArgumentException(sprintf('The Translator "%s" must implements TranslatorInterface', get_class($translator)));
+            throw new \InvalidArgumentException(sprintf('The Translator "%s" must implements TranslatorInterface',
+                get_class($translator)));
         }
 
         $this->translator = $translator;
@@ -63,6 +66,10 @@ class DebugTranslator implements TranslatorInterface
      */
     public function setLocale($locale)
     {
+        if (!$this->translator instanceof LocaleAwareInterface) {
+            throw new \LogicException("Se esperaba que el traductor implementara 'LocaleAwareInterface'");
+        }
+
         $this->translator->setLocale($locale);
     }
 
@@ -73,6 +80,10 @@ class DebugTranslator implements TranslatorInterface
      */
     public function getLocale()
     {
+        if (!$this->translator instanceof LocaleAwareInterface) {
+            throw new \LogicException("Se esperaba que el traductor implementara 'LocaleAwareInterface'");
+        }
+
         return $this->translator->getLocale();
     }
 
@@ -87,7 +98,7 @@ class DebugTranslator implements TranslatorInterface
     /**
      * Logs for missing translations.
      *
-     * @param string      $id
+     * @param string $id
      * @param string|null $domain
      * @param string|null $locale
      */
@@ -101,14 +112,14 @@ class DebugTranslator implements TranslatorInterface
             $domain = 'messages';
         }
 
-        $id = (string) $id;
-        $catalogue = $this->translator->getCatalogue($locale);
+        $id = (string)$id;
+        $catalogue = $this->getCatalogue($locale);
         if ($catalogue->defines($id, $domain)) {
             return;
         }
 
         if (!$catalogue->has($id, $domain)) {
-            if(!isset($this->missingTranslations[$domain]) OR !in_array($id, $this->missingTranslations[$domain])){
+            if (!isset($this->missingTranslations[$domain]) OR !in_array($id, $this->missingTranslations[$domain])) {
                 $this->missingTranslations[$domain][] = $id;
             }
         }
@@ -122,4 +133,12 @@ class DebugTranslator implements TranslatorInterface
         return $this->missingTranslations;
     }
 
+    public function getCatalogue(string $locale = null)
+    {
+        if (!$this->translator instanceof TranslatorBagInterface) {
+            throw new \LogicException("Se esperaba que el traductor implementara 'TranslatorBagInterface'");
+        }
+
+        return $this->translator->getCatalogue($locale);
+    }
 }

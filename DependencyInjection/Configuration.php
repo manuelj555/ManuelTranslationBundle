@@ -17,43 +17,25 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('manuel_translation');
+        $treeBuilder = new TreeBuilder('manuel_translation');
+        $rootNode    = $treeBuilder->getRootNode();
 
         $rootNode
             ->children()
                 ->arrayNode('locales')
                     ->isRequired()
-                    ->cannotBeEmpty()
+                    ->requiresAtLeastOneElement()
                     ->prototype('scalar')->end()
                 ->end()
                 ->arrayNode('bundles')
                     ->prototype('scalar')->end()
                 ->end()
-                ->scalarNode('backup_dir')->defaultValue('%kernel.root_dir%/Resources/translations/backup/')->end()
-                ->scalarNode('filename_sync')->defaultValue('%kernel.root_dir%/Resources/translations/translations.txt')->end()
-                ->scalarNode('api_key')
-                    ->info('Key used for the client for communications with server')
-                ->end()
-                ->arrayNode('client')
-                    ->canBeEnabled()
-                    ->children()
-                        ->scalarNode('api_key')
-                            ->info('Key used for the client for communications with server')
-                        ->end()
-                        ->scalarNode('server_url')
-                            ->info('Url of Server')
-                        ->end()
-                    ->end()
-                ->end()
-                ->arrayNode('server')
-                    ->canBeEnabled()
-                    ->children()
-                        ->scalarNode('api_key')
-                            ->info('Key used for the server for communications')
-                        ->end()
-                    ->end()
-                ->end()
+                ->scalarNode('backup_dir')->defaultValue('%kernel.project_dir%/translations/backup/')->end()
+                ->scalarNode('filename_sync')->defaultValue('%kernel.project_dir%/translations/translations.txt')->end()
+                //->scalarNode('catalogues_path')->defaultValue('%kernel.root_dir%/Resources/translations/')->end()
+                ->scalarNode('catalogues_path')->defaultValue('%kernel.project_dir%/var/translations/')->end()
+                ->booleanNode('use_database')->defaultTrue()->end()
+                ->scalarNode('tables_prefix')->end()
             ->end();
 
         return $treeBuilder;

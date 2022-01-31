@@ -33,16 +33,7 @@ class TranslationDataCollector extends DataCollector
         $this->locales = $locales;
     }
 
-    /**
-     * Collects data for the given Request and Response.
-     *
-     * @param Request    $request   A Request instance
-     * @param Response   $response  A Response instance
-     * @param \Exception $exception An Exception instance
-     *
-     * @api
-     */
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, \Throwable $exception = null)
     {
         $total = 0;
 
@@ -82,6 +73,25 @@ class TranslationDataCollector extends DataCollector
     public function getCount()
     {
         return $this->data['count'];
+    }
+
+    public function isLocalhost()
+    {
+        static $localhost = null;
+
+        if(null !== $localhost){
+            return $localhost;
+        }
+
+        return $localhost = !isset($_SERVER['HTTP_CLIENT_IP'])
+            && !isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+            && in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', 'fe80::1', '::1')) 
+            && php_sapi_name() !== 'cli-server';   
+    }
+
+    public function reset()
+    {
+        $this->data = [];
     }
 
 }

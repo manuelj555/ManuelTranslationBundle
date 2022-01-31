@@ -11,24 +11,24 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationLogRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @ autor Manuel Aguirre <programador.manuel@gmail.com>
  * @Route("/logs")
  */
-class LogController extends Controller
+class LogController extends AbstractController
 {
     /**
      * @Route("/list/{id}", name="manuel_translation_log_list")
      */
-    public function listAction(Translation $translation)
-    {
-        $logs = $this->getDoctrine()
-            ->getManager()
-            ->getRepository('ManuelTranslationBundle:TranslationLog')
-            ->getAllByTranslation($translation);
+    public function listAction(
+        Translation $translation,
+        TranslationLogRepository $repository
+    ) {
+        $logs = $repository->getAllByTranslation($translation);
 
         return $this->render('@ManuelTranslation/Log/list.html.twig', array(
             'logs' => $logs,

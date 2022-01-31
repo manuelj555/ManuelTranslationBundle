@@ -10,31 +10,52 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
-class TranslationToFileCommand extends ContainerAwareCommand
+class TranslationToFileCommand extends Command
 {
+    protected static $defaultName = 'manuel:translation:generate';
+    /**
+     * @var Synchronizator
+     */
+    private $synchronizator;
+
+    public function __construct(Synchronizator $synchronizator)
+    {
+        parent::__construct();
+
+        $this->synchronizator = $synchronizator;
+    }
+
     protected function configure()
     {
-        $this->setName('manuel:translation:write')
-            ->setDescription("Copia todas las traducciones que están en la Base de datos a un archivo de texto");
+        $this
+            ->setDescription("Copia todas las traducciones que están en la Base de datos a un archivo de texto")
+            ->setAliases(['manuel:translation:update']);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $sync = $this->getContainer()->get('manuel_translation.local_synchronizator');
+        $io = new SymfonyStyle($input, $output);
 
-        $output->writeln("Copiando traducciones al archivo");
+        $io->writeln("Copiando traducciones al archivo");
 
-        $file = $sync->toFile();
+        $result = $this->synchronizator->generateFile();
 
-        $output->writeln(sprintf("El archivo <comment>%s</comment> se ha creado/actualizado con exito", $file));
+        if ($result) {
+            $io->success("El archivo de traducciones se ha creado/actualizado con exito");
+        } else {
+            $io->error("No se pudo actualizar el archivo, debe sincronizar su base de datos antes");
+        }
+
+        return 0;
     }
 
 }

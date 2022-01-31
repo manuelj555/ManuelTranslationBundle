@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 
@@ -29,10 +30,15 @@ class TranslationType extends AbstractType
      * @var TranslationRepository
      */
     protected $translationRepository;
+    /**
+     * @var
+     */
+    private $activeLocales;
 
-    function __construct($translationRepository)
+    function __construct($translationRepository, $activeLocales)
     {
         $this->translationRepository = $translationRepository;
+        $this->activeLocales = $activeLocales;
     }
 
     /**
@@ -50,17 +56,21 @@ class TranslationType extends AbstractType
         $builder->add('values', 'collection', array(
             'type' => 'textarea',
         ));
-        $builder->add('localEditions', 'hidden', array('error_bubbling' => true));
+
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, array($this, 'addCodeAndDomainForms'));
-        $builder->addEventListener(FormEvents::PRE_SUBMIT, array($this, 'validateLocalEditions'));
+
+        $builder->get('values')->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            $data = $event->getData();
+            $data = array_replace(array_fill_keys($this->activeLocales, null), $data);
+            $event->setData($data);
+        }, 1000);
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ManuelAguirre\Bundle\TranslationBundle\Entity\Translation',
-//            'error_bubbling' => true,
             'translation_domain' => 'ManuelTranslationBundle',
         ));
     }
@@ -94,18 +104,5 @@ class TranslationType extends AbstractType
             'mapped' => false,
             'placeholder' => false,
         ));
-    }
-
-    public function validateLocalEditions(FormEvent $event)
-    {
-        $form = $event->getForm();
-        $data = $event->getData();
-        /** @var Translation $translation */
-        $translation = $form->getData();
-
-        if ($data['localEditions'] < $translation->getLocalEditions()) {
-            //si es menor, significa que otra persona ha hecho cambios
-            $form->addError(new FormError("Please Refresh Page"));
-        }
     }
 }

@@ -10,7 +10,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation\Loader;
 
-use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
+use ManuelAguirre\Bundle\TranslationBundle\TranslationRepository;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Translation\Exception\InvalidResourceException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
@@ -57,7 +57,8 @@ class DoctrineLoader implements LoaderInterface
 
         foreach ($translations as $translation) {
             if (array_key_exists($locale, $translation['values'])) {
-                $catalogue->set($translation['code'], $translation['values'][$locale], $translation['domain']);
+                $code = trim($translation['code']);
+                $catalogue->set($code, $translation['values'][$locale], $translation['domain']);
             }
         }
 
