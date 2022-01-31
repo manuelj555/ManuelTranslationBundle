@@ -7,5 +7,5 @@ namespace ManuelAguirre\Bundle\TranslationBundle;
  */
 interface TranslationRepository
 {
-    public function getActiveTranslations();
+    public function getActiveTranslations(): array;
 }

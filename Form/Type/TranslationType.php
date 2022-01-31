@@ -14,41 +14,20 @@ use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
 
 /**
  * @autor Manuel Aguirre <programador.manuel@gmail.com>
  */
 class TranslationType extends AbstractType
 {
-    /**
-     * @var TranslationRepository
-     */
-    protected $translationRepository;
-    /**
-     * @var
-     */
-    private $activeLocales;
-
-    function __construct($translationRepository, $activeLocales)
-    {
-        $this->translationRepository = $translationRepository;
-        $this->activeLocales = $activeLocales;
-    }
-
-    /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
-     */
-    public function getName()
-    {
-        return 'manuel_translation';
+    public function __construct(
+        private TranslationRepository $translationRepository,
+        private array $activeLocales,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -70,7 +49,7 @@ class TranslationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ManuelAguirre\Bundle\TranslationBundle\Entity\Translation',
+            'data_class' => Translation::class,
             'translation_domain' => 'ManuelTranslationBundle',
         ));
     }

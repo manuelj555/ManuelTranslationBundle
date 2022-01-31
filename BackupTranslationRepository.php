@@ -24,9 +24,9 @@ class BackupTranslationRepository implements TranslationRepository
         $this->backupDir = $backupDir;
     }
 
-    public function getActiveTranslations()
+    public function getActiveTranslations(): array
     {
-        $file = rtrim($this->backupDir, '/').'/translations.php';
+        $file = rtrim($this->backupDir, '/') . '/translations.php';
 
         if (is_file($file)) {
             $data = require $file;

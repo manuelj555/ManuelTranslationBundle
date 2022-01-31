@@ -13,33 +13,15 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Form\Type;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * @autor Manuel Aguirre <programador.manuel@gmail.com>
  */
 class TranslationFilterType extends AbstractType
 {
-    /**
-     * @var TranslationRepository
-     */
-    protected $translationRepository;
-
-    function __construct($translationRepository)
+    function __construct(private TranslationRepository $translationRepository)
     {
-        $this->translationRepository = $translationRepository;
-    }
-
-
-    /**
-     * Returns the name of this type.
-     *
-     * @return string The name of this type
-     */
-    public function getName()
-    {
-        return 'translation_filter';
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -67,7 +49,7 @@ class TranslationFilterType extends AbstractType
         ));
     }
 
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function setDefaultOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data' => array(
@@ -76,6 +58,5 @@ class TranslationFilterType extends AbstractType
             'translation_domain' => 'ManuelTranslationBundle',
         ));
     }
-
 
 }

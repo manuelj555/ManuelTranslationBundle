@@ -17,21 +17,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class TranslationsProvider
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-    /**
-     * @var TranslationRepository
-     */
-    private $repository;
-
     public function __construct(
-        TranslatorInterface $translator,
-        TranslationRepository $repository
+        private TranslatorInterface $translator,
+        private TranslationRepository $repository,
     ) {
-        $this->translator = $translator;
-        $this->repository = $repository;
     }
 
     public function byLocaleAndDomain($locale, $domain): array

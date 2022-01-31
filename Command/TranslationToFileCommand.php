@@ -22,26 +22,20 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class TranslationToFileCommand extends Command
 {
     protected static $defaultName = 'manuel:translation:generate';
-    /**
-     * @var Synchronizator
-     */
-    private $synchronizator;
 
-    public function __construct(Synchronizator $synchronizator)
+    public function __construct(private Synchronizator $synchronizator)
     {
         parent::__construct();
-
-        $this->synchronizator = $synchronizator;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription("Copia todas las traducciones que están en la Base de datos a un archivo de texto")
             ->setAliases(['manuel:translation:update']);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -55,7 +49,6 @@ class TranslationToFileCommand extends Command
             $io->error("No se pudo actualizar el archivo, debe sincronizar su base de datos antes");
         }
 
-        return 0;
+        return self::SUCCESS;
     }
-
 }

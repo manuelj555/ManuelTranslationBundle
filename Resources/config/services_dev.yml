@@ -27,12 +27,6 @@ services:
                 template: "@ManuelTranslation/DataCollector/translations.html.twig"
                 id: manuel_translations
 
-    manuel_translation.doctrine.translation_log_listener:
-        class: ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\TranslationLogListener
-        tags:
-            - { name: doctrine.event_listener, event: preUpdate }
-            - { name: doctrine.event_listener, event: postFlush }
-
     manuel_translation.doctrine.dump_files_listener:
         class: ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\DumpFilesListener
         arguments:
@@ -46,10 +40,9 @@ services:
         class: ManuelAguirre\Bundle\TranslationBundle\Translation\TranslationManager
         arguments:
             - "@translation.extractor"
-            - "@manuel_translation.translation_loader"
+            - ""
             - "@manuel_translation.translations_doctrine_loader"
             - "@manuel_translation.translations_doctrine_dumper"
-            - "@manuel_translation.translations_repository"
             - "%manuel_translation.locales%"
             - "%manuel_translation.extract_dirs%"
             - "%manuel_translation.translations_files_dirs%"

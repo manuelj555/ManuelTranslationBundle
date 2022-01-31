@@ -13,7 +13,6 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\CataloguesDumper;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @author maguirre <maguirre@developerplace.com>
@@ -21,26 +20,12 @@ use Symfony\Component\Filesystem\Filesystem;
 class DumpFilesListener
 {
     /**
-     * @var bool
      * @internal
      */
-    private $translationChanged = false;
+    private bool $translationChanged = false;
 
-    /**
-     * @var CataloguesDumper
-     */
-    private $cataloguesDumper;
-
-    /**
-     * DumpFilesListener constructor.
-     *
-     * @param Filesystem $filesystem
-     * @param array $locales
-     * @param string $filenameTemplate
-     */
-    public function __construct(CataloguesDumper $cataloguesDumper)
+    public function __construct(private CataloguesDumper $cataloguesDumper)
     {
-        $this->cataloguesDumper = $cataloguesDumper;
     }
 
     public function postPersist(LifecycleEventArgs $event)

@@ -12,35 +12,16 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
-/**
- * Class CataloguesDumper
- * @package ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper
- */
 class CataloguesDumper implements CacheWarmerInterface
 {
-    /**
-     * @var Filesystem
-     */
-    private $filesystem;
-
-    /**
-     * @var string
-     */
-    private $filenameTemplate;
-
-    /**
-     * @var array
-     */
-    private $locales;
-
-    public function __construct(Filesystem $filesystem, $fileTemplate, $locales)
-    {
-        $this->filesystem = $filesystem;
-        $this->filenameTemplate = $fileTemplate;
-        $this->locales = $locales;
+    public function __construct(
+        private Filesystem $filesystem,
+        private string $filenameTemplate,
+        private array $locales,
+    ) {
     }
 
-    public function dump()
+    public function dump(): void
     {
         try {
             foreach ($this->locales as $locale) {
@@ -52,6 +33,9 @@ class CataloguesDumper implements CacheWarmerInterface
         }
     }
 
+    /**
+     * @return bool
+     */
     public function isOptional()
     {
         return false;

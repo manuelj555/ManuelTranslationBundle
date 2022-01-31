@@ -10,11 +10,8 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Doctrine\Translatable;
  */
 class TranslatableEntitiesProvider
 {
-    private $entities;
-
-    public function __construct(array $entities)
+    public function __construct(private readonly array $entities)
     {
-        $this->entities = $entities;
     }
 
     public function getEntities(): array

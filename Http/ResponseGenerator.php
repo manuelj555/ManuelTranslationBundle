@@ -22,25 +22,15 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
  */
 class ResponseGenerator
 {
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * JsonResponseGenerator constructor.
-     * @param SerializerInterface $serializer
-     */
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(private SerializerInterface $serializer)
     {
-        $this->serializer = $serializer;
     }
 
     public function forOne(
-        Request $request, 
-        Translation $translation, 
+        Request $request,
+        Translation $translation,
         ConstraintViolationListInterface $errorList = null
-    ) {
+    ): Response {
         $data = $this->serializer->serialize($translation, $request->getRequestFormat());
         $errors = $this->errorsToArray($errorList);
 
@@ -51,14 +41,14 @@ class ResponseGenerator
         );
     }
 
-    public function forAll(Request $request, $translations, array $headers = [])
+    public function forAll(Request $request, $translations, array $headers = []): Response
     {
         $data = $this->serializer->serialize($translations, $request->getRequestFormat());
 
         return new Response($data, Response::HTTP_OK, $headers);
     }
 
-    private function errorsToArray(ConstraintViolationListInterface $errorList = null)
+    private function errorsToArray(ConstraintViolationListInterface $errorList = null): array
     {
         if (null === $errorList || 0 === count($errorList)) {
             return [];

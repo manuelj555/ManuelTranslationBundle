@@ -16,65 +16,31 @@ use ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
- *
- * @Route("/api",
- *     requirements={"_format" = "xml|json"},
- *     defaults={"_format" = "json"}
- * )
  */
+#[Route(
+    "/api",
+    requirements: ["_format" => "xml|json"],
+    defaults: ["_format" => "json"],
+)]
 class ApiController
 {
-    /**
-     * @var ResponseGenerator
-     */
-    private $responseGenerator;
-
-    /**
-     * @var TranslationRepository
-     */
-
-    private $translationRepository;
-    
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @var SerializerInterface
-     */
-    private $serializer;
-
-    /**
-     * ApiController constructor.
-     * @param ResponseGenerator $responseGenerator
-     * @param TranslationRepository $translationRepository
-     * @param SerializerInterface $serializer
-     * @param ValidatorInterface $validator
-     */
     public function __construct(
-        ResponseGenerator $responseGenerator,
-        TranslationRepository $translationRepository,
-        SerializerInterface $serializer,
-        ValidatorInterface $validator
+        private ResponseGenerator $responseGenerator,
+        private TranslationRepository $translationRepository,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
     ) {
-        $this->responseGenerator = $responseGenerator;
-        $this->translationRepository = $translationRepository;
-        $this->serializer = $serializer;
-        $this->validator = $validator;
     }
 
-    /**
-     * @Route(".{_format}", name="manuel_translation_api_list", methods={"GET"})
-     */
-    public function indexAction(Request $request)
+    #[Route(".{_format}", name: "manuel_translation_api_list", methods: "GET")]
+    public function index(Request $request): Response
     {
         $query = $this->translationRepository->getAllQueryBuilder(
             $request->get('search'),
@@ -95,10 +61,8 @@ class ApiController
         ]);
     }
 
-    /**
-     * @Route(".{_format}", name="manuel_translation_api_create", methods={"POST"})
-     */
-    public function createAction(Request $request)
+    #[Route(".{_format}", name: "manuel_translation_api_create", methods: "POST")]
+    public function create(Request $request): Response
     {
         $translation = $this->serializer->deserialize(
             $request->getContent(),
@@ -113,10 +77,8 @@ class ApiController
         return $this->responseGenerator->forOne($request, $translation, $errors);
     }
 
-    /**
-     * @Route("/{id}.{_format}", name="manuel_translation_api_update", methods={"PUT"})
-     */
-    public function updateAction(Request $request, Translation $translation)
+    #[Route("/{id}.{_format}", name: "manuel_translation_api_update", methods: "PUT")]
+    public function update(Request $request, Translation $translation): Response
     {
         $translation = $this->serializer->deserialize(
             $request->getContent(),
@@ -132,10 +94,8 @@ class ApiController
         return $this->responseGenerator->forOne($request, $translation, $errors);
     }
 
-    /**
-     * @Route("/domains.{_format}", name="manuel_translation_api_get_domains", methods={"GET"})
-     */
-    public function getDomainsAction(Request $request)
+    #[Route("/domains.{_format}", name: "manuel_translation_api_get_domains", methods: "GET")]
+    public function getDomains(Request $request): Response
     {
         $domains = $this->translationRepository->getExistentDomains();
 

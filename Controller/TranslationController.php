@@ -31,34 +31,24 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class TranslationController extends AbstractController
 {
-    /**
-     * @var ParameterBagInterface
-     */
-    private $parameters;
-
-    public function __construct(ParameterBagInterface $parameters)
+    public function __construct(private ParameterBagInterface $parameters)
     {
-        $this->parameters = $parameters;
     }
 
-    /**
-     * @Route("/list/{page}", name="manuel_translation_list", defaults={"page" = 1})
-     */
-    public function indexAction(
+    #[Route("/list/{page}", name: "manuel_translation_list")]
+    public function index(
         Request $request,
         TranslationRepository $repository,
-        $page = 1
-    ) {
+        int $page = 1
+    ): Response {
         return $this->render('@ManuelTranslation/Default/index.html.twig', array(
             'locales' => $this->parameters->get('manuel_translation.locales'),
             'domains' => $repository->getExistentDomains(),
         ));
     }
 
-    /**
-     * @Route("/show/item/{id}", name="manuel_translation_show_item")
-     */
-    public function getTranslationItemAction(Translation $translation)
+    #[Route("/show/item/{id}", name: "manuel_translation_show_item")]
+    public function getTranslationItem(Translation $translation): Response
     {
         return $this->render('@ManuelTranslation/Translation/_row.html.twig', array(
             'translation' => $translation,
@@ -66,14 +56,12 @@ class TranslationController extends AbstractController
         ));
     }
 
-    /**
-     * @Route("/save-from-profiler", name="manuel_translation_save_from_profiler")
-     */
-    public function saveFromProfilerAction(
+    #[Route("/save-from-profiler", name: "manuel_translation_save_from_profiler")]
+    public function saveFromProfiler(
         Request $request,
         ValidatorInterface $validator,
         TranslationRepository $repository
-    ) {
+    ): Response {
         $translation = $this->getNewTranslationInstance();
         $translation->setCode($request->request->get('code'));
         $translation->setDomain($request->request->get('domain'));
@@ -89,10 +77,7 @@ class TranslationController extends AbstractController
         return new Response('Ok');
     }
 
-    /**
-     * @return Translation
-     */
-    protected function getNewTranslationInstance()
+    protected function getNewTranslationInstance(): Translation
     {
         $translation = new Translation();
         $translation->setNew(false);
@@ -106,14 +91,12 @@ class TranslationController extends AbstractController
         return $translation;
     }
 
-    /**
-     * @Route("/update_all", name="manuel_translation_export")
-     */
-    public function updateXliffAction(
+    #[Route("/update_all", name: "manuel_translation_export")]
+    public function updateXliff(
         $_locale,
         DoctrineLoader $doctrineLoader,
         XliffFileDumper $xliffFileDumper
-    ) {
+    ): Response {
         $catalogue = $doctrineLoader->load('', $_locale);
         $path = $this->parameters->get('manuel_translation.translations_update_dir');
 
@@ -124,10 +107,8 @@ class TranslationController extends AbstractController
         return $this->redirectToRoute('manuel_translation_list');
     }
 
-    /**
-     * @Route("/download.php", name="manuel_translation_download_backup_file")
-     */
-    public function downloadBackupAction()
+    #[Route("/download.php", name: "manuel_translation_download_backup_file")]
+    public function downloadBackup(): Response
     {
         $response = new BinaryFileResponse(
             $this->parameters->get('manuel_translation.translations_backup_dir') . 'translations.php'
@@ -138,13 +119,11 @@ class TranslationController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("/live-download.php", name="manuel_translation_download_live_backup_file")
-     */
-    public function liveDownloadBackupAction(
+    #[Route("/live-download.php", name: "manuel_translation_download_live_backup_file")]
+    public function liveDownloadBackup(
         Synchronizator $synchronizator,
         TranslatorInterface $translator
-    ) {
+    ): Response {
         $path = $this->getParameter('kernel.cache_dir') . '/translations.php';
 
         if (!$synchronizator->generateFile($path)) {
@@ -160,12 +139,10 @@ class TranslationController extends AbstractController
         return $response;
     }
 
-    /**
-     * @Route("/clear-cache", name="manuel_translation_clear_cache")
-     */
-    public function clearCacheAction(
+    #[Route("/clear-cache", name: "manuel_translation_clear_cache")]
+    public function clearCache(
         CacheRemover $cacheRemover
-    ) {
+    ): Response {
         if (false !== $cacheRemover->clear()) {
             $this->addFlash('success', 'Caché limpiada con éxito');
         } else {

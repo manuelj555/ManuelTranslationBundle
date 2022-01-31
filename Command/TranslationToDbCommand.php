@@ -25,38 +25,17 @@ use Symfony\Component\Filesystem\Filesystem;
 class TranslationToDbCommand extends Command
 {
     protected static $defaultName = 'manuel:translation:sync';
-    /**
-     * @var Synchronizator
-     */
-    private $synchronizator;
-    /**
-     * @var Filesystem
-     */
-    private $filesystem;
-    /**
-     * @var string
-     */
-    private $filenameTemplate;
-    /**
-     * @var array
-     */
-    private $locales;
 
     public function __construct(
-        Synchronizator $synchronizator,
-        Filesystem $filesystem,
-        string $filenameTemplate,
-        array $locales
+        private Synchronizator $synchronizator,
+        private Filesystem $filesystem,
+        private string $filenameTemplate,
+        private array $locales,
     ) {
         parent::__construct();
-
-        $this->synchronizator = $synchronizator;
-        $this->filesystem = $filesystem;
-        $this->filenameTemplate = $filenameTemplate;
-        $this->locales = $locales;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription("Sincroniza las traducciones que están en el archivo con la Base de datos")
@@ -64,7 +43,7 @@ class TranslationToDbCommand extends Command
                 'Muestra las etiquetas con conflictos si las hay');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -102,7 +81,7 @@ class TranslationToDbCommand extends Command
             $io->writeln("Debe sincronizar desde el navegador para poder resolver los conflictos generados!!!");
         }
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     private function getConflictedCodes(SyncResult $result)

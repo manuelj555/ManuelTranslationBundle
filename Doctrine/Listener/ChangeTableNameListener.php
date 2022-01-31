@@ -7,17 +7,13 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
-use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationLog;
 
 /**
  * @author Manuel Aguirre
  */
 class ChangeTableNameListener
 {
-    /**
-     * @var string
-     */
-    private $tablePrefix;
+    private string $tablePrefix;
 
     public function __construct(string $tablePrefix)
     {
@@ -30,7 +26,6 @@ class ChangeTableNameListener
 
         if (!in_array($metadata->getName(), [
             Translation::class,
-            TranslationLog::class,
         ])) {
             return;
         }

@@ -15,19 +15,17 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @author Manuel Aguirre
- * @Route("/doctrine")
- * @ IsGranted("ROLE_TRANSLATIONS_MANAGEMENT")
  */
+#[Route("/doctrine")]
 class DoctrineExtensionController extends AbstractController
 {
-    /**
-     * @Route("/", name="manuel_translation_doctrine_index")
-     */
-    public function index(TranslatableEntitiesProvider $provider)
+    #[Route("/", name: "manuel_translation_doctrine_index")]
+    public function index(TranslatableEntitiesProvider $provider): Response
     {
         $entities = $provider->getEntities();
         $form = $this->createEntityForm($entities);
@@ -38,15 +36,13 @@ class DoctrineExtensionController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/edit", name="manuel_translation_doctrine_edit")
-     */
-    public function editAction(
+    #[Route("/edit", name: "manuel_translation_doctrine_edit")]
+    public function edit(
         Request $request,
         TranslatableEntitiesProvider $provider,
         EntityManagerInterface $entityManager,
         TranslatableListener $translatableListener
-    ) {
+    ): Response {
         $entities = $provider->getEntities();
         $form = $this->createEntityForm($entities);
         $form->handleRequest($request);
@@ -56,19 +52,12 @@ class DoctrineExtensionController extends AbstractController
         $rep = $entityManager->getRepository(Translation::class);
         $entity = $entityManager->getRepository($data['entity'])->find($data['identifiers']);
 
-        dump($rep->findTranslations($entity));
-        die;
-
         return $this->render('@ManuelTranslation/Doctrine/Extension/index.html.twig', [
             'entities' => $entities,
             'form' => $form->createView(),
         ]);
     }
 
-    /**
-     * @param array $entities
-     * @return \Symfony\Component\Form\FormInterface
-     */
     private function createEntityForm(array $entities): \Symfony\Component\Form\FormInterface
     {
         return $this->createFormBuilder(null, [

@@ -10,52 +10,30 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Synchronization;
 
-
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
 class SyncResult
 {
-    private $news = 0;
-    private $updated = 0;
-    private $conflictItems = array();
-
-    /**
-     * SyncResult constructor.
-     *
-     * @param int   $news
-     * @param int   $updated
-     * @param array $conflictItems
-     */
-    public function __construct($news, $updated, array $conflictItems)
-    {
-        $this->news = $news;
-        $this->updated = $updated;
-        $this->conflictItems = $conflictItems;
+    public function __construct(
+        private readonly int $news,
+        private readonly int $updated,
+        private readonly array $conflictItems,
+    ) {
     }
 
-    /**
-     * @return int
-     */
-    public function getNews()
+    public function getNews(): int
     {
         return $this->news;
     }
 
-    /**
-     * @return int
-     */
-    public function getUpdated()
+    public function getUpdated(): int
     {
         return $this->updated;
     }
 
-    /**
-     * @return array
-     */
-    public function getConflictItems()
+    public function getConflictItems(): array
     {
         return $this->conflictItems;
     }
-
 }

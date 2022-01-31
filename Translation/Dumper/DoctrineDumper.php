@@ -10,44 +10,26 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper;
 
+use Doctrine\ORM\EntityManagerInterface;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationValue;
 use Symfony\Component\Translation\Dumper\DumperInterface;
 use Symfony\Component\Translation\MessageCatalogue;
 
-
 /**
  * @autor Manuel Aguirre <programador.manuel@gmail.com>
  */
 class DoctrineDumper implements DumperInterface
 {
-
-    /**
-     * @var TranslationRepository
-     */
-    protected $translationRepository;
-    /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
-     */
-    protected $em;
-    protected $locales;
-
-    function __construct($em, $translationRepository, $locales)
-    {
-        $this->em = $em;
-        $this->translationRepository = $translationRepository;
-        $this->locales = $locales;
+    public function __construct(
+        private EntityManagerInterface $em,
+        private TranslationRepository $translationRepository,
+        private array $locales,
+    ) {
     }
 
-
-    /**
-     * Dumps the message catalogue.
-     *
-     * @param MessageCatalogue $messages The message catalogue
-     * @param array            $options  Options that are used by the dumper
-     */
-    public function dump(MessageCatalogue $messages, $options = array())
+    public function dump(MessageCatalogue $messages, array $options = [])
     {
         set_time_limit(10);
         $translations = $this->getExistentTranslations();
@@ -56,18 +38,9 @@ class DoctrineDumper implements DumperInterface
         //actualizamos las etiquetas de la BD en base al catálogo
         $translations = $this->setFromCatalogue($messages, $translations, $options);
 
-        $counter = 0;
-
         foreach ($translations as $domain => $items) {
             foreach ($items as $t) {
                 $this->em->persist($t);
-                /*
-                 * Se comenta el flush debido a que al parecer, se estan creando nuevos objetos en vez de actualizar
-                 */
-//                if (($counter++ % 20) === 0) {
-//                    $this->em->flush();
-//                    $this->em->clear();
-//                }
             }
         }
 
@@ -75,11 +48,10 @@ class DoctrineDumper implements DumperInterface
         $this->em->clear();
     }
 
-    public function getExistentTranslations()
+    public function getExistentTranslations(): array
     {
         $items = $this->translationRepository->findAll();
-
-        $result = array();
+        $result = [];
 
         foreach ($items as $e) {
             $result[$e->getDomain()][$e->getCode()] = $e;
@@ -88,25 +60,18 @@ class DoctrineDumper implements DumperInterface
         return $result;
     }
 
-    public function dumpCatalogues($catalogues)
+    public function dumpCatalogues($catalogues): void
     {
         $translations = $this->getExistentTranslations();
 
         foreach ($catalogues as $messages) {
             set_time_limit(10);
-            $translations = $this->setFromCatalogue($messages, $translations, array());
+            $translations = $this->setFromCatalogue($messages, $translations, []);
         }
-
-        $counter = 0;
 
         foreach ($translations as $domain => $items) {
             foreach ($items as $t) {
                 $this->em->persist($t);
-
-//                if (($counter++ % 50) === 0) {
-//                    $this->em->flush();
-//                    $this->em->clear();
-//                }
             }
         }
 
@@ -119,20 +84,19 @@ class DoctrineDumper implements DumperInterface
      *
      * @param MessageCatalogue $catalogue
      * @param                  $translations
-     * @param array            $options
+     * @param array $options
      *
      * @return mixed
      */
-    protected function setFromCatalogue(MessageCatalogue $catalogue, $translations, $options = array())
+    protected function setFromCatalogue(MessageCatalogue $catalogue, $translations, $options = [])
     {
         $locale = $catalogue->getLocale();
 
         foreach ($catalogue->all() as $domain => $items) {
             foreach ($items as $code => $value) {
-
                 if (isset($translations[$domain][$code])) {
                     $values = $translations[$domain][$code]->getValues();
-                    if (!isset($values[$locale]) OR isset($options['restoring'])) {
+                    if (!isset($values[$locale]) or isset($options['restoring'])) {
                         //si no existe el valor de traduccion en el locale actual
                         $translations[$domain][$code]->setValue($locale, $value);
                     }
@@ -141,7 +105,6 @@ class DoctrineDumper implements DumperInterface
                         //si se está usando, lo activamos
                         $translations[$domain][$code]->setActive(true);
                     }
-
                 } else {
                     $t = $translations[$domain][$code] = new Translation($code, $domain);
 

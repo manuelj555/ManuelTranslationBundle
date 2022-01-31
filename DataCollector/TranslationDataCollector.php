@@ -15,22 +15,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
-
 /**
  * @autor Manuel Aguirre <programador.manuel@gmail.com>
  */
 class TranslationDataCollector extends DataCollector
 {
-    /**
-     * @var DebugTranslator
-     */
-    private $debugTranslator;
-    private $locales;
-
-    function __construct($debugTranslator, $locales)
-    {
-        $this->debugTranslator = $debugTranslator;
-        $this->locales = $locales;
+    function __construct(
+        private DebugTranslator $debugTranslator,
+        private $locales,
+    ) {
     }
 
     public function collect(Request $request, Response $response, \Throwable $exception = null)
@@ -79,14 +72,14 @@ class TranslationDataCollector extends DataCollector
     {
         static $localhost = null;
 
-        if(null !== $localhost){
+        if (null !== $localhost) {
             return $localhost;
         }
 
         return $localhost = !isset($_SERVER['HTTP_CLIENT_IP'])
             && !isset($_SERVER['HTTP_X_FORWARDED_FOR'])
-            && in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', 'fe80::1', '::1')) 
-            && php_sapi_name() !== 'cli-server';   
+            && in_array(@$_SERVER['REMOTE_ADDR'], array('127.0.0.1', 'fe80::1', '::1'))
+            && php_sapi_name() !== 'cli-server';
     }
 
     public function reset()
