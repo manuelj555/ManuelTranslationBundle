@@ -2,37 +2,17 @@
 
 
 Bundle que permite la creación y edición de etiquetas de traducción desde la Base de datos 
-
-<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/trans_page.png" alt="ManuelTranslation Backend" title="ManuelTranslation" width="70%" align="middle" />
-
----------------
-
-**Puedes Crear y Modificar traducciones de etiquetas de manera simple y sin tocar archivos xml, yml, php...**
-
-<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/form.png" alt="ManuelTranslation Form" title="ManuelTranslation" width="50%" align="middle" />
-
--------------
-
-**Y además crear facilmente desde el Profiler las etiquetas sin traducir aun:**
-
-<img src="https://raw.githubusercontent.com/manuelj555/ManuelTranslationBundle/master/Resources/doc/profiler.png" alt="ManuelTranslation Profiler" title="ManuelTranslation" width="80%" align="middle"  />
+Puedes Crear y Modificar traducciones de etiquetas de manera simple y sin tocar archivos xml, yml, php...
+Y además crear facilmente desde el Profiler las etiquetas sin traducir aun.
 
 ------
 
 # Instalación
   
-Agregar al composer.json:
-
-```json
-"require" : {
-    "manuelj555/manuel-translation-bundle": "~5.0@dev"
-}
-```
-
-Y ejecutar 
+Ejecutar 
 
 ```
-composer update 
+composer require manuelj555/manuel-translation-bundle @dev
 ```
 
 Luego de ello, registrar los bundles en el **config/bundles.php**:
