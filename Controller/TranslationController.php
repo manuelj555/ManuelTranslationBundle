@@ -12,7 +12,7 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
-use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizer;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -91,25 +91,9 @@ class TranslationController extends AbstractController
         return $translation;
     }
 
-    #[Route("/update_all", name: "manuel_translation_export")]
-    public function updateXliff(
-        $_locale,
-        DoctrineLoader $doctrineLoader,
-        XliffFileDumper $xliffFileDumper
-    ): Response {
-        $catalogue = $doctrineLoader->load('', $_locale);
-        $path = $this->parameters->get('manuel_translation.translations_update_dir');
-
-        $xliffFileDumper->dump($catalogue, array(
-            'path' => $path,
-        ));
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
     #[Route("/download.php", name: "manuel_translation_download_backup_file")]
     public function liveDownloadBackup(
-        Synchronizator $synchronizator,
+        Synchronizer $synchronizator,
         TranslatorInterface $translator
     ): Response {
         $path = $this->getParameter('kernel.cache_dir') . '/sf_translations.php';

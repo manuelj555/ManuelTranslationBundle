@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator:
+        arguments: [ '@ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator.inner' ]
+        decorates: translator
+
+    ManuelAguirre\Bundle\TranslationBundle\DataCollector\TranslationDataCollector:
+        class: ManuelAguirre\Bundle\TranslationBundle\DataCollector\TranslationDataCollector
+        arguments:
+            - "@translator"
+            - "%manuel_translation.locales%"
+        tags:
+            -
+                name: data_collector
+                template: "@ManuelTranslation/DataCollector/translations.html.twig"
+                id: manuel_translations
+
+    ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\DumpFilesListener:
+        tags:
+            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: postFlush }

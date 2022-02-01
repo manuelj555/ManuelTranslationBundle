@@ -13,6 +13,7 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\CataloguesDumper;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 /**
  * @author maguirre <maguirre@developerplace.com>

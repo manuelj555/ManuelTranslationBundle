@@ -1,0 +1,23 @@
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true #
+        bind:
+            $locales: "%manuel_translation.locales%"
+            $activeLocales: "%manuel_translation.locales%"
+            $filenameTemplate: "%manuel_translation.filename_template%"
+            $backupDir: "%manuel_translation.translations_backup_dir%"
+            $cacheDir: "%kernel.cache_dir%"
+            $securityRole: ""
+
+    ManuelAguirre\Bundle\TranslationBundle\:
+        resource: '../../'
+        exclude:
+            - '../../DependencyInjection/'
+            - '../../Entity/'
+
+    ManuelAguirre\Bundle\TranslationBundle\Controller\:
+        resource: '../../Controller'
+        tags: [ 'controller.service_arguments' ]
+
+    ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository: ~

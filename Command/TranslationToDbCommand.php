@@ -10,7 +10,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Command;
 
-use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizer;
 use ManuelAguirre\Bundle\TranslationBundle\Synchronization\SyncResult;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +27,7 @@ class TranslationToDbCommand extends Command
     protected static $defaultName = 'manuel:translation:sync';
 
     public function __construct(
-        private Synchronizator $synchronizator,
+        private Synchronizer $synchronizer,
         private Filesystem $filesystem,
         private string $filenameTemplate,
         private array $locales,
@@ -49,7 +49,7 @@ class TranslationToDbCommand extends Command
 
         $io->writeln("Sincronizando...");
 
-        $result = $this->synchronizator->sync();
+        $result = $this->synchronizer->sync();
 
         foreach ($this->locales as $locale) {
             $filename = sprintf($this->filenameTemplate, $locale);

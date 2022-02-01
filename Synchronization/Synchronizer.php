@@ -20,7 +20,7 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * @autor Manuel Aguirre <programador.manuel@gmail.com>
  */
-class Synchronizator
+class Synchronizer
 {
     const STATUS_SUCCESS = 1;
     const STATUS_ERROR = 2;

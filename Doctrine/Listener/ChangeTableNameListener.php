@@ -6,27 +6,26 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener;
 
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+use Doctrine\ORM\Events;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 /**
  * @author Manuel Aguirre
  */
 class ChangeTableNameListener
 {
-    private string $tablePrefix;
-
-    public function __construct(string $tablePrefix)
+    public function __construct(private string $tablePrefix)
     {
         $this->tablePrefix = rtrim($tablePrefix, '_') . '_';
     }
 
-    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
+    #[AsEventListener(Events::loadClassMetadata)]
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs): void
     {
         $metadata = $eventArgs->getClassMetadata();
 
-        if (!in_array($metadata->getName(), [
-            Translation::class,
-        ])) {
+        if ($metadata->getName() !== Translation::class) {
             return;
         }
 

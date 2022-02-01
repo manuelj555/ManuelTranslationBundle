@@ -30,14 +30,5 @@
                 {{ 'label.clear_translation_cache'|trans }}
             </a>
         </li>
-        {% if app.environment != 'prod' %}
-            <li class="divider"></li>
-            <li>
-                <a href="{{ path('manuel_translation_transfer_files_to_bd') }}" title="Esta opción posiblemente sea removida en un futuro">
-                    <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
-                    <del>{{ 'label.load_trans_in_bd'|trans }}</del>
-                </a>
-            </li>
-        {% endif %}
     </ul>
 </div>

@@ -13,7 +13,7 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Model\TranslationLastEdit;
-use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +27,7 @@ class SyncController extends AbstractController
 {
     #[Route("/generate-file", name: "manuel_translation_generate_file")]
     public function generateFiles(
-        Synchronizator $synchronizator,
+        Synchronizer $synchronizator,
         TranslatorInterface $translator
     ): Response {
         if ($synchronizator->generateFile()) {
@@ -43,7 +43,7 @@ class SyncController extends AbstractController
 
     #[Route("/sync", name: "manuel_translation_load_from_file")]
     public function sync(
-        Synchronizator $synchronizator,
+        Synchronizer $synchronizator,
         Request $request
     ): Response {
         $result = $synchronizator->sync($request->query->getBoolean('forced'));
@@ -59,10 +59,10 @@ class SyncController extends AbstractController
     public function resolveConflict(
         Translation $translation,
         Request $request,
-        Synchronizator $synchronizator,
+        Synchronizer $synchronizator,
         EntityManagerInterface $entityManager
     ): Response {
-        $values = (array)$request->request->get('values', []);
+        $values = (array)$request->request->all('values');
         $hash = $request->request->get('hash');
         $active = $request->request->get('active');
         $new = $request->request->get('new');
@@ -78,7 +78,7 @@ class SyncController extends AbstractController
     }
 
     #[Route("/resolve-conflict-done", name: "manuel_translation_resolve_conflict_done")]
-    public function doneSync(Synchronizator $synchronizator): Response
+    public function doneSync(Synchronizer $synchronizator): Response
     {
         $synchronizator->markSyncAsDone();
 

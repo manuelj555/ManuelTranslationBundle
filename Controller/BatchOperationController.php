@@ -21,28 +21,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[Route("/batch-process")]
 class BatchOperationController extends AbstractController
 {
-    /**
-     * La idea es pasar las traducciones de los archivos a la base de datos
-     */
-    #[Route("/files-to-bd", name: "manuel_translation_transfer_files_to_bd")]
-    public function transferFilesToBd(
-        EntityManagerInterface $em,
-        TranslationManager $translationManager,
-        TranslatorInterface $translator
-    ): Response {
-        $em->beginTransaction();
-        $translationManager->extractToDatabase();
-        $em->flush();
-        $em->commit();
-
-        $this->addFlash('success', $translator
-            ->trans('flash.database_loaded', array(), 'ManuelTranslationBundle')
-        );
-
-        return $this->redirectToRoute('manuel_translation_list');
-    }
-
-    #[Route(
+        #[Route(
         "/change-status/{id}/{status}",
         name: "manuel_translation_change_status",
         requirements: ["status" => "active|inactive"],

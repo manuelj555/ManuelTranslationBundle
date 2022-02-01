@@ -12,25 +12,19 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Translation\Loader;
 
 use ManuelAguirre\Bundle\TranslationBundle\TranslationRepository;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\MessageCatalogue;
-
 
 /**
  * @autor Manuel Aguirre <programador.manuel@gmail.com>
  */
+#[AutoconfigureTag("translation.loader", ['alias' => 'doctrine'])]
 class DoctrineLoader implements LoaderInterface
 {
-    /**
-     * @var TranslationRepository
-     */
-    protected $translationRepository;
-    protected $fileTemplate;
-
-    function __construct($translationRepository, $fileTemplate)
-    {
-        $this->translationRepository = $translationRepository;
-        $this->fileTemplate = $fileTemplate;
+    function __construct(
+        private TranslationRepository $translationRepository,
+    ) {
     }
 
     public function load(mixed $resource, string $locale, string $domain = 'messages'): MessageCatalogue

@@ -11,17 +11,19 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Serializer\Normalizer;
 
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
+use ManuelAguirre\Bundle\TranslationBundle\Model\TranslationLastEdit;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ContextAwareDenormalizerInterface;
+use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
-class TranslationNormalizer implements NormalizerInterface, DenormalizerInterface
+class TranslationNormalizer implements ContextAwareNormalizerInterface, ContextAwareDenormalizerInterface
 {
-    public function __construct(private PropertyAccessorInterface $propertyAccesor)
-    {
+    public function __construct(
+        private PropertyAccessorInterface $propertyAccessor
+    ) {
     }
 
     public function normalize(mixed $object, string $format = null, array $context = [])
@@ -59,19 +61,23 @@ class TranslationNormalizer implements NormalizerInterface, DenormalizerInterfac
             $data['hash']
         );
 
+        if (isset($data['lastChanged'])) {
+            $data['lastChanged'] = TranslationLastEdit::from($data['lastChanged']);
+        }
+
         foreach ($data as $key => $value) {
-            $this->propertyAccesor->setValue($translation, $key, $value);
+            $this->propertyAccessor->setValue($translation, $key, $value);
         }
 
         return $translation;
     }
 
-    public function supportsNormalization(mixed $data, $format = null)
+    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
         return $data instanceof Translation;
     }
 
-    public function supportsDenormalization(mixed $data, string $type, string $format = null)
+    public function supportsDenormalization(mixed $data, string $type, string $format = null, array $context = []): bool
     {
         return $type == Translation::class;
     }

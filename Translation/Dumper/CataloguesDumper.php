@@ -8,10 +8,12 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 
+#[AutoconfigureTag("kernel.cache_warmer", ['priority' => 1000])]
 class CataloguesDumper implements CacheWarmerInterface
 {
     public function __construct(

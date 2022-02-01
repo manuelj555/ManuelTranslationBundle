@@ -11,6 +11,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation;
 
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Translation\TranslatorBagInterface;
 use Symfony\Contracts\Translation\LocaleAwareInterface;
@@ -19,6 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @author Abdellatif Ait boudad <a.aitboudad@gmail.com>
  */
+#[When("dev")]
 class DebugTranslator implements TranslatorInterface, TranslatorBagInterface, LocaleAwareInterface
 {
     /**
@@ -44,17 +46,6 @@ class DebugTranslator implements TranslatorInterface, TranslatorBagInterface, Lo
     public function trans(string $id, array $parameters = [], string $domain = null, string $locale = null): string
     {
         $trans = $this->translator->trans($id, $parameters, $domain, $locale);
-        $this->debug($id, $domain, $locale);
-
-        return $trans;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function transChoice($id, $number, array $parameters = array(), $domain = null, $locale = null)
-    {
-        $trans = $this->translator->transChoice($id, $number, $parameters, $domain, $locale);
         $this->debug($id, $domain, $locale);
 
         return $trans;

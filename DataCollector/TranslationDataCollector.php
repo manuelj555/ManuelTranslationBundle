@@ -11,6 +11,7 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\DataCollector;
 
 use ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator;
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
@@ -18,6 +19,7 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 /**
  * @autor Manuel Aguirre <programador.manuel@gmail.com>
  */
+#[When("dev")]
 class TranslationDataCollector extends DataCollector
 {
     function __construct(

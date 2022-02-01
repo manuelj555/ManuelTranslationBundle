@@ -10,7 +10,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Command;
 
-use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizator;
+use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,7 +23,7 @@ class TranslationToFileCommand extends Command
 {
     protected static $defaultName = 'manuel:translation:generate';
 
-    public function __construct(private Synchronizator $synchronizator)
+    public function __construct(private Synchronizer $synchronizer)
     {
         parent::__construct();
     }
@@ -41,7 +41,7 @@ class TranslationToFileCommand extends Command
 
         $io->writeln("Copiando traducciones al archivo");
 
-        $result = $this->synchronizator->generateFile();
+        $result = $this->synchronizer->generateFile();
 
         if ($result) {
             $io->success("El archivo de traducciones se ha creado/actualizado con exito");
