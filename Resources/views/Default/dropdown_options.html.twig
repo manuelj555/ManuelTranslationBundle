@@ -23,12 +23,6 @@
                 {{ 'label.download_generated_file'|trans }}
             </a>
         </li>
-        <li>
-            <a href="{{ path('manuel_translation_download_live_backup_file') }}">
-                <span aria-hidden="true" class="glyphicon glyphicon-download"></span>
-                {{ 'label.generate_and_download_cache_file'|trans }}
-            </a>
-        </li>
         <li class="divider"></li>
         <li>
             <a href="{{ path('manuel_translation_clear_cache') }}">
@@ -42,12 +36,6 @@
                 <a href="{{ path('manuel_translation_transfer_files_to_bd') }}" title="Esta opción posiblemente sea removida en un futuro">
                     <span aria-hidden="true" class="glyphicon glyphicon-refresh"></span>
                     <del>{{ 'label.load_trans_in_bd'|trans }}</del>
-                </a>
-            </li>
-            <li>
-                <a href="{{ path('manuel_translation_inactive_unused') }}">
-                    <span aria-hidden="true" class="glyphicon glyphicon-exclamation-sign"></span>
-                    {{ 'label.inactive_unused_trans'|trans }}
                 </a>
             </li>
         {% endif %}

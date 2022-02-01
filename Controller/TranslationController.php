@@ -108,23 +108,11 @@ class TranslationController extends AbstractController
     }
 
     #[Route("/download.php", name: "manuel_translation_download_backup_file")]
-    public function downloadBackup(): Response
-    {
-        $response = new BinaryFileResponse(
-            $this->parameters->get('manuel_translation.translations_backup_dir') . 'translations.php'
-        );
-
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
-
-        return $response;
-    }
-
-    #[Route("/live-download.php", name: "manuel_translation_download_live_backup_file")]
     public function liveDownloadBackup(
         Synchronizator $synchronizator,
         TranslatorInterface $translator
     ): Response {
-        $path = $this->getParameter('kernel.cache_dir') . '/translations.php';
+        $path = $this->getParameter('kernel.cache_dir') . '/sf_translations.php';
 
         if (!$synchronizator->generateFile($path)) {
             $this->addFlash('warning',

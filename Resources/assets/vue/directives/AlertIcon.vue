@@ -6,9 +6,9 @@ export default {
     bind() {
         this.$el = $(this.el).hide()
         this.params.alertClassPrefix = this.params.alertClassPrefix || 'alert'
-        
+
         this.vm.$on('alert-icon:show', (reference) => {
-            //console.log(this.elementRef, reference)
+            console.log(this.elementRef, reference)
             if(reference !== this.elementRef){
                 return true;
             }

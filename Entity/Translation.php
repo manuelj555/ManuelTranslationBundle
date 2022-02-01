@@ -78,14 +78,14 @@ class Translation
 
     public function __construct(?string $code = null, ?string $domain = null)
     {
-        $this->setCode($code);
-        $this->setDomain($domain);
+        $code and $this->setCode($code);
+        $domain and $this->setDomain($domain);
         $this->lastChanged = TranslationLastEdit::LOCAL;
     }
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
     public function getActive(): bool
@@ -192,12 +192,12 @@ class Translation
 
     public function getCreatedAt(): DateTimeImmutable
     {
-        return $this->createdAt;
+        return $this->createdAt ??= new DateTimeImmutable();
     }
 
     public function getUpdatedAt(): DateTimeImmutable
     {
-        return $this->updatedAt;
+        return $this->updatedAt ??= new DateTimeImmutable();
     }
 
     public function getHash(): ?string

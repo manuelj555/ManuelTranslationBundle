@@ -22,7 +22,7 @@ var config = {
     cssTarget: './public/css/',
 };
 
-gulp.task('js', function () {
+gulp.task('js', function (done) {
     /*return gulp.src([
      
     ])
@@ -30,6 +30,7 @@ gulp.task('js', function () {
         .pipe(gulpif(gutil.env.env == 'prod',uglify()))
         .pipe(concat('app_head.js'))
         .pipe(gulp.dest('web/compiled/js'));*/
+    done();
 });
 
 gulp.task('js:vue', function () {
@@ -79,15 +80,17 @@ gulp.task('js:vue', function () {
     return rebundle();
 });
 
-gulp.task('css', function () {
+gulp.task('css', function (done) {
     /*var dest = './web/compiled/css';
 
     return gulp.src([
-       
+
     ])
         .pipe(concat('styles.css'))
         .pipe(gulpif(gutil.env.env == 'prod',uglifycss()))
         .pipe(gulp.dest(dest));*/
+
+    return done();
 });
 
 gulp.task('watch', function(){
@@ -98,8 +101,9 @@ gulp.task('watch', function(){
         'js/**/*.js',
         'vue/**/*.vue',
         'vue/**/*.js'
-    ], { cwd: './assets'}, ['js:vue']);
+    ], { cwd: './assets'}, gulp.series('js:vue'));
 });
 
-gulp.task('default', ['css', 'js', 'js:vue']);
+exports.default = gulp.series('css', 'js', 'js:vue');
+
 
