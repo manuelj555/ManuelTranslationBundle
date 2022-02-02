@@ -8,7 +8,7 @@ services:
             $filenameTemplate: "%manuel_translation.filename_template%"
             $backupDir: "%manuel_translation.translations_backup_dir%"
             $cacheDir: "%kernel.cache_dir%"
-            $securityRole: ""
+            $securityRole: "%manuel_translation.security_role%"
 
     ManuelAguirre\Bundle\TranslationBundle\:
         resource: '../../'

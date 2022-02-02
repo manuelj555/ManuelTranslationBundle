@@ -11,6 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use function dd;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -37,6 +38,7 @@ class ManuelTranslationExtension extends Extension
         $container->setParameter('manuel_translation.locales', $config['locales']);
         $container->setParameter('manuel_translation.filename_template', $config['catalogues_path']);
         $container->setParameter('manuel_translation.translations_backup_dir', $config['backup_dir']);
+        $container->setParameter('manuel_translation.security_role', $config['security_role']);
 
         if (!$config['use_database']) {
             $container
@@ -51,9 +53,5 @@ class ManuelTranslationExtension extends Extension
         } else {
             $container->removeDefinition(ChangeTableNameListener::class);
         }
-
-//        $container
-//            ->getDefinition(ManageTranslationsVoter::class)
-//            ->setArgument(1, $config['security_role']);
     }
 }

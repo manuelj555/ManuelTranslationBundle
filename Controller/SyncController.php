@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Model\TranslationLastEdit;
 use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizer;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
+#[IsGranted('manage_translations')]
 class SyncController extends AbstractController
 {
     #[Route("/generate-file", name: "manuel_translation_generate_file")]

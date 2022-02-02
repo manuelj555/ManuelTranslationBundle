@@ -15,6 +15,7 @@ use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizer;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\CacheRemover;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -29,6 +30,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
+#[IsGranted('manage_translations')]
 class TranslationController extends AbstractController
 {
     public function __construct(private ParameterBagInterface $parameters)

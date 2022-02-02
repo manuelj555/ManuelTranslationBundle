@@ -15,6 +15,7 @@ use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,6 +40,7 @@ class ApiController
     ) {
     }
 
+    #[IsGranted('manage_translations')]
     #[Route(".{_format}", name: "manuel_translation_api_list", methods: "GET")]
     public function index(Request $request): Response
     {
@@ -61,6 +63,7 @@ class ApiController
         ]);
     }
 
+    #[IsGranted('manage_translations')]
     #[Route(".{_format}", name: "manuel_translation_api_create", methods: "POST")]
     public function create(Request $request): Response
     {
@@ -77,6 +80,7 @@ class ApiController
         return $this->responseGenerator->forOne($request, $translation, $errors);
     }
 
+    #[IsGranted('manage_translations')]
     #[Route("/{id}.{_format}", name: "manuel_translation_api_update", methods: "PUT")]
     public function update(Request $request, Translation $translation): Response
     {
