@@ -49,7 +49,7 @@ export default {
     },
 
     ready () {
-        this.resource = this.$resource(this.getTranslationApiUrl() + '{/id}.json')
+        this.resource = this.$resource(this.getTranslationApiUrl() + '{/id}')
 
         this.getTranslations()
     },
