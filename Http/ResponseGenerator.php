@@ -31,7 +31,7 @@ class ResponseGenerator
         Translation $translation,
         ConstraintViolationListInterface $errorList = null
     ): Response {
-        $data = $this->serializer->serialize($translation, $request->getRequestFormat());
+        $data = $this->serializer->serialize($translation, 'json');
         $errors = $this->errorsToArray($errorList);
 
         return new Response(
@@ -43,7 +43,7 @@ class ResponseGenerator
 
     public function forAll(Request $request, $translations, array $headers = []): Response
     {
-        $data = $this->serializer->serialize($translations, $request->getRequestFormat());
+        $data = $this->serializer->serialize($translations, 'json');
 
         return new Response($data, Response::HTTP_OK, $headers);
     }

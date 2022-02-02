@@ -25,11 +25,8 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
-#[Route(
-    "/api",
-    requirements: ["_format" => "xml|json"],
-    defaults: ["_format" => "json"],
-)]
+#[Route("/api")]
+#[IsGranted('manage_translations')]
 class ApiController
 {
     public function __construct(
@@ -40,8 +37,7 @@ class ApiController
     ) {
     }
 
-    #[IsGranted('manage_translations')]
-    #[Route(".{_format}", name: "manuel_translation_api_list", methods: "GET")]
+    #[Route("", name: "manuel_translation_api_list", methods: "GET")]
     public function index(Request $request): Response
     {
         $query = $this->translationRepository->getAllQueryBuilder(
@@ -63,8 +59,7 @@ class ApiController
         ]);
     }
 
-    #[IsGranted('manage_translations')]
-    #[Route(".{_format}", name: "manuel_translation_api_create", methods: "POST")]
+    #[Route("", name: "manuel_translation_api_create", methods: "POST")]
     public function create(Request $request): Response
     {
         $translation = $this->serializer->deserialize(
@@ -80,8 +75,7 @@ class ApiController
         return $this->responseGenerator->forOne($request, $translation, $errors);
     }
 
-    #[IsGranted('manage_translations')]
-    #[Route("/{id}.{_format}", name: "manuel_translation_api_update", methods: "PUT")]
+    #[Route("/{id}", name: "manuel_translation_api_update", methods: "PUT")]
     public function update(Request $request, Translation $translation): Response
     {
         $translation = $this->serializer->deserialize(
@@ -96,13 +90,5 @@ class ApiController
         }
 
         return $this->responseGenerator->forOne($request, $translation, $errors);
-    }
-
-    #[Route("/domains.{_format}", name: "manuel_translation_api_get_domains", methods: "GET")]
-    public function getDomains(Request $request): Response
-    {
-        $domains = $this->translationRepository->getExistentDomains();
-
-        return $this->responseGenerator->forOne($request, $domains);
     }
 }
