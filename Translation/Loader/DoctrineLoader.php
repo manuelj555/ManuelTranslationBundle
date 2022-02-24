@@ -11,7 +11,7 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation\Loader;
 
 use ManuelAguirre\Bundle\TranslationBundle\TranslationRepository;
-use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\Config\Resource\DirectoryResource;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Translation\Loader\LoaderInterface;
 use Symfony\Component\Translation\MessageCatalogue;
@@ -40,7 +40,7 @@ class DoctrineLoader implements LoaderInterface
             }
         }
 
-        $catalogue->addResource(new FileResource(rtrim($resource, '/')));
+        $catalogue->addResource(new DirectoryResource($resource));
 
         return $catalogue;
     }
