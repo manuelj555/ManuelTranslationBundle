@@ -40,7 +40,7 @@ class DoctrineLoader implements LoaderInterface
             }
         }
 
-        $catalogue->addResource(new FileResource($resource));
+        $catalogue->addResource(new FileResource(rtrim($resource, '/')));
 
         return $catalogue;
     }
