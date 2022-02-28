@@ -4,6 +4,7 @@ namespace ManuelAguirre\Bundle\TranslationBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use function dd;
 use function rtrim;
 use function str_starts_with;
 
@@ -32,10 +33,6 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('backup_dir')->defaultValue('%kernel.project_dir%/translations/backup/')->end()
                 ->scalarNode('catalogues_path')
                     ->defaultValue('%kernel.project_dir%/var/translations/')
-                    ->beforeNormalization()
-                        ->ifString()
-                        ->then(static fn($v) => rtrim($v, '/') . '/messages.%s.doctrine')
-                    ->end()
                 ->end()
                 ->booleanNode('use_database')->defaultTrue()->end()
                 ->scalarNode('tables_prefix')->end()

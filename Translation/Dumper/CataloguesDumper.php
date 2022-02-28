@@ -8,6 +8,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper;
 
+use ManuelAguirre\Bundle\TranslationBundle\Util\TranslationsUtil;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -18,7 +19,7 @@ class CataloguesDumper implements CacheWarmerInterface
 {
     public function __construct(
         private Filesystem $filesystem,
-        private string $filenameTemplate,
+        private string $cataloguesPath,
         private array $locales,
     ) {
     }
@@ -27,7 +28,7 @@ class CataloguesDumper implements CacheWarmerInterface
     {
         try {
             foreach ($this->locales as $locale) {
-                $filename = sprintf($this->filenameTemplate, $locale);
+                $filename = TranslationsUtil::buildResourcePath($this->cataloguesPath, $locale);
                 $this->filesystem->dumpFile($filename, time());
             }
         } catch (IOException $e) {

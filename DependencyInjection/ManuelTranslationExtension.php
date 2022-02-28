@@ -36,7 +36,7 @@ class ManuelTranslationExtension extends Extension
         }
 
         $container->setParameter('manuel_translation.locales', $config['locales']);
-        $container->setParameter('manuel_translation.filename_template', $config['catalogues_path']);
+        $container->setParameter('manuel_translation.catalogues_path', $config['catalogues_path']);
         $container->setParameter('manuel_translation.translations_backup_dir', $config['backup_dir']);
         $container->setParameter('manuel_translation.security_role', $config['security_role']);
 

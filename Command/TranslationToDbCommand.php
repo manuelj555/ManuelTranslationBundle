@@ -12,12 +12,12 @@ namespace ManuelAguirre\Bundle\TranslationBundle\Command;
 
 use ManuelAguirre\Bundle\TranslationBundle\Synchronization\Synchronizer;
 use ManuelAguirre\Bundle\TranslationBundle\Synchronization\SyncResult;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\Dumper\CataloguesDumper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
@@ -28,9 +28,7 @@ class TranslationToDbCommand extends Command
 
     public function __construct(
         private Synchronizer $synchronizer,
-        private Filesystem $filesystem,
-        private string $filenameTemplate,
-        private array $locales,
+        private CataloguesDumper $cataloguesDumper,
     ) {
         parent::__construct();
     }
@@ -51,10 +49,7 @@ class TranslationToDbCommand extends Command
 
         $result = $this->synchronizer->sync();
 
-        foreach ($this->locales as $locale) {
-            $filename = sprintf($this->filenameTemplate, $locale);
-            $this->filesystem->dumpFile($filename, time());
-        }
+        $this->cataloguesDumper->dump();
 
         if (0 === $numConflicts = count($result->getConflictItems())) {
             $io->success("La base de datos ha sido actualizada correctamente");

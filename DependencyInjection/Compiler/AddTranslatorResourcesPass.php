@@ -11,6 +11,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\DependencyInjection\Compiler;
 
+use ManuelAguirre\Bundle\TranslationBundle\Util\TranslationsUtil;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -23,10 +24,10 @@ class AddTranslatorResourcesPass implements CompilerPassInterface
         }
 
         $translator = $container->findDefinition('translator.default');
-        $resourceTemplate = $container->getParameter('manuel_translation.filename_template');
+        $path = $container->getParameter('manuel_translation.catalogues_path');
 
         foreach ($container->getParameter('manuel_translation.locales') as $locale) {
-            $resource = sprintf($resourceTemplate, $locale);
+            $resource = TranslationsUtil::buildResourcePath($path, $locale);
 
             $translator->addMethodCall('addResource', [
                 'doctrine',

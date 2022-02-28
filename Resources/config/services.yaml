@@ -5,7 +5,7 @@ services:
         bind:
             $locales: "%manuel_translation.locales%"
             $activeLocales: "%manuel_translation.locales%"
-            $filenameTemplate: "%manuel_translation.filename_template%"
+            $cataloguesPath: "%manuel_translation.catalogues_path%"
             $backupDir: "%manuel_translation.translations_backup_dir%"
             $cacheDir: "%kernel.cache_dir%"
             $securityRole: "%manuel_translation.security_role%"
