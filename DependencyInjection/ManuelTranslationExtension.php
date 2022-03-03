@@ -43,7 +43,7 @@ class ManuelTranslationExtension extends Extension
         if (!$config['use_database']) {
             $container
                 ->findDefinition(DoctrineLoader::class)
-                ->replaceArgument(0, new Reference(BackupTranslationRepository::class));
+                ->setArgument(0, new Reference(BackupTranslationRepository::class));
         }
 
         if (isset($config['tables_prefix']) && $config['tables_prefix']) {

@@ -21,3 +21,5 @@ services:
         tags: [ 'controller.service_arguments' ]
 
     ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository: ~
+    ManuelAguirre\Bundle\TranslationBundle\TranslationRepository:
+        alias: ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository

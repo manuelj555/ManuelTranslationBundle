@@ -30,7 +30,6 @@ class DoctrineLoader implements LoaderInterface
     public function load(mixed $resource, string $locale, string $domain = 'messages'): MessageCatalogue
     {
         $translations = $this->translationRepository->getActiveTranslations();
-
         $catalogue = new MessageCatalogue($locale);
 
         foreach ($translations as $translation) {
