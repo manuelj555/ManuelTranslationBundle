@@ -3,15 +3,16 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\DependencyInjection;
 
 use ManuelAguirre\Bundle\TranslationBundle\BackupTranslationRepository;
+use ManuelAguirre\Bundle\TranslationBundle\DataCollector\TranslationDataCollector;
 use ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\ChangeTableNameListener;
-use ManuelAguirre\Bundle\TranslationBundle\Security\Voter\ManageTranslationsVoter;
+use ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\DumpFilesListener;
+use ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use function dd;
 
 /**
  * This is the class that loads and manages your bundle configuration
@@ -31,10 +32,6 @@ class ManuelTranslationExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.yaml');
 
-        if ($container->getParameter('kernel.environment') !== 'prod') {
-            $loader->load('services_dev.yaml');
-        }
-
         $container->setParameter('manuel_translation.locales', $config['locales']);
         $container->setParameter('manuel_translation.catalogues_path', $config['catalogues_path']);
         $container->setParameter('manuel_translation.translations_backup_dir', $config['backup_dir']);
@@ -53,5 +50,21 @@ class ManuelTranslationExtension extends Extension
         } else {
             $container->removeDefinition(ChangeTableNameListener::class);
         }
+
+        $this->removeDevServices($container);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     */
+    private function removeDevServices(ContainerBuilder $container): void
+    {
+        if ($container->getParameter('kernel.environment') !== 'prod') {
+            return;
+        }
+
+        $container->removeDefinition(DebugTranslator::class);
+        $container->removeDefinition(TranslationDataCollector::class);
+        $container->removeDefinition(DumpFilesListener::class);
     }
 }
