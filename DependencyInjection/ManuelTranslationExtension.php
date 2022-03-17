@@ -3,10 +3,7 @@
 namespace ManuelAguirre\Bundle\TranslationBundle\DependencyInjection;
 
 use ManuelAguirre\Bundle\TranslationBundle\BackupTranslationRepository;
-use ManuelAguirre\Bundle\TranslationBundle\DataCollector\TranslationDataCollector;
 use ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\ChangeTableNameListener;
-use ManuelAguirre\Bundle\TranslationBundle\Doctrine\Listener\DumpFilesListener;
-use ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator;
 use ManuelAguirre\Bundle\TranslationBundle\Translation\Loader\DoctrineLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -29,7 +26,11 @@ class ManuelTranslationExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader = new Loader\YamlFileLoader(
+            $container,
+            new FileLocator(__DIR__ . '/../Resources/config'),
+            $container->getParameter('kernel.environment'),
+        );
         $loader->load('services.yaml');
 
         $container->setParameter('manuel_translation.locales', $config['locales']);
@@ -50,21 +51,5 @@ class ManuelTranslationExtension extends Extension
         } else {
             $container->removeDefinition(ChangeTableNameListener::class);
         }
-
-        $this->removeDevServices($container);
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     */
-    private function removeDevServices(ContainerBuilder $container): void
-    {
-        if ($container->getParameter('kernel.environment') !== 'prod') {
-            return;
-        }
-
-        $container->removeDefinition(DebugTranslator::class);
-        $container->removeDefinition(TranslationDataCollector::class);
-        $container->removeDefinition(DumpFilesListener::class);
     }
 }
