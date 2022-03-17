@@ -26,6 +26,10 @@ services:
 
 when@dev:
     services:
+        _defaults:
+            autowire: true      # Automatically injects dependencies in your services.
+            autoconfigure: true #
+
         ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator:
             arguments: [ '@ManuelAguirre\Bundle\TranslationBundle\Translation\DebugTranslator.inner' ]
             decorates: translator
