@@ -1,7 +1,7 @@
 {
   "name": "manuelj555/manuel-translation-bundle",
   "require": {
-    "php": ">8.1",
+    "php": ">=8.1",
     "symfony/framework-bundle": "^5.2|^6.0",
     "pagerfanta/pagerfanta": "^1.0.1|^2.0"
   },
