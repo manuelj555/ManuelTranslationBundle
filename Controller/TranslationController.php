@@ -68,7 +68,7 @@ class TranslationController extends AbstractController
         $translation->setCode($request->request->get('code'));
         $translation->setDomain($request->request->get('domain'));
 
-        foreach ($request->request->get('values', array()) as $locale => $value) {
+        foreach ($request->request->all('values') as $locale => $value) {
             $translation->setValue($locale, $value);
         }
 
