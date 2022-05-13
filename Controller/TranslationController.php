@@ -87,7 +87,7 @@ class TranslationController extends AbstractController
         $translation->setActive(true);
 
         foreach ($this->parameters->get('manuel_translation.locales') as $locale) {
-            $translation->setValue($locale, null);
+            $translation->setValue($locale, '');
         }
 
         return $translation;
