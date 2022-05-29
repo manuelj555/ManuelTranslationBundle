@@ -9,6 +9,7 @@ use ManuelAguirre\Bundle\TranslationBundle\DependencyInjection\Compiler\LoggingT
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use function dirname;
 
 class ManuelTranslationBundle extends Bundle
 {
@@ -23,4 +24,8 @@ class ManuelTranslationBundle extends Bundle
 //        }
     }
 
+    public function getPath(): string
+    {
+        return dirname(__DIR__);
+    }
 }
