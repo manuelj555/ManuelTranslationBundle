@@ -28,7 +28,7 @@ class ManuelTranslationExtension extends Extension
 
         $loader = new Loader\YamlFileLoader(
             $container,
-            new FileLocator(__DIR__ . '/../Resources/config'),
+            new FileLocator(__DIR__ . '/../../config'),
             $container->getParameter('kernel.environment'),
         );
         $loader->load('services.yaml');

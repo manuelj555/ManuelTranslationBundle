@@ -43,7 +43,7 @@ En el **config/routes.yaml** agregar:
 
 ```yaml
 manuel_translation:
-    resource: "@ManuelTranslationBundle/Controller/"
+    resource: "@ManuelTranslationBundle/src/Controller/"
     type:     annotation
     prefix:   /{_locale}/admin/trans
 #    requirements:

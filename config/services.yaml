@@ -11,13 +11,13 @@ services:
             $securityRole: "%manuel_translation.security_role%"
 
     ManuelAguirre\Bundle\TranslationBundle\:
-        resource: '../../'
+        resource: '../src/'
         exclude:
-            - '../../DependencyInjection/'
-            - '../../Entity/'
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
 
     ManuelAguirre\Bundle\TranslationBundle\Controller\:
-        resource: '../../Controller'
+        resource: '../src/Controller'
         tags: [ 'controller.service_arguments' ]
 
     ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository: ~
