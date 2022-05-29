@@ -7,12 +7,13 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 }
 
 Encore
-    .setOutputPath('public/build/')
-    .setPublicPath('build/')
+    .setOutputPath('./public/')
+    .setPublicPath('./')
+    .setManifestKeyPrefix('bundles/manueltranslation')
     .addEntry('app', './assets/js/app.js')
     .addEntry('config', './assets/js/config/index.js')
-    .splitEntryChunks()
-    .enableSingleRuntimeChunk()
+    .addStyleEntry('styles', './assets/css/app.scss')
+    .disableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
@@ -25,7 +26,7 @@ Encore
         config.useBuiltIns = 'usage';
         config.corejs = 3;
     })
-    //.enableSassLoader()
+    .enableSassLoader()
     .enableReactPreset()
 ;
 

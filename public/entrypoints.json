@@ -2,14 +2,17 @@
   "entrypoints": {
     "app": {
       "js": [
-        "/runtime.js",
-        "/app.js"
+        "./app.js"
       ]
     },
     "config": {
       "js": [
-        "/runtime.js",
-        "/config.js"
+        "./config.js"
+      ]
+    },
+    "styles": {
+      "css": [
+        "./styles.css"
       ]
     }
   }

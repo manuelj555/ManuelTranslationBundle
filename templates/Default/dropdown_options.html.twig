@@ -1,32 +1,35 @@
 {% trans_default_domain "ManuelTranslationBundle" %}
-<div class="btn-group">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-        <span aria-hidden="true" class="glyphicon glyphicon-cog"></span> <span class="caret"></span>
+<div class="dropdown">
+    <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+        <i class="bi bi-gear"></i>
+        <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu dropdown-menu-right" role="menu">
+    <ul class="dropdown-menu dropdown-menu-end" role="menu">
         <li>
-            <a href="{{ path('manuel_translation_load_from_file') }}">
-                <span aria-hidden="true" class="glyphicon glyphicon-random"></span>
+            <a class="dropdown-item" href="{{ path('manuel_translation_load_from_file') }}">
+                <i class="bi bi-bezier me-2"></i>
                 {{ 'label.load_from_file'|trans }}
             </a>
         </li>
         <li class="divider"></li>
         <li>
-            <a href="{{ path('manuel_translation_generate_file') }}">
-                <span aria-hidden="true" class="glyphicon glyphicon-indent-right"></span>
+            <a class="dropdown-item" href="{{ path('manuel_translation_generate_file') }}">
+                <i class="bi bi-hdd me-2"></i>
                 {{ 'label.update_file'|trans }}
             </a>
         </li>
         <li>
-            <a href="{{ path('manuel_translation_download_backup_file') }}">
-                <span aria-hidden="true" class="glyphicon glyphicon-download"></span>
+            <a class="dropdown-item" href="{{ path('manuel_translation_download_backup_file') }}">
+                <i class="bi bi-cloud-arrow-down me-2"></i>
                 {{ 'label.download_generated_file'|trans }}
             </a>
         </li>
-        <li class="divider"></li>
         <li>
-            <a href="{{ path('manuel_translation_clear_cache') }}">
-                <span aria-hidden="true" class="glyphicon glyphicon-random"></span>
+            <hr class="dropdown-divider">
+        </li>
+        <li>
+            <a class="dropdown-item" href="{{ path('manuel_translation_clear_cache') }}">
+                <i class="bi bi-arrow-repeat me-2"></i>
                 {{ 'label.clear_translation_cache'|trans }}
             </a>
         </li>

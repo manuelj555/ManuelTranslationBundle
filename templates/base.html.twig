@@ -6,10 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Translations Administration{% endblock %}</title>
     {% block stylesheets %}
-        <link href="{{ asset('bundles/manueltranslation/css/lumen_bootstrap.min.css') }}" rel="stylesheet">
+        {# <link href="{{ asset('bundles/manueltranslation/css/lumen_bootstrap.min.css') }}" rel="stylesheet"> #}
+        <link href="{{ asset('bundles/manueltranslation/styles.css') }}" rel="stylesheet">
         <style>
-            .trans-files, .trans-files h6 { line-height: 18px; color: #aaa }
-            pre { white-space: pre-wrap; }
+            .trans-files, .trans-files h6 {
+                line-height: 18px;
+                color: #aaa
+            }
+
+            pre {
+                white-space: pre-wrap;
+            }
         </style>
     {% endblock %}
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}"/>
@@ -19,11 +26,11 @@
     {{ include('@ManuelTranslation/header.html.twig') }}
     <div class="container">
 
-        <div class="page-header">
-            <div class="pull-right">
+        <div class="page-header d-flex mb-5 border-bottom">
+            <h1>{% block page_header %}{% endblock %}</h1>
+            <div class="ms-auto">
                 {% block page_header_right %}{% endblock %}
             </div>
-            <h1>{% block page_header %}{% endblock %}</h1>
         </div>
 
         {{ include('@ManuelTranslation/flash.html.twig') }}
@@ -32,12 +39,13 @@
     </div>
 {% endblock %}
 {% block javascripts %}
-    <script src="{{ asset('bundles/manueltranslation/js/jquery.min.js') }}"></script>
-    <script src="{{ asset('bundles/manueltranslation/js/bootstrap.min.js') }}"></script>
+    {# <script src="{{ asset('bundles/manueltranslation/js/jquery.min.js') }}"></script> #}
+    {# <script src="{{ asset('bundles/manueltranslation/js/bootstrap.min.js') }}"></script> #}
+     <script src="{{ asset('bundles/manueltranslation/app.js') }}"></script>
     <script>
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
+        // $(function () {
+        // $('[data-toggle="tooltip"]').tooltip()
+        // })
     </script>
 {% endblock %}
 </body>

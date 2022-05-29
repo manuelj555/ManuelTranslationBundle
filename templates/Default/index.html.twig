@@ -8,18 +8,18 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <style>
-        .code-text {
-            white-space: pre; /* CSS 2.0 */
-            white-space: pre-wrap; /* CSS 2.1 */
-            white-space: pre-line; /* CSS 3.0 */
-            white-space: -pre-wrap; /* Opera 4-6 */
-            white-space: -o-pre-wrap; /* Opera 7 */
-            white-space: -moz-pre-wrap; /* Mozilla */
-            white-space: -hp-pre-wrap; /* HP Printers */
-            word-wrap: break-word; /* IE 5+ */
-        }
-    </style>
+{#    <style>#}
+{#        .code-text {#}
+{#            white-space: pre; /* CSS 2.0 */#}
+{#            white-space: pre-wrap; /* CSS 2.1 */#}
+{#            white-space: pre-line; /* CSS 3.0 */#}
+{#            white-space: -pre-wrap; /* Opera 4-6 */#}
+{#            white-space: -o-pre-wrap; /* Opera 7 */#}
+{#            white-space: -moz-pre-wrap; /* Mozilla */#}
+{#            white-space: -hp-pre-wrap; /* HP Printers */#}
+{#            word-wrap: break-word; /* IE 5+ */#}
+{#        }#}
+{#    </style>#}
 {% endblock %}
 
 {% block page_header %}
@@ -27,17 +27,21 @@
 {% endblock %}
 
 {% block page_header_right %}
-    <a href="#" @click.prevent="addTranslation" 
-    class="btn btn-primary" id="add-translation">
-        <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
-    </a>
-    {{ include('@ManuelTranslation/Default/dropdown_options.html.twig') }}
+    <div class="d-flex gap-2">
+        <a href="#" class="btn btn-primary" id="add-translation">
+            <span aria-hidden="true" class="glyphicon glyphicon-plus"></span> {{ 'label.add'|trans }}
+        </a>
+        {{ include('@ManuelTranslation/Default/dropdown_options.html.twig') }}
+    </div>
 {% endblock %}
 
 {% block content %}
     {% verbatim %}
         
-        <trans-list></trans-list>
+<!--        <trans-list></trans-list>-->
+
+
+        <div id="translations-configuration"></div>
 
     {% endverbatim %}
 {% endblock %}
@@ -46,12 +50,13 @@
     {{ parent() }}
 
     <script>
-    var TranslationData = {
-        baseUrlApi: '{{ path('manuel_translation_api_list') }}',
-        locales: {{ locales|json_encode|raw }},
-        locale: '{{ app.request.locale }}',
-        domains: {{ domains|json_encode|raw }},
-    };
+        var TranslationData = {
+            baseUrlApi: '{{ path('manuel_translation_api_list') }}',
+            locales: {{ locales|json_encode|raw }},
+            locale: '{{ app.request.locale }}',
+            domains: {{ domains|json_encode|raw }},
+        };
     </script>
-    <script src="{{ asset('bundles/manueltranslation/js/translations.js') }}"></script>
+    {# <script src="{{ asset('bundles/manueltranslation/js/translations.js') }}"></script> #}
+    <script src="{{ asset('bundles/manueltranslation/config.js') }}"></script>
 {% endblock %}
