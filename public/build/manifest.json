@@ -1,0 +1,5 @@
+{
+  "build/app.js": "build/app.js",
+  "build/config.js": "build/config.js",
+  "build/runtime.js": "build/runtime.js"
+}

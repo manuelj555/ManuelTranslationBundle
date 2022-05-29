@@ -1,0 +1,31 @@
+{
+  "name": "manuel-translation-bundle",
+  "version": "1.0.0",
+  "description": "Bundle que permite la creación y edición de etiquetas de traducción desde la Base de datos \r Puedes Crear y Modificar traducciones de etiquetas de manera simple y sin tocar archivos xml, yml, php...\r Y además crear facilmente desde el Profiler las etiquetas sin traducir aun.",
+  "main": "webpack.config.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/preset-react": "^7.17.12",
+    "@symfony/webpack-encore": "^2.1.0",
+    "webpack-notifier": "^1.15.0"
+  },
+  "scripts": {
+    "dev-server": "encore dev-server",
+    "dev": "encore dev",
+    "watch": "encore dev --watch",
+    "build": "encore production --progress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manuelj555/ManuelTranslationBundle.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manuelj555/ManuelTranslationBundle/issues"
+  },
+  "homepage": "https://github.com/manuelj555/ManuelTranslationBundle#readme"
+}
