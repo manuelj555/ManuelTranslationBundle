@@ -6,7 +6,7 @@
     "pagerfanta/pagerfanta": "^1.0.1|^2.0"
   },
   "autoload": {
-    "psr-4": {"ManuelAguirre\\Bundle\\TranslationBundle\\": ""}
+    "psr-4": {"ManuelAguirre\\Bundle\\TranslationBundle\\": "src/"}
   },
   "extra": {
     "branch-alias": {
