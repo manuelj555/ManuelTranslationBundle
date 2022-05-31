@@ -1,43 +1,31 @@
 import React, {useContext} from "react";
 import Item from "./Item";
 import TranslationsContext from "../../context/TranslationsContext";
+import Paginator from "./Paginator";
 
 export default function List() {
-    const {translations} = useContext(TranslationsContext);
+    const {translations, currentPage, totalCount, changePage} = useContext(TranslationsContext);
+
+    const pagination = (
+        <Paginator
+            currentPage={currentPage}
+            totalCount={totalCount}
+            onChange={changePage}
+        />
+    );
 
     return (
         <div>
-            <div className="row paginator-container">
-                <div className="col-sm-4 total-count"><b>Items:</b> 1</div>
-                <div className="col-sm-8 text-right">
-                    <nav aria-label="Page navigation">
-                        <ul className="pagination">
+            {pagination}
 
-                            <li className="disabled">
-                                <span aria-hidden="true">«</span>
-
-                            </li>
-
-                            <li className="active">
-                                <span>1</span>
-
-                            </li>
-
-                            <li className="disabled">
-                                <span aria-hidden="true">»</span>
-
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
             <div>
-                <div>
-                    {translations.map(translation => (
-                        <Item key={translation.id} translation={translation}/>
-                    ))}
-                </div>
+                {translations.map(translation => (
+                    <Item key={translation.id} translation={translation}/>
+                ))}
             </div>
+
+            {pagination}
+
         </div>
     );
 }

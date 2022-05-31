@@ -6,6 +6,12 @@ const GlobalsContext = createContext({
     booleanLabel: (value) => null,
 });
 
+const itemsPerPage = 50;
+
+const calculatePagesCount = (totalCount) => {
+    return Math.floor(totalCount / itemsPerPage) + 1;
+}
+
 const GlobalsResolver = ({children, paths, domains}) => {
 
     const booleanLabel = (value) => {
@@ -25,5 +31,5 @@ const GlobalsResolver = ({children, paths, domains}) => {
     );
 }
 
-export {GlobalsResolver};
+export {GlobalsResolver, calculatePagesCount, itemsPerPage};
 export default GlobalsContext;

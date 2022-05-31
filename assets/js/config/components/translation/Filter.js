@@ -2,6 +2,7 @@ import React, {useContext, useState} from "react";
 import {Button, Card, Col, Form, Row} from "react-bootstrap";
 import TranslationsContext from "../../context/TranslationsContext";
 import Icon from "../Icon";
+import GlobalsContext from "../../context/GlobalsContext";
 
 const emptyFilters = (domains) => ({
     search: '',
@@ -11,8 +12,7 @@ const emptyFilters = (domains) => ({
 
 export default function Filter() {
     const {applyFilters} = useContext(TranslationsContext);
-    // const {domains} = useContext(GlobalsContext);
-    const domains = ['A', 'B', 'C'];
+    const {domains} = useContext(GlobalsContext);
     const [filters, setFilters] = useState(() => emptyFilters(domains));
 
     const handleFormSubmit = (e) => {
@@ -63,6 +63,8 @@ export default function Filter() {
                                     {domains.map((domain, index) => (
                                         <Form.Check
                                             key={domain}
+                                            id={"filter-domain-" + index}
+                                            inline
                                             name="domains"
                                             label={domain}
                                             value={domain}
@@ -75,7 +77,7 @@ export default function Filter() {
                             <Form.Group as={Row} className="mb-3">
                                 <Form.Label column sm={2} className="py-0" lg={1}>Status</Form.Label>
                                 <Col>
-                                    <Form.Check label="Inactives"/>
+                                    <Form.Check id="filter-show-inactives" label="Inactives"/>
                                 </Col>
                             </Form.Group>
                         </div>
