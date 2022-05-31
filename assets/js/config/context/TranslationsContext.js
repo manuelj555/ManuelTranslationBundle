@@ -4,11 +4,18 @@ import axios from "axios";
 
 const TranslationsContext = createContext({
     translations: [],
+    applyFilters: (newFilters) => null,
 });
 
 const TranslationsProvider = ({children}) => {
     const {paths} = useContext(GlobalsContext);
     const [translations, setTranslations] = useState([]);
+    const [domains, setDomains] = useState([]);
+    const [filters, setFilters] = useState(() => ({
+        search: '',
+        domains: [],
+        showInactive: false,
+    }));
 
     useEffect(() => {
         axios.get(paths.list)
@@ -18,9 +25,18 @@ const TranslationsProvider = ({children}) => {
             })
     }, []);
 
+    useEffect(() => {
+        console.log('Aplicando filtros');
+    }, [filters]);
+
+    const applyFilters = (newFilters) => {
+        setFilters({...filters, ...newFilters});
+    };
+
     return (
         <TranslationsContext.Provider value={{
             translations,
+            applyFilters,
         }}>
             {children}
         </TranslationsContext.Provider>
