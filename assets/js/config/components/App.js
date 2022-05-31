@@ -1,13 +1,16 @@
 import React from "react";
-import TranslationsFilter from "./TranslationsFilter";
-import TranslationsList from "./TranslationsList";
+import Filter from "./translation/Filter";
+import List from "./translation/List";
+import {TranslationsProvider} from "../context/TranslationsContext";
 
 
-export default function App () {
+export default function App() {
     return (
         <div>
-            <TranslationsFilter />
-            <TranslationsList />
+            <TranslationsProvider>
+                <Filter/>
+                <List/>
+            </TranslationsProvider>
         </div>
     );
 }

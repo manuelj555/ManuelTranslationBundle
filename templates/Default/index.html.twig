@@ -8,18 +8,15 @@
 
 {% block stylesheets %}
     {{ parent() }}
-{#    <style>#}
-{#        .code-text {#}
-{#            white-space: pre; /* CSS 2.0 */#}
-{#            white-space: pre-wrap; /* CSS 2.1 */#}
-{#            white-space: pre-line; /* CSS 3.0 */#}
-{#            white-space: -pre-wrap; /* Opera 4-6 */#}
-{#            white-space: -o-pre-wrap; /* Opera 7 */#}
-{#            white-space: -moz-pre-wrap; /* Mozilla */#}
-{#            white-space: -hp-pre-wrap; /* HP Printers */#}
-{#            word-wrap: break-word; /* IE 5+ */#}
-{#        }#}
-{#    </style>#}
+    <style>
+        .trans-value {
+            background-color: #e7e1e3;
+            border: 1px solid #b9b9b9;
+            border-radius: 3px;
+            padding: 4px;
+            margin: 2px;
+        }
+    </style>
 {% endblock %}
 
 {% block page_header %}
@@ -36,14 +33,12 @@
 {% endblock %}
 
 {% block content %}
-    {% verbatim %}
-        
-<!--        <trans-list></trans-list>-->
 
-
-        <div id="translations-configuration"></div>
-
-    {% endverbatim %}
+    <div id="translations-configuration"
+         data-paths="{{- {
+             'list': path('manuel_translation_api_list')
+         }|json_encode|e('html_attr') -}}"
+    ></div>
 {% endblock %}
 
 {% block javascripts %}
