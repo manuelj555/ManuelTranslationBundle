@@ -12,7 +12,7 @@ const calculatePagesCount = (totalCount) => {
     return Math.floor(totalCount / itemsPerPage) + 1;
 }
 
-const GlobalsResolver = ({children, paths, domains}) => {
+const GlobalsProvider = ({children, paths, domains}) => {
 
     const booleanLabel = (value) => {
         return value ? 'Yes' : 'No';
@@ -31,5 +31,5 @@ const GlobalsResolver = ({children, paths, domains}) => {
     );
 }
 
-export {GlobalsResolver, calculatePagesCount, itemsPerPage};
+export {GlobalsProvider, calculatePagesCount, itemsPerPage};
 export default GlobalsContext;

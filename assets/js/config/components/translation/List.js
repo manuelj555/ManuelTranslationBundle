@@ -1,10 +1,15 @@
 import React, {useContext} from "react";
-import Item from "./Item";
+import Item, {LoadingItem} from "./Item";
 import TranslationsContext from "../../context/TranslationsContext";
-import Paginator from "./Paginator";
+import Paginator, {LoadingPaginator} from "./Paginator";
 
 export default function List() {
-    const {translations, currentPage, totalCount, changePage} = useContext(TranslationsContext);
+    const {
+        translations,
+        currentPage,
+        totalCount,
+        changePage,
+    } = useContext(TranslationsContext);
 
     const pagination = (
         <Paginator
@@ -29,3 +34,19 @@ export default function List() {
         </div>
     );
 }
+
+const LoadingList = () => {
+    return (
+        <div>
+            <LoadingPaginator/>
+
+            <LoadingItem/>
+            <LoadingItem/>
+            <LoadingItem/>
+
+            <LoadingPaginator/>
+        </div>
+    );
+};
+
+export {LoadingList};

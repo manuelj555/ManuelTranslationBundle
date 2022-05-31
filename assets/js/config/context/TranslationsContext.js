@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
 import GlobalsContext, {itemsPerPage} from "./GlobalsContext";
 import axios from "axios";
+import LoadingContext from "./LoadingContext";
 
 const TranslationsContext = createContext({
     translations: [],
@@ -12,6 +13,7 @@ const TranslationsContext = createContext({
 
 const TranslationsProvider = ({children}) => {
     const {paths} = useContext(GlobalsContext);
+    const {setAppLoading} = useContext(LoadingContext);
     const [translations, setTranslations] = useState([]);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
@@ -22,6 +24,7 @@ const TranslationsProvider = ({children}) => {
     }));
 
     const loadTranslations = () => {
+        setAppLoading(true);
         axios.get(paths.list, {
             params: {
                 search: filters.search,
@@ -39,6 +42,7 @@ const TranslationsProvider = ({children}) => {
             })
             .then(data => {
                 setTranslations(data);
+                setAppLoading(false);
             })
     }
 

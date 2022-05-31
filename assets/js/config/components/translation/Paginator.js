@@ -1,5 +1,5 @@
 import React from "react";
-import {Pagination} from "react-bootstrap";
+import {Pagination, Placeholder} from "react-bootstrap";
 import {calculatePagesCount, itemsPerPage} from "../../context/GlobalsContext";
 
 export default function Paginator({currentPage, totalCount, onChange}) {
@@ -21,6 +21,15 @@ export default function Paginator({currentPage, totalCount, onChange}) {
             <div className="ms-auto">
                 <b>Items:</b> {itemsCount} <b>of</b> {totalCount}
             </div>
+        </div>
+    );
+}
+
+export function LoadingPaginator() {
+    return (
+        <div className="d-flex gap-2 my-2">
+            <Placeholder xs={2}/>
+            <Placeholder className="ms-auto py-3" xs={2}/>
         </div>
     );
 }

@@ -1,14 +1,20 @@
-import React from "react";
+import React, {useContext} from "react";
 import Filter from "./translation/Filter";
-import List from "./translation/List";
+import List, {LoadingList} from "./translation/List";
 import {TranslationsProvider} from "../context/TranslationsContext";
+import LoadingContext from "../context/LoadingContext";
 
 export default function App() {
+    const {appLoading} = useContext(LoadingContext);
+
     return (
         <div>
             <TranslationsProvider>
                 <Filter/>
-                <List/>
+                {appLoading
+                    ? <LoadingList/>
+                    : <List/>
+                }
             </TranslationsProvider>
         </div>
     );
