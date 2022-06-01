@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import Item, {LoadingItem} from "./Item";
 import TranslationsContext from "../../context/TranslationsContext";
 import Paginator, {LoadingPaginator} from "./Paginator";
@@ -9,7 +9,21 @@ export default function List() {
         currentPage,
         totalCount,
         changePage,
+        addEmptyItem,
     } = useContext(TranslationsContext);
+
+    useEffect(() => {
+        const addBtn = document.getElementById('add-translation');
+
+        addBtn.addEventListener('click', handleAddClick);
+
+        return () => addBtn.removeEventListener('click', handleAddClick);
+    }, []);
+
+    const handleAddClick = (e) => {
+        e?.preventDefault();
+        addEmptyItem();
+    };
 
     const pagination = (
         <Paginator
@@ -25,7 +39,7 @@ export default function List() {
 
             <div>
                 {translations.map(translation => (
-                    <Item key={translation.id} translation={translation}/>
+                    <Item key={translation.uuid} translation={translation}/>
                 ))}
             </div>
 

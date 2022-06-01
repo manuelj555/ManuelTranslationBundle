@@ -58,7 +58,8 @@ class TranslationNormalizer implements ContextAwareNormalizerInterface, ContextA
             $data['createdAt'],
             $data['updatedAt'],
             $data['id'],
-            $data['hash']
+            $data['hash'],
+            $data['uuid'],
         );
 
         if (isset($data['lastChanged'])) {

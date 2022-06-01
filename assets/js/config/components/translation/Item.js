@@ -5,12 +5,18 @@ import Icon from "../Icon";
 import TranslationsContext from "../../context/TranslationsContext";
 
 export default function Item({translation}) {
-    const {saveItem} = useContext(TranslationsContext);
+    const {saveItem, removeEmptyItem} = useContext(TranslationsContext);
     const [editing, setEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const showForm = editing || !translation.id;
 
     const handleEditClick = () => setEditing(true);
-    const handleCloseFormClick = () => setEditing(false);
+    const handleCloseFormClick = () => {
+        if (!translation.id) {
+            removeEmptyItem(translation);
+        }
+        setEditing(false);
+    }
 
     const handleSave = (item) => {
         setEditing(false);
@@ -24,7 +30,7 @@ export default function Item({translation}) {
 
     return (
         <div className="translation-item mb-2">
-            {editing
+            {showForm
                 ? <ItemForm
                     item={translation}
                     handleSave={handleSave}

@@ -2,6 +2,7 @@ import React, {createContext, useContext, useEffect, useState} from "react";
 import GlobalsContext, {itemsPerPage} from "./GlobalsContext";
 import axios from "axios";
 import LoadingContext from "./LoadingContext";
+import {v4 as uuid} from 'uuid';
 
 const TranslationsContext = createContext({
     translations: [],
@@ -10,6 +11,8 @@ const TranslationsContext = createContext({
     changePage: (page) => null,
     applyFilters: (newFilters) => null,
     saveItem: (item) => null,
+    addEmptyItem: () => null,
+    removeEmptyItem: (item) => null,
 });
 
 const TranslationsProvider = ({children}) => {
@@ -42,7 +45,7 @@ const TranslationsProvider = ({children}) => {
                 return data;
             })
             .then(data => {
-                setTranslations(data);
+                setTranslations(data.map(item => ({...item, uuid: uuid()})));
                 setAppLoading(false);
             })
     }
@@ -62,6 +65,7 @@ const TranslationsProvider = ({children}) => {
 
     const saveItem = (item) => {
         let ajaxRequest = null;
+        const itemUuid = item.uuid;
 
         if (item.id) {
             ajaxRequest = axios.put(apiUrl + '/' + item.id, item);
@@ -72,18 +76,41 @@ const TranslationsProvider = ({children}) => {
         return ajaxRequest
             .then(({data}) => data)
             .then((item) => {
-                const newTranslations = [...translations];
-                const itemIndex = newTranslations.findIndex(i => i.id === item.id);
+                setTranslations(translations => {
+                    const newTranslations = [...translations];
+                    const itemIndex = newTranslations.findIndex(i => i.uuid === itemUuid);
+                    item = {...item, uuid: itemUuid};
 
-                if (0 <= itemIndex) {
-                    newTranslations[itemIndex] = item;
-                } else {
-                    //item nuevo
-                    newTranslations.unshift(item);
-                }
+                    if (0 <= itemIndex) {
+                        newTranslations[itemIndex] = item;
+                    } else {
+                        //item nuevo
+                        newTranslations.unshift(item);
+                    }
 
-                setTranslations(newTranslations);
+                    return newTranslations;
+                })
             });
+    };
+
+    const addEmptyItem = () => {
+        setTranslations(translations => {
+            const newTranslations = [...translations];
+            newTranslations.unshift({
+                id: null,
+                uuid: uuid(),
+                code: '',
+                domain: 'messages',
+                active: true,
+                values: {},
+            });
+
+            return newTranslations;
+        })
+    };
+
+    const removeEmptyItem = (item) => {
+        setTranslations(translations => translations.filter(({uuid}) => uuid !== item.uuid));
     };
 
     return (
@@ -94,6 +121,8 @@ const TranslationsProvider = ({children}) => {
             changePage,
             applyFilters,
             saveItem,
+            addEmptyItem,
+            removeEmptyItem,
         }}>
             {children}
         </TranslationsContext.Provider>
