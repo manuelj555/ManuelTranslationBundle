@@ -7,12 +7,13 @@ import {LoadingProvider} from "./context/LoadingContext";
 const container = document.getElementById('translations-configuration');
 const paths = JSON.parse(container.dataset.paths || '{}');
 const domains = JSON.parse(container.dataset.domains || '[]');
+const locales = JSON.parse(container.dataset.locales || '[]');
 
 const root = createRoot(container);
 
 root.render(
     <React.StrictMode>
-        <GlobalsProvider paths={paths} domains={domains}>
+        <GlobalsProvider paths={paths} domains={domains} locales={locales}>
             <LoadingProvider>
                 <App/>
             </LoadingProvider>

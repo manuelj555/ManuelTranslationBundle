@@ -9,10 +9,11 @@ const TranslationsContext = createContext({
     totalCount: 0,
     changePage: (page) => null,
     applyFilters: (newFilters) => null,
+    saveItem: (item) => null,
 });
 
 const TranslationsProvider = ({children}) => {
-    const {paths} = useContext(GlobalsContext);
+    const {paths: {api: apiUrl}} = useContext(GlobalsContext);
     const {setAppLoading} = useContext(LoadingContext);
     const [translations, setTranslations] = useState([]);
     const [page, setPage] = useState(1);
@@ -25,7 +26,7 @@ const TranslationsProvider = ({children}) => {
 
     const loadTranslations = () => {
         setAppLoading(true);
-        axios.get(paths.list, {
+        axios.get(apiUrl, {
             params: {
                 search: filters.search,
                 domains: filters.domains.filter(d => d.length > 0),
@@ -59,6 +60,32 @@ const TranslationsProvider = ({children}) => {
         setPage(page);
     };
 
+    const saveItem = (item) => {
+        let ajaxRequest = null;
+
+        if (item.id) {
+            ajaxRequest = axios.put(apiUrl + '/' + item.id, item);
+        } else {
+            ajaxRequest = axios.post(apiUrl, item);
+        }
+
+        return ajaxRequest
+            .then(({data}) => data)
+            .then((item) => {
+                const newTranslations = [...translations];
+                const itemIndex = newTranslations.findIndex(i => i.id === item.id);
+
+                if (0 <= itemIndex) {
+                    newTranslations[itemIndex] = item;
+                } else {
+                    //item nuevo
+                    newTranslations.unshift(item);
+                }
+
+                setTranslations(newTranslations);
+            });
+    };
+
     return (
         <TranslationsContext.Provider value={{
             translations,
@@ -66,6 +93,7 @@ const TranslationsProvider = ({children}) => {
             totalCount,
             changePage,
             applyFilters,
+            saveItem,
         }}>
             {children}
         </TranslationsContext.Provider>

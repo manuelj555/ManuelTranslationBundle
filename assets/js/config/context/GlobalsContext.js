@@ -3,6 +3,7 @@ import React, {createContext} from "react";
 const GlobalsContext = createContext({
     paths: {},
     domains: [],
+    locales: [],
     booleanLabel: (value) => null,
 });
 
@@ -12,7 +13,7 @@ const calculatePagesCount = (totalCount) => {
     return Math.floor(totalCount / itemsPerPage) + 1;
 }
 
-const GlobalsProvider = ({children, paths, domains}) => {
+const GlobalsProvider = ({children, paths, domains, locales}) => {
 
     const booleanLabel = (value) => {
         return value ? 'Yes' : 'No';
@@ -24,6 +25,7 @@ const GlobalsProvider = ({children, paths, domains}) => {
         <GlobalsContext.Provider value={{
             paths,
             domains: domainsAsArray,
+            locales,
             booleanLabel,
         }}>
             {children}

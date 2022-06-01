@@ -36,9 +36,10 @@
 
     <div id="translations-configuration"
          data-paths="{{- {
-             'list': path('manuel_translation_api_list')
+             'api': path('manuel_translation_api_list')
          }|json_encode|e('html_attr') -}}"
          data-domains="{{- domains|json_encode|e('html_attr') -}}"
+         data-locales="{{- locales|json_encode|e('html_attr') -}}"
     ></div>
 {% endblock %}
 
