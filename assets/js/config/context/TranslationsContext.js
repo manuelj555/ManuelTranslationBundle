@@ -24,7 +24,6 @@ const TranslationsProvider = ({children}) => {
     const [filters, setFilters] = useState(() => ({
         search: '',
         domains: [],
-        showInactive: false,
     }));
 
     const loadTranslations = () => {
@@ -33,7 +32,6 @@ const TranslationsProvider = ({children}) => {
             params: {
                 search: filters.search,
                 domains: filters.domains.filter(d => d.length > 0),
-                inactive: filters.showInactive,
                 page,
                 perPage: itemsPerPage,
             }

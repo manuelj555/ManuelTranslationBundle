@@ -7,7 +7,6 @@ import GlobalsContext from "../../context/GlobalsContext";
 const emptyFilters = (domains) => ({
     search: '',
     domains: new Array(domains.length).fill(''),
-    showInactive: false,
 });
 
 export default function Filter() {
@@ -72,12 +71,6 @@ export default function Filter() {
                                             onChange={e => handlerDomainsChange(index, e)}
                                         />
                                     ))}
-                                </Col>
-                            </Form.Group>
-                            <Form.Group as={Row} className="mb-3">
-                                <Form.Label column sm={2} className="py-0" lg={1}>Status</Form.Label>
-                                <Col>
-                                    <Form.Check id="filter-show-inactives" label="Inactives"/>
                                 </Col>
                             </Form.Group>
                         </div>

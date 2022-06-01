@@ -3,6 +3,7 @@ import {Button, ButtonGroup, Card, Dropdown, Form, Placeholder} from "react-boot
 import GlobalsContext from "../../context/GlobalsContext";
 import Icon from "../Icon";
 import TranslationsContext from "../../context/TranslationsContext";
+import useTranslationValidator from "../../hooks/useTranslationValidator";
 
 export default function Item({translation}) {
     const {saveItem, removeEmptyItem} = useContext(TranslationsContext);
@@ -18,11 +19,21 @@ export default function Item({translation}) {
         setEditing(false);
     }
 
+    const save = (data) => {
+        setLoading(true);
+        saveItem(data).then(() => setLoading(false));
+    };
+
     const handleSave = (item) => {
         setEditing(false);
         setLoading(true);
-        saveItem(item).then(() => setLoading(false));
+        save(item);
     }
+
+    const handleStatusChange = (active) => {
+        setLoading(true);
+        save({...translation, active});
+    };
 
     if (loading) {
         return <LoadingItem/>;
@@ -39,14 +50,18 @@ export default function Item({translation}) {
                 : <ItemText
                     item={translation}
                     handleEdit={handleEditClick}
+                    handleStatusChange={handleStatusChange}
                 />
             }
         </div>
     );
 }
 
-const ItemText = ({item, handleEdit}) => {
+const ItemText = ({item, handleEdit, handleStatusChange}) => {
     const {booleanLabel} = useContext(GlobalsContext);
+
+    const handleDeactivateClick = () => handleStatusChange(false);
+    const handleActivateClick = () => handleStatusChange(true);
 
     return (
         <Card>
@@ -73,15 +88,21 @@ const ItemText = ({item, handleEdit}) => {
                     </div>
                     <div className="d-grid gap-2 col-sm-2 col-lg-1">
                         <Dropdown as={ButtonGroup} size="sm">
-                            <Button variant="outline-secondary" onClick={handleEdit}>
+                            <Button variant="outline-secondary" onClick={handleEdit} disabled={!item.active}>
                                 <Icon icon="pencil-square"/>
                                 Edit
                             </Button>
                             <Dropdown.Toggle split variant="outline-secondary"/>
 
                             <Dropdown.Menu>
-                                <Dropdown.Item><Icon icon="trash"/>Deactivate</Dropdown.Item>
-                                <Dropdown.Item><Icon icon="check-circle"/>Activate</Dropdown.Item>
+                                {item.active
+                                    ? <Dropdown.Item onClick={handleDeactivateClick}>
+                                        <Icon icon="trash"/>Deactivate
+                                    </Dropdown.Item>
+                                    : <Dropdown.Item onClick={handleActivateClick}>
+                                        <Icon icon="check-circle"/>Activate
+                                    </Dropdown.Item>
+                                }
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
@@ -109,6 +130,8 @@ const ItemForm = ({item, handleClose, handleSave}) => {
         domain: item.domain,
         values: getFormValues(defaultLocales, item),
     }));
+    const [showErrors, setShowErrors] = useState(false);
+    const {valid, errors} = useTranslationValidator(formData);
     const isNew = !item.id;
 
     const handleCodeChange = (e) => {
@@ -130,8 +153,12 @@ const ItemForm = ({item, handleClose, handleSave}) => {
     };
 
     const handleSaveClick = () => {
-        handleSave({...item, ...formData});
-        handleClose();
+        if (valid) {
+            handleSave({...item, ...formData});
+            handleClose();
+        } else {
+            setShowErrors(true);
+        }
     };
 
     return (
@@ -193,8 +220,27 @@ const ItemForm = ({item, handleClose, handleSave}) => {
                         <Button variant="danger" onClick={handleClose}><Icon icon="x"/>Cancel</Button>
                     </div>
                 </div>
+                {showErrors ? <ItemFormErrors errors={errors}/> : null}
             </Card.Body>
         </Card>
+    );
+};
+
+const ItemFormErrors = ({errors = {}}) => {
+    return (
+        <div>
+            {Object.keys(errors).length > 0
+                ? (
+                    <ul>
+                        {Object.entries(errors).map(([key, messages]) => (
+                            <li key={key} className="text-danger">
+                                <b>{key}:</b> {messages.join(', ')}
+                            </li>
+                        ))}
+                    </ul>
+                ) : null
+            }
+        </div>
     );
 };
 
