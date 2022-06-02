@@ -2,11 +2,9 @@ import React, {useContext, useState} from "react";
 import {Button, ButtonGroup, Card, Dropdown, Form, Placeholder} from "react-bootstrap";
 import GlobalsContext from "../../context/GlobalsContext";
 import Icon from "../Icon";
-import TranslationsContext from "../../context/TranslationsContext";
 import useTranslationValidator from "../../hooks/useTranslationValidator";
 
-export default function Item({translation}) {
-    const {saveItem, removeEmptyItem} = useContext(TranslationsContext);
+const Item = React.memo(({translation, saveItemHandler, removeEmptyItemHandler}) => {
     const [editing, setEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const showForm = editing || !translation.id;
@@ -14,14 +12,14 @@ export default function Item({translation}) {
     const handleEditClick = () => setEditing(true);
     const handleCloseFormClick = () => {
         if (!translation.id) {
-            removeEmptyItem(translation);
+            removeEmptyItemHandler(translation);
         }
         setEditing(false);
     }
 
     const save = (data) => {
         setLoading(true);
-        saveItem(data).then(() => setLoading(false));
+        saveItemHandler(data).then(() => setLoading(false));
     };
 
     const handleSave = (item) => {
@@ -55,7 +53,7 @@ export default function Item({translation}) {
             }
         </div>
     );
-}
+});
 
 const ItemText = ({item, handleEdit, handleStatusChange}) => {
     const {booleanLabel} = useContext(GlobalsContext);
@@ -290,3 +288,4 @@ const LoadingItem = () => {
 };
 
 export {LoadingItem};
+export default Item;

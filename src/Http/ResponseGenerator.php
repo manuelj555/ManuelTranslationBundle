@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use function count;
+use function json_encode;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
@@ -35,9 +37,8 @@ class ResponseGenerator
         $errors = $this->errorsToArray($errorList);
 
         return new Response(
-            $data,
+            0 === count($errors) ? $data : json_encode($errors),
             count($errors) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK,
-            ['errors' => json_encode($errors)]
         );
     }
 

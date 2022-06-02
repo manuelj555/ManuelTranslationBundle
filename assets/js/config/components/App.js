@@ -1,21 +1,20 @@
 import React, {useContext} from "react";
 import Filter from "./translation/Filter";
 import List, {LoadingList} from "./translation/List";
-import {TranslationsProvider} from "../context/TranslationsContext";
+import TranslationsContext from "../context/TranslationsContext";
 import LoadingContext from "../context/LoadingContext";
 
 export default function App() {
     const {appLoading} = useContext(LoadingContext);
+    const {applyFilters} = useContext(TranslationsContext);
 
     return (
         <div>
-            <TranslationsProvider>
-                <Filter/>
-                {appLoading
-                    ? <LoadingList/>
-                    : <List/>
-                }
-            </TranslationsProvider>
+            <Filter onSubmit={applyFilters}/>
+            {appLoading
+                ? <LoadingList/>
+                : <List/>
+            }
         </div>
     );
 }

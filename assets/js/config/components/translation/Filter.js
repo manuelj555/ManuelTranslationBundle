@@ -9,20 +9,19 @@ const emptyFilters = (domains) => ({
     domains: new Array(domains.length).fill(''),
 });
 
-export default function Filter() {
-    const {applyFilters} = useContext(TranslationsContext);
+const Filter = React.memo(({onSubmit}) => {
     const {domains} = useContext(GlobalsContext);
     const [filters, setFilters] = useState(() => emptyFilters(domains));
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        applyFilters(filters);
+        onSubmit(filters);
     }
 
     const handleClearClick = (e) => {
         const newFilters = emptyFilters(domains);
         setFilters(newFilters);
-        applyFilters(newFilters);
+        onSubmit(newFilters);
     }
 
     const handlerSearchChange = (e) => {
@@ -91,4 +90,6 @@ export default function Filter() {
             </Card.Body>
         </Card>
     );
-}
+});
+
+export default Filter;

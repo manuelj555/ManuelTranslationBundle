@@ -3,6 +3,7 @@ import {createRoot} from "react-dom/client";
 import App from "./components/App";
 import {GlobalsProvider} from "./context/GlobalsContext";
 import {LoadingProvider} from "./context/LoadingContext";
+import {TranslationsProvider} from "./context/TranslationsContext";
 
 const container = document.getElementById('translations-configuration');
 const paths = JSON.parse(container.dataset.paths || '{}');
@@ -15,7 +16,9 @@ root.render(
     <React.StrictMode>
         <GlobalsProvider paths={paths} domains={domains} locales={locales}>
             <LoadingProvider>
-                <App/>
+                <TranslationsProvider>
+                    <App/>
+                </TranslationsProvider>
             </LoadingProvider>
         </GlobalsProvider>
     </React.StrictMode>

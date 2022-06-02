@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useEffect, useState} from "react";
+import React, {createContext, useCallback, useContext, useEffect, useState} from "react";
 import GlobalsContext, {itemsPerPage} from "./GlobalsContext";
 import axios from "axios";
 import LoadingContext from "./LoadingContext";
@@ -27,6 +27,8 @@ const TranslationsProvider = ({children}) => {
     }));
 
     const loadTranslations = () => {
+        let count = 0;
+
         setAppLoading(true);
         axios.get(apiUrl, {
             params: {
@@ -37,14 +39,14 @@ const TranslationsProvider = ({children}) => {
             }
         })
             .then(({data, headers}) => {
-                const totalCount = headers['x-count'];
-                setTotalCount(totalCount);
+                count = headers['x-count'];
 
                 return data;
             })
             .then(data => {
                 setTranslations(data.map(item => ({...item, uuid: uuid()})));
                 setAppLoading(false);
+                setTotalCount(count);
             })
     }
 
@@ -52,16 +54,16 @@ const TranslationsProvider = ({children}) => {
         loadTranslations();
     }, [filters, page]);
 
-    const applyFilters = (newFilters) => {
+    const applyFilters = useCallback((newFilters) => {
         setPage(1);
         setFilters({...filters, ...newFilters});
-    };
+    }, [filters]);
 
-    const changePage = (page) => {
+    const changePage = useCallback((page) => {
         setPage(page);
-    };
+    }, [setPage]);
 
-    const saveItem = (item) => {
+    const saveItem = useCallback((item) => {
         let ajaxRequest = null;
         const itemUuid = item.uuid;
 
@@ -89,9 +91,9 @@ const TranslationsProvider = ({children}) => {
                     return newTranslations;
                 })
             });
-    };
+    }, [apiUrl]);
 
-    const addEmptyItem = () => {
+    const addEmptyItem = useCallback(() => {
         setTranslations(translations => {
             const newTranslations = [...translations];
             newTranslations.unshift({
@@ -105,11 +107,11 @@ const TranslationsProvider = ({children}) => {
 
             return newTranslations;
         })
-    };
+    }, []);
 
-    const removeEmptyItem = (item) => {
+    const removeEmptyItem = useCallback((item) => {
         setTranslations(translations => translations.filter(({uuid}) => uuid !== item.uuid));
-    };
+    }, []);
 
     return (
         <TranslationsContext.Provider value={{

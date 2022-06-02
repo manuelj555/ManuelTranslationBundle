@@ -2,7 +2,7 @@ import React from "react";
 import {Pagination, Placeholder} from "react-bootstrap";
 import {calculatePagesCount, itemsPerPage} from "../../context/GlobalsContext";
 
-export default function Paginator({currentPage, totalCount, onChange}) {
+const Paginator = React.memo(({currentPage, totalCount, onChange}) => {
     const pagesCount = calculatePagesCount(totalCount);
     const itemsCount = itemsPerPage > totalCount ? totalCount : itemsPerPage;
 
@@ -23,7 +23,7 @@ export default function Paginator({currentPage, totalCount, onChange}) {
             </div>
         </div>
     );
-}
+});
 
 export function LoadingPaginator() {
     return (
@@ -33,3 +33,5 @@ export function LoadingPaginator() {
         </div>
     );
 }
+
+export default Paginator;

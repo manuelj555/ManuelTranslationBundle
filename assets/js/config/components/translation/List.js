@@ -10,6 +10,8 @@ export default function List() {
         totalCount,
         changePage,
         addEmptyItem,
+        saveItem,
+        removeEmptyItem,
     } = useContext(TranslationsContext);
 
     useEffect(() => {
@@ -39,7 +41,12 @@ export default function List() {
 
             <div>
                 {translations.map(translation => (
-                    <Item key={translation.uuid} translation={translation}/>
+                    <Item
+                        key={translation.uuid}
+                        translation={translation}
+                        saveItemHandler={saveItem}
+                        removeEmptyItemHandler={removeEmptyItem}
+                    />
                 ))}
             </div>
 
