@@ -1,6 +1,5 @@
 import React, {useContext, useState} from "react";
 import {Button, Card, Col, Form, Row} from "react-bootstrap";
-import TranslationsContext from "../../context/TranslationsContext";
 import Icon from "../Icon";
 import GlobalsContext from "../../context/GlobalsContext";
 

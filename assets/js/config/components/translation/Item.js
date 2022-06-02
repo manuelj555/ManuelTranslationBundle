@@ -4,7 +4,7 @@ import GlobalsContext from "../../context/GlobalsContext";
 import Icon from "../Icon";
 import useTranslationValidator from "../../hooks/useTranslationValidator";
 
-const Item = React.memo(({translation, saveItemHandler, removeEmptyItemHandler}) => {
+const Item = React.memo(({translation, saveItem, removeEmptyItem}) => {
     const [editing, setEditing] = useState(false);
     const [loading, setLoading] = useState(false);
     const showForm = editing || !translation.id;
@@ -12,14 +12,14 @@ const Item = React.memo(({translation, saveItemHandler, removeEmptyItemHandler})
     const handleEditClick = () => setEditing(true);
     const handleCloseFormClick = () => {
         if (!translation.id) {
-            removeEmptyItemHandler(translation);
+            removeEmptyItem(translation);
         }
         setEditing(false);
     }
 
     const save = (data) => {
         setLoading(true);
-        saveItemHandler(data).then(() => setLoading(false));
+        saveItem(data).then(() => setLoading(false));
     };
 
     const handleSave = (item) => {
