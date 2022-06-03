@@ -22,6 +22,16 @@ const useTranslationValidator = (item) => {
             errors['code'].push('This field cannot have blank spaces');
         }
 
+        if (!item.domain || item.domain.trim().length === 0) {
+            errors['domain'] = errors['domain'] || [];
+            errors['domain'].push('This field is required');
+        }
+
+        if (item.domain && item.code.trim().match(/\s/)) {
+            errors['domain'] = errors['domain'] || [];
+            errors['domain'].push('This field cannot have blank spaces');
+        }
+
         Object.entries(item?.values || {}).map(([locale, value]) => {
             if (value.trim().length === 0) {
                 const index = locale.toUpperCase() + ' Value';

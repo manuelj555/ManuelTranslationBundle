@@ -3,6 +3,7 @@ import {Button, ButtonGroup, Card, Dropdown, Form, Placeholder} from "react-boot
 import GlobalsContext from "../../context/GlobalsContext";
 import Icon from "../Icon";
 import useTranslationValidator from "../../hooks/useTranslationValidator";
+import DomainField from "./DomainField";
 
 const Item = React.memo(({translation, saveItem, removeEmptyItem}) => {
     const [editing, setEditing] = useState(false);
@@ -138,9 +139,9 @@ const ItemForm = ({item, handleClose, handleSave}) => {
         }
     };
 
-    const handleDomainChange = (e) => {
+    const handleDomainChange = (domain) => {
         if (isNew) {
-            setFormData({...formData, domain: e.target.value});
+            setFormData({...formData, domain});
         }
     };
 
@@ -172,26 +173,19 @@ const ItemForm = ({item, handleClose, handleSave}) => {
                         />
                     </div>
 
-                    {/*<span slot="message">*/}
-                    {/*    <span className="glyphicon glyphicon-ok label label-success">*/}
-                    {/*        Save Successfull!*/}
-                    {/*    </span>*/}
-                    {/*    <span className="glyphicon glyphicon-remove label label-danger">*/}
-                    {/*        Save Error!*/}
-                    {/*    </span>*/}
-                    {/*</span>*/}
-
                     <div className="col-sm-3 text-muted text-end">
-                        <Form.Select
-                            size="sm"
-                            disabled={!isNew}
-                            value={formData.domain}
-                            onChange={handleDomainChange}
-                        >
-                            {domains.map(domain => (
-                                <option key={domain} value={domain}>{domain}</option>
-                            ))}
-                        </Form.Select>
+                        {isNew
+                            ? (
+                                <DomainField
+                                    domains={domains}
+                                    value={formData.domain}
+                                    disabled={!isNew}
+                                    selectDomain={handleDomainChange}
+                                />
+                            ) : (
+                                <span className="border rounded py-1 px-2">{formData.domain}</span>
+                            )
+                        }
                     </div>
                     <div className="col-sm-2 text-end">
                         <b>Active:</b> {booleanLabel(item.active)}
@@ -232,7 +226,7 @@ const ItemFormErrors = ({errors = {}}) => {
                     <ul>
                         {Object.entries(errors).map(([key, messages]) => (
                             <li key={key} className="text-danger">
-                                <b>{key}:</b> {messages.join(', ')}
+                                <b className="text-capitalize">{key}:</b> {messages.join(', ')}
                             </li>
                         ))}
                     </ul>

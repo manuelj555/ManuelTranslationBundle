@@ -15,7 +15,7 @@ const createNewItem = () => ({
 });
 
 const useTranslations = () => {
-    const {paths: {api: apiUrl}} = useContext(GlobalsContext);
+    const {paths: {api: apiUrl}, addDomain} = useContext(GlobalsContext);
     const [filters, setFilters] = useState(() => ({
         search: '',
         domains: [],
@@ -84,6 +84,7 @@ const useTranslations = () => {
                                 ...pagination,
                                 totalCount: pagination.totalCount + 1,
                             }));
+                            addDomain(item.domain);
                         })
                     }
 
@@ -105,7 +106,7 @@ const useTranslations = () => {
         };
 
         return {saveItem, addEmptyItem, removeEmptyItem};
-    }, [apiUrl]);
+    }, [apiUrl, addDomain]);
 
     return {
         isLoading,
