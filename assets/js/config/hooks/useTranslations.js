@@ -92,7 +92,10 @@ const useTranslations = () => {
                 })
             };
 
-            return ajaxMethod(ajaxUrl, item).then(({data}) => data).then(onSuccess);
+            return ajaxMethod(ajaxUrl, {
+                ...item,
+                lastChanged: 'local',
+            }).then(({data}) => data).then(onSuccess);
         };
 
         const addEmptyItem = () => {
