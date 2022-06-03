@@ -2,14 +2,15 @@ import React from "react";
 import {Pagination, Placeholder} from "react-bootstrap";
 import {calculatePagesCount, itemsPerPage} from "../../context/GlobalsContext";
 
-const Paginator = React.memo(({currentPage, totalCount, onChange}) => {
+const Paginator = React.memo(({paginationData, onChange}) => {
+    const {page: currentPage, totalCount} = paginationData;
     const pagesCount = calculatePagesCount(totalCount);
     const itemsCount = itemsPerPage > totalCount ? totalCount : itemsPerPage;
 
     const prev = currentPage > 1 ? currentPage - 1 : null;
     const next = currentPage + 1 < pagesCount ? currentPage + 1 : null;
 
-    const goToPage = (page) => onChange(page);
+    const goToPage = onChange;
 
     return (
         <div className="d-flex my-2 align-items-center">

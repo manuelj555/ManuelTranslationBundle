@@ -1,14 +1,13 @@
 import React, {useEffect} from "react";
 import Item, {LoadingItem} from "./Item";
-import {LoadingPaginator} from "./Paginator";
+import Paginator, {LoadingPaginator} from "./Paginator";
 
 export default function List(props) {
     const {
-        translations,
-        pagination,
-        saveItem,
-        removeEmptyItem,
+        paginationData,
+        changePage,
         addEmptyItem,
+        children,
     } = props;
 
     useEffect(() => {
@@ -24,24 +23,20 @@ export default function List(props) {
         addEmptyItem();
     };
 
+    const paginationContent = (
+        <Paginator
+            paginationData={paginationData}
+            onChange={changePage}
+        />
+    );
 
     return (
         <div>
-            {pagination}
+            {paginationContent}
 
-            <div>
-                {translations.map(translation => (
-                    <Item
-                        key={translation.uuid}
-                        translation={translation}
-                        saveItem={saveItem}
-                        removeEmptyItem={removeEmptyItem}
-                    />
-                ))}
-            </div>
+            {children}
 
-            {pagination}
-
+            {paginationContent}
         </div>
     );
 }
