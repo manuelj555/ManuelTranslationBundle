@@ -268,19 +268,6 @@ class Synchronizer
         return $translations;
     }
 
-    protected function getActiveTranslationsFromDatabase(): array
-    {
-        $translations = [];
-        $dbTranslations = $this->translationRepository->getActiveTranslations();
-
-        /** @var Translation $translation */
-        foreach ($dbTranslations as $translation) {
-            $translations[$translation->getDomain()][$translation->getCode()] = $translation;
-        }
-
-        return $translations;
-    }
-
     public function updateLocalHash(string $hash): void
     {
         $filename = rtrim($this->cacheDir, '/') . '/manuel_translations_hash';

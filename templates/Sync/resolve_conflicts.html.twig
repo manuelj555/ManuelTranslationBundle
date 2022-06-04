@@ -26,33 +26,16 @@
         </tr>
         <tr>
             <td>{{ 'label.conflicted_items'|trans }}</td>
-            <td class="text-right">{{ conflicted_items|length|number_format(0) }}</td>
+            <td class="text-right">{{ conflicted_items_count|number_format(0) }}</td>
         </tr>
     </table>
 
     {% if conflicted_items|length > 0 %}
-        <fieldset>
-            <legend>{{ 'label.conflict_items'|trans }}</legend>
-
-            <div id="resolve-conflicts-container"
-                data-items="{{ conflicted_items|escape('html_attr') }}"
-            >
-            </div>
-
-        </fieldset>
-        <hr>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <br>
-        <fieldset >
-            <legend>{{ 'label.conflict_items'|trans }}</legend>
-
-            {{ include('@ManuelTranslation/Sync/table_conflicts.html.twig') }}
-
-        </fieldset>
+        <div id="resolve-conflicts-container"
+             data-items="{{ conflicted_items|escape('html_attr') }}"
+             data-endpoint="{{ path('manuel_translation_resolve_conflicts') }}"
+        >
+        </div>
     {% endif %}
 
 {% endblock %}
