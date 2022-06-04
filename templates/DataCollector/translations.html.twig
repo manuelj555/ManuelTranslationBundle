@@ -9,6 +9,19 @@
             border-radius: 5px;
             background-color: white;
         }
+        .missing-translations-creator header {
+            display: flex;
+            align-items: center;
+            margin: 10px 10px 20px;
+        }
+
+        .missing-translations-creator header * {
+            margin: 0;
+            padding: 0;
+        }
+        .missing-translations-creator header a {
+            margin-left: auto;
+        }
 
         .translation-item-creator {
             border: 1px solid #ccc;
@@ -133,6 +146,9 @@
             <script>
                 var missingTranslations = {{ translations|json_encode|raw }};
                 var translationsLocales = {{ get_translations_locales()|json_encode|raw }};
+                var translationsPath = {
+                    list: '{{ path('manuel_translation_list') }}'
+                };
             </script>
             <script src="{{ asset('bundles/manueltranslation/profiler.js') }}"></script>
         {% endif %}

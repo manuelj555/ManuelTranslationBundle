@@ -26,7 +26,7 @@ import {GlobalsProvider} from "./context/GlobalsContext";
     const reactRoot = createRoot(reactContainer);
     reactRoot.render(
         <React.StrictMode>
-            <GlobalsProvider locales={translationsLocales}>
+            <GlobalsProvider locales={translationsLocales} paths={translationsPath}>
                 <App items={missingTranslations}/>
             </GlobalsProvider>
         </React.StrictMode>
