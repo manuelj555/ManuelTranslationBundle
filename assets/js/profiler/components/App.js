@@ -1,8 +1,16 @@
 import React from "react";
+import Item from "./Item";
 
-const App = () => {
+const App = ({items}) => {
+
+    console.log(items);
+
     return (
-        <h3>App react!!!</h3>
+        <div className="missing-translations-creator">
+            {items.map(item => (
+                <Item key={item.code} item={item}/>
+            ))}
+        </div>
     )
 }
 

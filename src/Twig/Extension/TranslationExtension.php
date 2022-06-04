@@ -21,6 +21,10 @@ class TranslationExtension extends AbstractExtension
                 'get_translations_by_domain',
                 [TranslationExtensionRuntime::class, 'getTranslationsByDomain']
             ),
+            new TwigFunction(
+                'get_translations_locales',
+                [TranslationExtensionRuntime::class, 'getLocales']
+            ),
         ];
     }
 }

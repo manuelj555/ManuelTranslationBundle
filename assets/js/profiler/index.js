@@ -1,8 +1,13 @@
 import React from "react";
 import {createRoot} from "react-dom/client";
 import App from "./components/App";
+import {GlobalsProvider} from "./context/GlobalsContext";
 
 (() => {
+    if (!missingTranslations) {
+        return;
+    }
+
     const tabContents = document.querySelectorAll('.sf-tabs .tab-content');
 
     if (tabContents.length === 0) {
@@ -21,7 +26,9 @@ import App from "./components/App";
     const reactRoot = createRoot(reactContainer);
     reactRoot.render(
         <React.StrictMode>
-            <App />
+            <GlobalsProvider locales={translationsLocales}>
+                <App items={missingTranslations}/>
+            </GlobalsProvider>
         </React.StrictMode>
     );
 })();

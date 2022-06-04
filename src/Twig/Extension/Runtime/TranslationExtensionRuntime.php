@@ -15,21 +15,11 @@ use Twig\Extension\RuntimeExtensionInterface;
  */
 class TranslationExtensionRuntime implements RuntimeExtensionInterface
 {
-    /**
-     * @var TranslationsProvider
-     */
-    private $provider;
-    /**
-     * @var RequestStack
-     */
-    private $requestStack;
-
     public function __construct(
-        TranslationsProvider $provider,
-        RequestStack $requestStack
+        private TranslationsProvider $provider,
+        private RequestStack $requestStack,
+        private array $locales,
     ) {
-        $this->provider = $provider;
-        $this->requestStack = $requestStack;
     }
 
     public function getTranslationsByDomain(string $domain, string $locale = null): array
@@ -39,5 +29,10 @@ class TranslationExtensionRuntime implements RuntimeExtensionInterface
         }
 
         return $this->provider->byLocaleAndDomain($locale, $domain);
+    }
+
+    public function getLocales(): array
+    {
+        return $this->locales;
     }
 }
