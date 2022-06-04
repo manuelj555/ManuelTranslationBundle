@@ -10,6 +10,11 @@
         "./config.js"
       ]
     },
+    "conflicts": {
+      "js": [
+        "./conflicts.js"
+      ]
+    },
     "styles": {
       "css": [
         "./styles.css"

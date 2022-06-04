@@ -45,15 +45,5 @@
 
 {% block javascripts %}
     {{ parent() }}
-
-    <script>
-        var TranslationData = {
-            baseUrlApi: '{{ path('manuel_translation_api_list') }}',
-            locales: {{ locales|json_encode|raw }},
-            locale: '{{ app.request.locale }}',
-            domains: {{ domains|json_encode|raw }},
-        };
-    </script>
-    {# <script src="{{ asset('bundles/manueltranslation/js/translations.js') }}"></script> #}
     <script src="{{ asset('bundles/manueltranslation/config.js') }}"></script>
 {% endblock %}

@@ -33,7 +33,23 @@
     {% if conflicted_items|length > 0 %}
         <fieldset>
             <legend>{{ 'label.conflict_items'|trans }}</legend>
-            
+
+            <div id="resolve-conflicts-container"
+                data-items="{{ conflicted_items|escape('html_attr') }}"
+            >
+            </div>
+
+        </fieldset>
+        <hr>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <fieldset >
+            <legend>{{ 'label.conflict_items'|trans }}</legend>
+
             {{ include('@ManuelTranslation/Sync/table_conflicts.html.twig') }}
 
         </fieldset>
@@ -41,10 +57,11 @@
 
 {% endblock %}
 
-{% block javascripts %}
+{% block javascripts111 %}
     {{ parent() }}
     <script>
         $(".resolve-conflicts").on('click', function (e) {
+
             e.preventDefault();
             var $btn = $(this).button('loading');
             var $otherBtn = $btn.closest('.conflict-item').find('.resolve-conflicts').not(this).attr('disabled', true);
@@ -68,4 +85,9 @@
             });
         });
     </script>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/manueltranslation/conflicts.js') }}"></script>
 {% endblock %}

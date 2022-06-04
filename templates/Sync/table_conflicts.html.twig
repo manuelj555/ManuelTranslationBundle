@@ -1,5 +1,5 @@
 {% trans_default_domain "ManuelTranslationBundle" %}
-<table class="table table-bordered table-striped table-hover translation-list">
+<table class="table table-bordered translation-list">
     <thead>
         <tr>
             <th class="col-sm-6">{{ 'label.file_values'|trans }}</th>
@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for data in conflicted_items %}
+        {% for data in conflicted_items_old %}
             <tr class="conflict-item">
                 <td>
                     {% include '@ManuelTranslation/Sync/_translation_data.html.twig' with {

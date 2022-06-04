@@ -12,6 +12,7 @@ Encore
     .setManifestKeyPrefix('bundles/manueltranslation')
     .addEntry('app', './assets/js/app.js')
     .addEntry('config', './assets/js/config/index.js')
+    .addEntry('conflicts', './assets/js/conflicts/index.js')
     .addStyleEntry('styles', './assets/css/app.scss')
     .disableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()

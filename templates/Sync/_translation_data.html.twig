@@ -3,17 +3,19 @@
 <table class="table">
     <tr>
         <td>
-            <strong>{{ translation.code }}</strong>
-            <a class="resolve-conflicts pull-right btn btn-default btn-xs"
-               target="_blank" href="{{ path('manuel_translation_resolve_conflict', {id: id}) }}"
-               data-values="{{ translation.values|json_encode }}"
-               data-hash="{{ hash }}"
-               data-active="{{ translation.active }}"
-               data-last-changed="{{ last_changed }}"
-                    >
-                <span aria-hidden="true" class="glyphicon glyphicon-ok"></span>
-            </a>
-            <small class="pull-right">{{ translation.domain }}</small>
+            <div class="d-flex gap-4 align-items-center">
+                <strong>{{ translation.code }}</strong>
+                <small>{{ translation.domain }}</small>
+                <a class="resolve-conflicts btn btn-secondary btn-xs ms-auto"
+                   target="_blank" href="{{ path('manuel_translation_resolve_conflict', {id: id}) }}"
+                   data-values="{{ translation.values|json_encode }}"
+                   data-hash="{{ hash }}"
+                   data-active="{{ translation.active }}"
+                   data-last-changed="{{ last_changed }}"
+                >
+                    <span class="bi bi-check"></span>
+                </a>
+            </div>
         </td>
     </tr>
     <tr>

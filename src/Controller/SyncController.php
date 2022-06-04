@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
@@ -46,14 +47,16 @@ class SyncController extends AbstractController
     #[Route("/sync", name: "manuel_translation_load_from_file")]
     public function sync(
         Synchronizer $synchronizator,
-        Request $request
+        SerializerInterface $serializer,
+        Request $request,
     ): Response {
         $result = $synchronizator->sync($request->query->getBoolean('forced'));
 
         return $this->render('@ManuelTranslation/Sync/resolve_conflicts.html.twig', array(
             'news' => $result->getNews(),
             'updates' => $result->getUpdated(),
-            'conflicted_items' => $result->getConflictItems(),
+            'conflicted_items' => $serializer->serialize($result->getConflictItems(), 'json'),
+            'conflicted_items_old' => $result->getConflictItems(),
         ));
     }
 
