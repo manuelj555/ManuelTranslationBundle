@@ -2,6 +2,7 @@
   "bundles/manueltranslation/app.js": "./app.js",
   "bundles/manueltranslation/config.js": "./config.js",
   "bundles/manueltranslation/conflicts.js": "./conflicts.js",
+  "bundles/manueltranslation/profiler.js": "./profiler.js",
   "bundles/manueltranslation/styles.css": "./styles.css",
   "bundles/manueltranslation/fonts/bootstrap-icons.woff?": "./fonts/bootstrap-icons.7ff3ca6f.woff",
   "bundles/manueltranslation/fonts/bootstrap-icons.woff2?": "./fonts/bootstrap-icons.f2539a50.woff2"

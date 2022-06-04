@@ -1,1 +1,6 @@
 {% extends "@WebProfiler/Collector/translation.html.twig" %}
+
+{% block body %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/manueltranslation/profiler.js') }}"></script>
+{% endblock body %}

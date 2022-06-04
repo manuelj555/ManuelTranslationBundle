@@ -13,6 +13,7 @@ Encore
     .addEntry('app', './assets/js/app.js')
     .addEntry('config', './assets/js/config/index.js')
     .addEntry('conflicts', './assets/js/conflicts/index.js')
+    .addEntry('profiler', './assets/js/profiler/index.js')
     .addStyleEntry('styles', './assets/css/app.scss')
     .disableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()
