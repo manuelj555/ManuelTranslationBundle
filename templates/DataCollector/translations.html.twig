@@ -25,7 +25,8 @@
                 var translationsLocales = {{ get_translations_locales()|json_encode|raw }};
                 var translationsPath = {
                     list: '{{ path('manuel_translation_list') }}',
-                    getMissing: '{{ path('manuel_translation_get_missing_items') }}',
+                    getMissing: '{{ path('manuel_translation_api_missing_items') }}',
+                    create: '{{ path('manuel_translation_api_create') }}',
                 };
             </script>
             <script src="{{ asset('bundles/manueltranslation/profiler.js') }}"></script>

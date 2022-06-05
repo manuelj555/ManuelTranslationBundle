@@ -62,42 +62,6 @@ class TranslationController extends AbstractController
         ));
     }
 
-    #[Route("/save-from-profiler", name: "manuel_translation_save_from_profiler")]
-    public function saveFromProfiler(
-        Request $request,
-        ValidatorInterface $validator,
-        TranslationRepository $repository
-    ): Response {
-        $translation = $this->getNewTranslationInstance();
-        $translation->setCode($request->request->get('code'));
-        $translation->setDomain($request->request->get('domain'));
-
-        foreach ($request->request->get('values', array()) as $locale => $value) {
-            $translation->setValue($locale, $value);
-        }
-
-        if (count($validator->validate($translation)) == 0) {
-            $repository->saveTranslation($translation);
-        }
-
-        return new Response('Ok');
-    }
-
-    #[Route("/get-missing/", name: "manuel_translation_get_missing_items", methods: "post")]
-    public function getMissing(
-        Request $request,
-        TranslationRepository $repository
-    ): Response {
-        $search = json_decode($request->getContent(), true);
-
-        $items = $repository->findByCodesAndDomains($search);
-
-        $missing = array_udiff($search, $items, fn($a, $b) => $a <=> $b);
-        dump($missing);
-
-        return $this->json($missing);
-    }
-
     protected function getNewTranslationInstance(): Translation
     {
         $translation = new Translation();

@@ -1,12 +1,13 @@
 import {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import GlobalsContext from "../context/GlobalsContext";
+import {v4 as uuid} from "uuid";
 
 const equalItems = (a, b) => (a.code === b.code && a.domain === b.domain);
 
 export default function useItems(defaultItems) {
     const [items, setItems] = useState(false);
-    const {paths: {getMissing}, locales} = useContext(GlobalsContext);
+    const {paths: {getMissing, create: createPath}, locales} = useContext(GlobalsContext);
 
     useEffect(() => {
         const search = defaultItems.map(item => ({code: item.code, domain: item.domain}));
@@ -21,6 +22,7 @@ export default function useItems(defaultItems) {
                 setItems(defaultItems.filter(existsInMissing).map(item => {
                     return {
                         ...item,
+                        id: uuid(),
                         values: locales.reduce((localesObj, locale) => ({
                             ...localesObj,
                             [locale]: item.code,
@@ -30,20 +32,37 @@ export default function useItems(defaultItems) {
             });
     }, [defaultItems]);
 
-    const updateItem = (newItemData) => {
+    const updateItem = (id, newItemData) => {
         const newItems = [...items];
-        const indexToUpdate = newItems.findIndex(item => equalItems(item, newItemData));
+        const indexToUpdate = newItems.findIndex(item => item.id === id);
 
         if (0 > indexToUpdate) {
             return;
         }
 
-        newItems[indexToUpdate] = {...newItemData};
+        const item = newItems[indexToUpdate];
+
+        newItems[indexToUpdate] = {...item, ...newItemData};
         setItems(newItems);
+    }
+
+    const persistItem = (id) => {
+        const itemToPersist = items.find(item => item.id === id);
+
+        if (!itemToPersist) {
+            return;
+        }
+
+        const {code, domain, values} = itemToPersist
+
+        axios.post(createPath, {code, domain, values}).then(() => {
+            setItems(oldItems => (oldItems.filter(item => item.id !== id)))
+        })
     }
 
     return {
         items,
         updateItem,
+        persistItem,
     }
 }

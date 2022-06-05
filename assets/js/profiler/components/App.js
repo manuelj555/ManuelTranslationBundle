@@ -4,11 +4,11 @@ import GlobalsContext from "../context/GlobalsContext";
 import useItems from "../hooks/useItems";
 
 const App = ({items: defaultItems}) => {
-    const {items, updateItem} = useItems(defaultItems);
+    const {items, updateItem, persistItem} = useItems(defaultItems);
     const {paths} = useContext(GlobalsContext);
 
-    const handleChange = (itemData) => {
-        updateItem(itemData);
+    const handleChange = (id, itemData) => {
+        updateItem(id, itemData);
     }
 
     return (
@@ -25,9 +25,10 @@ const App = ({items: defaultItems}) => {
                 : (<div>
                     {items.map(item => (
                         <Item
-                            key={item.code}
+                            key={item.id}
                             item={item}
                             onChange={handleChange}
+                            onSubmit={persistItem}
                         />
                     ))}
                 </div>)

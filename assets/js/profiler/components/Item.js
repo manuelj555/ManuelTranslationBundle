@@ -1,6 +1,6 @@
 import React from "react";
 
-const Item = ({item, onChange}) => {
+const Item = ({item, onChange, onSubmit}) => {
     const parameters = Array.from(Object.keys(item.parameters));
     const {values} = item
     const valuesMap = Object.entries(values);
@@ -8,10 +8,11 @@ const Item = ({item, onChange}) => {
     const handleValueChange = (locale, event) => {
         const newValues = {...values, [locale]: event.target.value};
 
-        onChange({
-            ...item,
-            values: newValues,
-        });
+        onChange(item.id, {values: newValues});
+    }
+
+    const handleCreateClick = () => {
+        onSubmit(item.id);
     }
 
     return (
@@ -39,7 +40,7 @@ const Item = ({item, onChange}) => {
                 ))}
             </div>
             <div className="item-actions">
-                <button>Create</button>
+                <button onClick={handleCreateClick}>Create</button>
             </div>
         </div>
     )

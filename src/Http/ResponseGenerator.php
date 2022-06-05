@@ -42,13 +42,6 @@ class ResponseGenerator
         );
     }
 
-    public function forAll(Request $request, $translations, array $headers = []): Response
-    {
-        $data = $this->serializer->serialize($translations, 'json');
-
-        return new Response($data, Response::HTTP_OK, $headers);
-    }
-
     private function errorsToArray(ConstraintViolationListInterface $errorList = null): array
     {
         if (null === $errorList || 0 === count($errorList)) {

@@ -16,18 +16,24 @@ use ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use function array_udiff;
+use function array_values;
+use function json_decode;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
  */
 #[Route("/api")]
 #[IsGranted('manage_translations')]
-class ApiController
+#[AsController]
+class ApiController extends AbstractController
 {
     public function __construct(
         private ResponseGenerator $responseGenerator,
@@ -54,7 +60,7 @@ class ApiController
             $data = $query->getQuery()->getResult();
         }
 
-        return $this->responseGenerator->forAll($request, $data, [
+        return $this->json($data, Response::HTTP_OK, [
             'X-Count' => count($data),
         ]);
     }
@@ -90,5 +96,19 @@ class ApiController
         }
 
         return $this->responseGenerator->forOne($request, $translation, $errors);
+    }
+
+    #[Route("/get-missing/", name: "manuel_translation_api_missing_items", methods: "post")]
+    public function getMissing(
+        Request $request,
+        TranslationRepository $repository
+    ): Response {
+        $search = json_decode($request->getContent(), true);
+
+        $items = $repository->findByCodesAndDomains($search);
+
+        $missing = array_udiff($search, $items, fn($a, $b) => $a <=> $b);
+
+        return $this->json(array_values($missing));
     }
 }
