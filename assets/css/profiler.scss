@@ -1,12 +1,39 @@
-@keyframes slideup {
-  0% {
+@keyframes persisted {
+  from {
     opacity: 1;
   }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
+  to {
     opacity: 0;
+  }
+}
+
+@keyframes persisting {
+  from {
+    filter: drop-shadow(5px 8px 10px #fff);
+  }
+  to {
+    filter: drop-shadow(5px 8px 10px #aaa) blur(1px);
+  }
+}
+
+@keyframes rotateButton {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes zoomOut {
+  from {
+    transform: scale(1);
+  }
+  30%{
+    transform: scale(1.2);
+  }
+  to {
+    transform: scale(.6);
   }
 }
 
@@ -40,16 +67,20 @@
     gap: 10px;
 
     &.persisted {
-      animation: slideup 1s;
-      opacity: 0;
+      animation: persisted 1s forwards;
+
+      .btn-container {
+        animation: zoomOut 800ms forwards ease-in-out;
+      }
 
       button {
         background: #12b000 !important;
+        animation: rotateButton 500ms infinite linear;
       }
     }
 
     &.persisting {
-      filter: blur(1px);
+      animation: alternate persisting 600ms infinite ease;
     }
 
 

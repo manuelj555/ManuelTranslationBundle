@@ -52,11 +52,13 @@ const Item = ({item, onChange, onSubmit}) => {
                 ))}
             </div>
             <div className="item-actions">
-                <button
-                    onClick={handleCreateClick}
-                    disabled={isPersisting}
-                >{isPersisting ? 'Creating...!' : (isPersisted ? 'Created...!' : 'Create')}
-                </button>
+                <div className="btn-container">
+                    <button
+                        onClick={handleCreateClick}
+                        disabled={isPersisting}
+                    >{isPersisting ? 'Creating...!' : (isPersisted ? 'Done' : 'Create')}
+                    </button>
+                </div>
             </div>
         </div>
     )
