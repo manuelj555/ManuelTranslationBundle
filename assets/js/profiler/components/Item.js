@@ -1,6 +1,8 @@
-import React from "react";
+import React, {useState} from "react";
 
 const Item = ({item, onChange, onSubmit}) => {
+    const [isPersisting, setPersisting] = useState(false);
+    const [isPersisted, setPersisted] = useState(false);
     const parameters = Array.from(Object.keys(item.parameters));
     const {values} = item
     const valuesMap = Object.entries(values);
@@ -12,11 +14,17 @@ const Item = ({item, onChange, onSubmit}) => {
     }
 
     const handleCreateClick = () => {
-        onSubmit(item.id);
+        setPersisting(true);
+        onSubmit(item.id).then(() => {
+            setPersisting(false)
+            setPersisted(true);
+        });
     }
 
     return (
-        <div className="translation-item-creator">
+        <div className={
+            `translation-item-creator ${isPersisting ? 'persisting' : ''} ${isPersisted ? 'persisted' : ''}`
+        }>
             <div className="item-data">
                 <div>Code<span>{item.code}</span></div>
                 <div>Domain<span>{item.domain}</span></div>
@@ -35,12 +43,20 @@ const Item = ({item, onChange, onSubmit}) => {
                 {valuesMap.map(([locale, value]) => (
                     <div key={locale}>
                         <span>{locale}</span>
-                        <textarea value={value} onChange={(e) => handleValueChange(locale, e)}/>
+                        <textarea
+                            disabled={isPersisting}
+                            value={value}
+                            onChange={(e) => handleValueChange(locale, e)}
+                        />
                     </div>
                 ))}
             </div>
             <div className="item-actions">
-                <button onClick={handleCreateClick}>Create</button>
+                <button
+                    onClick={handleCreateClick}
+                    disabled={isPersisting}
+                >{isPersisting ? 'Creating...!' : (isPersisted ? 'Created...!' : 'Create')}
+                </button>
             </div>
         </div>
     )

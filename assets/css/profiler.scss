@@ -1,3 +1,15 @@
+@keyframes slideup {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
 .missing-translations-creator {
   border: 1px solid #ccc;
   padding: 5px;
@@ -26,6 +38,19 @@
     //border-radius: 5px;
     display: flex;
     gap: 10px;
+
+    &.persisted {
+      animation: slideup 1s;
+      opacity: 0;
+
+      button {
+        background: #12b000 !important;
+      }
+    }
+
+    &.persisting {
+      filter: blur(1px);
+    }
 
 
     .item-data {

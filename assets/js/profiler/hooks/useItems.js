@@ -55,8 +55,10 @@ export default function useItems(defaultItems) {
 
         const {code, domain, values} = itemToPersist
 
-        axios.post(createPath, {code, domain, values}).then(() => {
-            setItems(oldItems => (oldItems.filter(item => item.id !== id)))
+        return axios.post(createPath, {code, domain, values}).then(() => {
+            setTimeout(() => {
+                setItems(oldItems => (oldItems.filter(item => item.id !== id)))
+            }, 1100)
         })
     }
 
