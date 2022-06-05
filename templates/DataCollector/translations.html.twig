@@ -2,130 +2,7 @@
 
 {% block head %}
     {{ parent() }}
-    <style>
-        .missing-translations-creator {
-            border: 1px solid #ccc;
-            padding: 5px;
-            border-radius: 5px;
-            background-color: white;
-        }
-        .missing-translations-creator header {
-            display: flex;
-            align-items: center;
-            margin: 10px 10px 20px;
-        }
-
-        .missing-translations-creator header * {
-            margin: 0;
-            padding: 0;
-        }
-        .missing-translations-creator header a {
-            margin-left: auto;
-        }
-
-        .translation-item-creator {
-            border: 1px solid #ccc;
-            padding: 5px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .item-data {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            width: 40%;
-        }
-
-        .item-data > div {
-            display: flex;
-            border: 1px solid;
-            border-radius: 3px;
-            background-color: #e0e0e0;
-            padding: 3px 6px;
-            align-items: center;
-            color: #777777;
-        }
-
-        .item-data span {
-            margin-left: auto;
-            color: #111;
-            user-select: all;
-        }
-
-        span.item-parameters {
-            user-select: auto !important;
-        }
-
-        .item-parameters span {
-            border: 1px solid;
-            display: inline-block;
-            border-radius: 3px;
-            padding: 2px;
-            margin: 2px 0px 2px 6px;
-            user-select: all;
-            backdrop-filter: brightness(90%);
-        }
-
-        .item-values {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-            flex-grow: 1;
-        }
-
-        .item-values div {
-            display: flex;
-            margin-left: 10px;
-        }
-
-        .item-values div span {
-            padding: 5px;
-            border: 2px inset;
-            border-right: none;
-            background-color: #eee;
-            text-transform: uppercase;
-            font-weight: bold;
-            border-radius: 3px 0px 0px 3px;
-            min-height: 40px;
-        }
-
-        .item-values div textarea {
-            border-radius: 0px 3px 3px 0px;
-            width: 100%;
-            resize: vertical;
-            border: 2px inset;
-            border-left: none;
-            outline: none;
-            min-height: 40px;
-        }
-
-        .item-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .item-actions button {
-            padding: 10px 20px;
-            background-color: #7d7d87;
-            border: 0;
-            box-shadow: 3px 5px #506fce;
-            color: white;
-        }
-
-        .item-actions button:hover {
-            filter: brightness(80%);
-        }
-
-        .item-actions button:active {
-            margin-top: 1px;
-            box-shadow: 2px 4px #506fce;
-        }
-
-    </style>
+    <link rel="stylesheet" href="{{ asset('bundles/manueltranslation/profiler_css.css') }}">
 {% endblock %}
 
 {% block body %}
@@ -147,7 +24,8 @@
                 var missingTranslations = {{ translations|json_encode|raw }};
                 var translationsLocales = {{ get_translations_locales()|json_encode|raw }};
                 var translationsPath = {
-                    list: '{{ path('manuel_translation_list') }}'
+                    list: '{{ path('manuel_translation_list') }}',
+                    getMissing: '{{ path('manuel_translation_get_missing_items') }}',
                 };
             </script>
             <script src="{{ asset('bundles/manueltranslation/profiler.js') }}"></script>

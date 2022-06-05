@@ -26,6 +26,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\Dumper\XliffFileDumper;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use function array_diff;
+use function array_diff_ukey;
+use function array_udiff;
+use function json_decode;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
@@ -77,6 +81,21 @@ class TranslationController extends AbstractController
         }
 
         return new Response('Ok');
+    }
+
+    #[Route("/get-missing/", name: "manuel_translation_get_missing_items", methods: "post")]
+    public function getMissing(
+        Request $request,
+        TranslationRepository $repository
+    ): Response {
+        $search = json_decode($request->getContent(), true);
+
+        $items = $repository->findByCodesAndDomains($search);
+
+        $missing = array_udiff($search, $items, fn($a, $b) => $a <=> $b);
+        dump($missing);
+
+        return $this->json($missing);
     }
 
     protected function getNewTranslationInstance(): Translation

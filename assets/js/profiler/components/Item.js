@@ -1,9 +1,18 @@
-import React, {useContext} from "react";
-import GlobalsContext from "../context/GlobalsContext";
+import React from "react";
 
-const Item = ({item}) => {
-    const {locales} = useContext(GlobalsContext);
+const Item = ({item, onChange}) => {
     const parameters = Array.from(Object.keys(item.parameters));
+    const {values} = item
+    const valuesMap = Object.entries(values);
+
+    const handleValueChange = (locale, event) => {
+        const newValues = {...values, [locale]: event.target.value};
+
+        onChange({
+            ...item,
+            values: newValues,
+        });
+    }
 
     return (
         <div className="translation-item-creator">
@@ -22,10 +31,10 @@ const Item = ({item}) => {
                 }
             </div>
             <div className="item-values">
-                {locales.map(locale => (
+                {valuesMap.map(([locale, value]) => (
                     <div key={locale}>
                         <span>{locale}</span>
-                        <textarea defaultValue={item.code}></textarea>
+                        <textarea value={value} onChange={(e) => handleValueChange(locale, e)}/>
                     </div>
                 ))}
             </div>

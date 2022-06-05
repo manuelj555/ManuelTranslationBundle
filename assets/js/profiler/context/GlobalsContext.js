@@ -4,6 +4,7 @@ const GlobalsContext = createContext({
     locales: [],
     paths: {
         list: '',
+        getMissing: '',
     },
 });
 

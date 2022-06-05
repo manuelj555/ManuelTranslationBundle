@@ -1,0 +1,127 @@
+.missing-translations-creator {
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 5px;
+  background-color: white;
+
+  header {
+    display: flex;
+    align-items: center;
+    margin: 10px 10px 20px;
+
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      margin-left: auto;
+    }
+  }
+
+  .translation-item-creator {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 5px;
+    //border-radius: 5px;
+    display: flex;
+    gap: 10px;
+
+
+    .item-data {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 40%;
+
+      & > div {
+        display: flex;
+        border: 1px solid;
+        //border-radius: 3px;
+        background-color: #e0e0e0;
+        padding: 3px 6px;
+        align-items: center;
+        color: #777777;
+        box-shadow: 2px 3px #a6a6a6;
+      }
+
+      span {
+        margin-left: auto;
+        color: #111;
+        user-select: all;
+      }
+
+      span.item-parameters {
+        user-select: auto !important;
+      }
+
+      .item-parameters span {
+        border: 1px solid;
+        display: inline-block;
+        //border-radius: 3px;
+        padding: 2px;
+        margin: 2px 0px 2px 6px;
+        user-select: all;
+        backdrop-filter: brightness(90%);
+      }
+    }
+
+    .item-values {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-grow: 1;
+
+      div {
+        display: flex;
+        margin-left: 10px;
+        box-shadow: 2px 3px 5px #aaa;
+
+        span, textarea {
+          border: 4px ridge;
+          min-height: 40px;
+        }
+
+        span {
+          padding: 8px 5px 2px;
+          border-right: none;
+          background-color: #eee;
+          text-transform: uppercase;
+          font-weight: bold;
+        }
+
+        textarea {
+          padding: 5px 10px;
+          width: 100%;
+          resize: vertical;
+          border-left: none;
+          outline: none;
+        }
+      }
+    }
+
+    .item-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      button {
+        padding: 10px 20px;
+        background-color: #7d7d87;
+        border: 0;
+        box-shadow: 3px 5px #506fce;
+        color: white;
+
+        &:hover {
+          filter: brightness(80%);
+
+        }
+
+        &:active {
+          margin-top: 1px;
+          box-shadow: 2px 4px #506fce;
+        }
+      }
+    }
+  }
+}

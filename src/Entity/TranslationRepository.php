@@ -139,4 +139,19 @@ class TranslationRepository extends ServiceEntityRepository implements Repositor
             ->getQuery()
             ->getOneOrNullResult(Query::HYDRATE_ARRAY);
     }
+
+    public function findByCodesAndDomains(array $data): array
+    {
+        $query = $this->createQueryBuilder('t')
+            ->select('t.code, t.domain');
+
+        foreach ($data as $index => $item) {
+            $query->orWhere("t.code = :code_{$index} AND t.domain = :domain_{$index}")
+                ->setParameter("code_{$index}", $item['code'] ?? null)
+                ->setParameter("domain_{$index}", $item['domain'] ?? null);
+        }
+
+
+        return $query->getQuery()->getArrayResult();
+    }
 }

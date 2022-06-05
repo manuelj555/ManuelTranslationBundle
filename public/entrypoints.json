@@ -20,6 +20,11 @@
         "./profiler.js"
       ]
     },
+    "profiler_css": {
+      "css": [
+        "./profiler_css.css"
+      ]
+    },
     "styles": {
       "css": [
         "./styles.css"
