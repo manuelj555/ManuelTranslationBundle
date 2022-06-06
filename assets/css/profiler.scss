@@ -1,9 +1,12 @@
 @keyframes persisted {
   from {
     opacity: 1;
+    transform: scale(1);
   }
   to {
     opacity: 0;
+    margin-top: -100px;
+    z-index: 100;
   }
 }
 
@@ -29,11 +32,37 @@
   from {
     transform: scale(1);
   }
-  30%{
+  30% {
     transform: scale(1.2);
   }
   to {
     transform: scale(.6);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes buzz {
+  from, to {
+    transform: translateX(0px);
+  }
+  25% {
+    transform: translateX(10px);
+  }
+  75% {
+    transform: translateX(-10px);
   }
 }
 
@@ -60,10 +89,12 @@
 
   .translation-item-creator {
     border: 1px solid #ccc;
+    background-color: white;
     padding: 5px;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
     //border-radius: 5px;
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
 
     &.persisted {
@@ -83,6 +114,23 @@
       animation: alternate persisting 600ms infinite ease;
     }
 
+    .message {
+      width: 100%;
+      flex-shrink: 0;
+      padding: 10px;
+      text-align: center;
+      background-color: #9dc7b5;
+      border: 2px solid #739a89;
+      box-shadow: 4px 4px 2px #555;
+      //animation: zoomIn 400ms forwards ease-out;
+      animation: buzz 150ms 3 ease-out;
+
+      &.error {
+        background-color: #c74848;
+        border: 2px solid #a13535;
+        color: white;
+      }
+    }
 
     .item-data {
       display: flex;

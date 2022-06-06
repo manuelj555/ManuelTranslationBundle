@@ -10,6 +10,7 @@
 
 namespace ManuelAguirre\Bundle\TranslationBundle\Controller;
 
+use Exception;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\Translation;
 use ManuelAguirre\Bundle\TranslationBundle\Entity\TranslationRepository;
 use ManuelAguirre\Bundle\TranslationBundle\Http\ResponseGenerator;

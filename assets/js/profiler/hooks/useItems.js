@@ -55,10 +55,32 @@ export default function useItems(defaultItems) {
 
         const {code, domain, values} = itemToPersist
 
-        return axios.post(createPath, {code, domain, values}).then(() => {
-            setTimeout(() => {
-                setItems(oldItems => (oldItems.filter(item => item.id !== id)))
-            }, 1100)
+        return new Promise((resolve, reject) => {
+            axios.post(createPath, {code, domain, values}).then(() => {
+                resolve();
+
+                setTimeout(() => {
+                    setItems(oldItems => (oldItems.filter(item => item.id !== id)))
+                }, 1100)
+            }).catch(({message, response}) => {
+                let error = message
+
+                if (response.status === 400) {
+                    error = JSON.stringify(response.data  || message, null, 1);
+                }
+
+                // if (response.status === 0) {
+                //     return Promise.reject(message);
+                // } else if (response.status >= 500) {
+                //     console.log(response)
+                //     return Promise.reject(message);
+                // } else {
+                //     console.log(response)
+                //     error = message;
+                // }
+
+                reject(error);
+            })
         })
     }
 

@@ -1,8 +1,24 @@
-import React, {useState} from "react";
+import React, {startTransition, useState} from "react";
+
+const STATUS_EDITING = 'editing'
+const STATUS_PERSISTING = 'persisting'
+const STATUS_PERSISTED = 'persisted'
+const STATUS_ERROR = 'error'
+
+const persistButtonLabel = (status) => {
+    switch (status) {
+        case STATUS_PERSISTING:
+            return 'Persisting...!!!'
+        case STATUS_PERSISTED:
+            return 'DONE'
+        default:
+            return 'Create';
+    }
+}
 
 const Item = ({item, onChange, onSubmit}) => {
-    const [isPersisting, setPersisting] = useState(false);
-    const [isPersisted, setPersisted] = useState(false);
+    const [status, setStatus] = useState(STATUS_EDITING);
+    const [message, setMessage] = useState('');
     const parameters = Array.from(Object.keys(item.parameters));
     const {values} = item
     const valuesMap = Object.entries(values);
@@ -14,17 +30,29 @@ const Item = ({item, onChange, onSubmit}) => {
     }
 
     const handleCreateClick = () => {
-        setPersisting(true);
+        startTransition(() => {
+            setMessage('')
+            setStatus(STATUS_PERSISTING)
+        });
         onSubmit(item.id).then(() => {
-            setPersisting(false)
-            setPersisted(true);
+            setMessage('')
+            setStatus(STATUS_PERSISTED)
+        }).catch((message) => {
+            setMessage(message)
+            setStatus(STATUS_ERROR)
         });
     }
 
     return (
         <div className={
-            `translation-item-creator ${isPersisting ? 'persisting' : ''} ${isPersisted ? 'persisted' : ''}`
+            `translation-item-creator ${status}`
         }>
+            {message?.length > 0
+                ? (
+                    <div className={`message ${status}`}>{message}</div>
+                ) : null
+            }
+
             <div className="item-data">
                 <div>Code<span>{item.code}</span></div>
                 <div>Domain<span>{item.domain}</span></div>
@@ -44,7 +72,7 @@ const Item = ({item, onChange, onSubmit}) => {
                     <div key={locale}>
                         <span>{locale}</span>
                         <textarea
-                            disabled={isPersisting}
+                            disabled={STATUS_PERSISTING === status}
                             value={value}
                             onChange={(e) => handleValueChange(locale, e)}
                         />
@@ -55,8 +83,9 @@ const Item = ({item, onChange, onSubmit}) => {
                 <div className="btn-container">
                     <button
                         onClick={handleCreateClick}
-                        disabled={isPersisting}
-                    >{isPersisting ? 'Creating...!' : (isPersisted ? 'Done' : 'Create')}
+                        disabled={STATUS_PERSISTING === status}
+                    >
+                        {persistButtonLabel(status)}
                     </button>
                 </div>
             </div>
