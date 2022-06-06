@@ -12,7 +12,7 @@ Y además crear facilmente desde el Profiler las etiquetas sin traducir aun.
 Ejecutar 
 
 ```
-composer require manuelj555/manuel-translation-bundle @dev
+composer require optimeconsulting/manuel-translation-bundle @dev
 ```
 
 Luego de ello, registrar los bundles en el **config/bundles.php**:

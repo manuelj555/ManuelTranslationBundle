@@ -62,13 +62,34 @@ class TranslationController extends AbstractController
         ));
     }
 
+    #[Route("/save-from-profiler", name: "manuel_translation_save_from_profiler")]
+    public function saveFromProfiler(
+        Request $request,
+        ValidatorInterface $validator,
+        TranslationRepository $repository
+    ): Response {
+        $translation = $this->getNewTranslationInstance();
+        $translation->setCode($request->request->get('code'));
+        $translation->setDomain($request->request->get('domain'));
+
+        foreach ($request->request->all('values') as $locale => $value) {
+            $translation->setValue($locale, $value);
+        }
+
+        if (count($validator->validate($translation)) == 0) {
+            $repository->saveTranslation($translation);
+        }
+
+        return new Response('Ok');
+    }
+
     protected function getNewTranslationInstance(): Translation
     {
         $translation = new Translation();
         $translation->setActive(true);
 
         foreach ($this->parameters->get('manuel_translation.locales') as $locale) {
-            $translation->setValue($locale, null);
+            $translation->setValue($locale, '');
         }
 
         return $translation;

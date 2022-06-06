@@ -1,5 +1,5 @@
 {
-  "name": "manuelj555/manuel-translation-bundle",
+  "name": "optimeconsulting/manuel-translation-bundle",
   "require": {
     "php": ">=8.1",
     "symfony/framework-bundle": "^5.2|^6.0",
