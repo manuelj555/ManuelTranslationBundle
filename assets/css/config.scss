@@ -1,0 +1,5 @@
+.translation-item {
+  &.inactive {
+    filter: opacity(.8);
+  }
+}

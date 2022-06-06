@@ -1,5 +1,5 @@
 import React, {useContext, useState} from "react";
-import {Button, ButtonGroup, Card, Dropdown, Form, Placeholder} from "react-bootstrap";
+import {Button, Card, Form, Placeholder} from "react-bootstrap";
 import GlobalsContext from "../../context/GlobalsContext";
 import Icon from "../Icon";
 import useTranslationValidator from "../../hooks/useTranslationValidator";
@@ -18,6 +18,10 @@ const Item = React.memo(({translation, saveItem, removeEmptyItem}) => {
         setEditing(false);
     }
 
+    const handleEditToggle = () => {
+        setEditing(editing => !editing)
+    }
+
     const save = (data) => {
         setLoading(true);
         saveItem(data).then(() => setLoading(false));
@@ -31,6 +35,7 @@ const Item = React.memo(({translation, saveItem, removeEmptyItem}) => {
 
     const handleStatusChange = (active) => {
         setLoading(true);
+        setEditing(false);
         save({...translation, active});
     };
 
@@ -39,32 +44,31 @@ const Item = React.memo(({translation, saveItem, removeEmptyItem}) => {
     }
 
     return (
-        <div className="translation-item mb-2">
+        <div className={`translation-item mb-2 ${translation.active ? '' : 'inactive'}`}>
             {showForm
                 ? <ItemForm
                     item={translation}
                     handleSave={handleSave}
                     handleClose={handleCloseFormClick}
+                    handleEditToggle={handleEditToggle}
+                    handleStatusChange={handleStatusChange}
                 />
                 : <ItemText
                     item={translation}
                     handleEdit={handleEditClick}
-                    handleStatusChange={handleStatusChange}
+                    handleEditToggle={handleEditToggle}
                 />
             }
         </div>
     );
 });
 
-const ItemText = ({item, handleEdit, handleStatusChange}) => {
+const ItemText = ({item, handleEdit, handleStatusChange, handleEditToggle}) => {
     const {booleanLabel} = useContext(GlobalsContext);
-
-    const handleDeactivateClick = () => handleStatusChange(false);
-    const handleActivateClick = () => handleStatusChange(true);
 
     return (
         <Card>
-            <Card.Header>
+            <Card.Header onClick={handleEditToggle} role="button">
                 <div className="row align-items-center">
                     <div className="col-sm-7">{item.code}</div>
                     <div className="col-sm-3 text-muted text-end">
@@ -77,7 +81,7 @@ const ItemText = ({item, handleEdit, handleStatusChange}) => {
             </Card.Header>
             <Card.Body>
                 <div className="row align-items-start">
-                    <div className="col-sm-10 col-lg-11">
+                    <div className="col-sm-10">
                         {Object.entries(item.values).map(([locale, value]) => (
                             <div key={locale} className="d-flex">
                                 <div className="me-2 mt-1 text-end" style={{minWidth: 25}}>{locale}</div>
@@ -85,25 +89,11 @@ const ItemText = ({item, handleEdit, handleStatusChange}) => {
                             </div>
                         ))}
                     </div>
-                    <div className="d-grid gap-2 col-sm-2 col-lg-1">
-                        <Dropdown as={ButtonGroup} size="sm">
-                            <Button variant="outline-secondary" onClick={handleEdit} disabled={!item.active}>
-                                <Icon icon="pencil-square"/>
-                                Edit
-                            </Button>
-                            <Dropdown.Toggle split variant="outline-secondary"/>
-
-                            <Dropdown.Menu>
-                                {item.active
-                                    ? <Dropdown.Item onClick={handleDeactivateClick}>
-                                        <Icon icon="trash"/>Deactivate
-                                    </Dropdown.Item>
-                                    : <Dropdown.Item onClick={handleActivateClick}>
-                                        <Icon icon="check-circle"/>Activate
-                                    </Dropdown.Item>
-                                }
-                            </Dropdown.Menu>
-                        </Dropdown>
+                    <div className="d-grid gap-2 col-sm-2">
+                        <Button variant="outline-secondary" size="sm" onClick={handleEdit}>
+                            <Icon icon="pencil-square"/>
+                            Edit
+                        </Button>
                     </div>
                 </div>
             </Card.Body>
@@ -122,7 +112,7 @@ const getFormValues = (defaultLocales, item) => {
     return {...values, ...itemValues};
 }
 
-const ItemForm = ({item, handleClose, handleSave}) => {
+const ItemForm = ({item, handleClose, handleSave, handleEditToggle, handleStatusChange}) => {
     const {booleanLabel, domains, locales: defaultLocales} = useContext(GlobalsContext);
     const [formData, setFormData] = useState(() => ({
         code: item.code,
@@ -151,6 +141,9 @@ const ItemForm = ({item, handleClose, handleSave}) => {
         setFormData({...formData, values: newValues});
     };
 
+    const handleDeactivateClick = () => handleStatusChange(false);
+    const handleActivateClick = () => handleStatusChange(true);
+
     const handleSaveClick = () => {
         if (valid) {
             handleSave({...item, ...formData});
@@ -162,7 +155,7 @@ const ItemForm = ({item, handleClose, handleSave}) => {
 
     return (
         <Card>
-            <Card.Header>
+            <Card.Header onClick={isNew ? null : handleEditToggle} role="button">
                 <div className="row align-items-center">
                     <div className="col-sm-7 m-0">
                         {isNew
@@ -214,6 +207,17 @@ const ItemForm = ({item, handleClose, handleSave}) => {
                     <div className="d-grid gap-2 col-sm-2">
                         <Button variant="primary" onClick={handleSaveClick}><Icon icon="save"/>Save</Button>
                         <Button variant="danger" onClick={handleClose}><Icon icon="x"/>Cancel</Button>
+
+                        <hr/>
+
+                        {item.active
+                            ? <Button size="sm" variant="warning" onClick={handleDeactivateClick}>
+                                <Icon icon="trash"/>Deactivate
+                            </Button>
+                            : <Button size="sm" variant="success" onClick={handleActivateClick}>
+                                <Icon icon="check-circle"/>Activate
+                            </Button>
+                        }
                     </div>
                 </div>
                 {showErrors ? <ItemFormErrors errors={errors}/> : null}

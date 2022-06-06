@@ -68,8 +68,6 @@
 
 .missing-translations-creator {
   border: 1px solid #ccc;
-  padding: 5px;
-  border-radius: 5px;
   background-color: white;
 
   header {
@@ -88,11 +86,9 @@
   }
 
   .translation-item-creator {
-    border: 1px solid #ccc;
+    border-top: 1px solid #ccc;
     background-color: white;
-    padding: 5px;
-    margin-bottom: 15px;
-    //border-radius: 5px;
+    padding: 20px 10px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -140,13 +136,13 @@
 
       & > div {
         display: flex;
-        border: 1px solid;
+        border: 1px solid #aaaaaa;
         //border-radius: 3px;
         background-color: #e0e0e0;
         padding: 3px 6px;
         align-items: center;
         color: #777777;
-        box-shadow: 2px 3px #a6a6a6;
+        box-shadow: 2px 2px 5px #a6a6a6;
       }
 
       span {
@@ -178,11 +174,9 @@
 
       div {
         display: flex;
-        margin-left: 10px;
-        box-shadow: 2px 3px 5px #aaa;
 
         span, textarea {
-          border: 4px ridge;
+          border: 2px solid #dddddd;
           min-height: 40px;
         }
 
@@ -213,7 +207,7 @@
         padding: 10px 20px;
         background-color: #7d7d87;
         border: 0;
-        box-shadow: 3px 5px #506fce;
+        box-shadow: 3px 5px 4px #506fce;
         color: white;
 
         &:hover {
@@ -223,7 +217,7 @@
 
         &:active {
           margin-top: 1px;
-          box-shadow: 2px 4px #506fce;
+          box-shadow: 2px 4px 4px #506fce;
         }
       }
     }
