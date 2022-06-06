@@ -66,7 +66,7 @@ const ItemText = ({item, handleEdit, handleStatusChange}) => {
         <Card>
             <Card.Header>
                 <div className="row align-items-center">
-                    <Card.Title className="col-sm-7 m-0">{item.code}</Card.Title>
+                    <div className="col-sm-7">{item.code}</div>
                     <div className="col-sm-3 text-muted text-end">
                         {item.domain}
                     </div>
@@ -165,12 +165,16 @@ const ItemForm = ({item, handleClose, handleSave}) => {
             <Card.Header>
                 <div className="row align-items-center">
                     <div className="col-sm-7 m-0">
-                        <Form.Control
-                            value={formData.code}
-                            onChange={handleCodeChange}
-                            size="sm"
-                            disabled={!isNew}
-                        />
+                        {isNew
+                            ?
+                            <Form.Control
+                                value={formData.code}
+                                onChange={handleCodeChange}
+                                size="sm"
+                                disabled={!isNew}
+                            />
+                            : formData.code
+                        }
                     </div>
 
                     <div className="col-sm-3 text-muted text-end">
@@ -183,7 +187,7 @@ const ItemForm = ({item, handleClose, handleSave}) => {
                                     selectDomain={handleDomainChange}
                                 />
                             ) : (
-                                <span className="border rounded py-1 px-2">{formData.domain}</span>
+                                formData.domain
                             )
                         }
                     </div>

@@ -14,7 +14,7 @@ const Paginator = React.memo(({paginationData, onChange}) => {
 
     return (
         <div className="d-flex my-2 align-items-center">
-            <Pagination className="mb-0">
+            <Pagination className="mb-0" size="sm">
                 <Pagination.Prev disabled={!prev} onClick={() => goToPage(prev)}>Prev</Pagination.Prev>
                 <Pagination.Item active>{currentPage}</Pagination.Item>
                 <Pagination.Next disabled={!next} onClick={() => goToPage(next)}>Next</Pagination.Next>
