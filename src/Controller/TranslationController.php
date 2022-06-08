@@ -26,10 +26,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\Dumper\XliffFileDumper;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use function array_diff;
-use function array_diff_ukey;
-use function array_udiff;
-use function json_decode;
 
 /**
  * @author Manuel Aguirre <programador.manuel@gmail.com>
@@ -61,40 +57,7 @@ class TranslationController extends AbstractController
             'locales' => $this->parameters->get('manuel_translation.locales'),
         ));
     }
-
-    #[Route("/save-from-profiler", name: "manuel_translation_save_from_profiler")]
-    public function saveFromProfiler(
-        Request $request,
-        ValidatorInterface $validator,
-        TranslationRepository $repository
-    ): Response {
-        $translation = $this->getNewTranslationInstance();
-        $translation->setCode($request->request->get('code'));
-        $translation->setDomain($request->request->get('domain'));
-
-        foreach ($request->request->all('values') as $locale => $value) {
-            $translation->setValue($locale, $value);
-        }
-
-        if (count($validator->validate($translation)) == 0) {
-            $repository->saveTranslation($translation);
-        }
-
-        return new Response('Ok');
-    }
-
-    protected function getNewTranslationInstance(): Translation
-    {
-        $translation = new Translation();
-        $translation->setActive(true);
-
-        foreach ($this->parameters->get('manuel_translation.locales') as $locale) {
-            $translation->setValue($locale, '');
-        }
-
-        return $translation;
-    }
-
+    
     #[Route("/download.php", name: "manuel_translation_download_backup_file")]
     public function liveDownloadBackup(
         Synchronizer $synchronizator,
