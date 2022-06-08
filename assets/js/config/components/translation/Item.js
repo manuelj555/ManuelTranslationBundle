@@ -4,10 +4,10 @@ import GlobalsContext from "../../context/GlobalsContext";
 import Icon from "../Icon";
 import useTranslationValidator from "../../hooks/useTranslationValidator";
 import DomainField from "./DomainField";
+import useMutateItem from "../../hooks/useMutateItem";
 
-const Item = React.memo(({translation, saveItem, removeEmptyItem}) => {
+const Item = React.memo(({translation, removeEmptyItem}) => {
     const [editing, setEditing] = useState(false);
-    const [loading, setLoading] = useState(false);
     const showForm = editing || !translation.id;
 
     const handleEditClick = () => setEditing(true);
@@ -22,36 +22,13 @@ const Item = React.memo(({translation, saveItem, removeEmptyItem}) => {
         setEditing(editing => !editing)
     }
 
-    const save = (data) => {
-        setLoading(true);
-        saveItem(data).then(() => setLoading(false));
-    };
-
-    const handleSave = (item) => {
-        setEditing(false);
-        setLoading(true);
-        save(item);
-    }
-
-    const handleStatusChange = (active) => {
-        setLoading(true);
-        setEditing(false);
-        save({...translation, active});
-    };
-
-    if (loading) {
-        return <LoadingItem/>;
-    }
-
     return (
         <div className={`translation-item mb-2 ${translation.active ? '' : 'inactive'}`}>
             {showForm
                 ? <ItemForm
                     item={translation}
-                    handleSave={handleSave}
                     handleClose={handleCloseFormClick}
                     handleEditToggle={handleEditToggle}
-                    handleStatusChange={handleStatusChange}
                 />
                 : <ItemText
                     item={translation}
@@ -63,7 +40,7 @@ const Item = React.memo(({translation, saveItem, removeEmptyItem}) => {
     );
 });
 
-const ItemText = ({item, handleEdit, handleStatusChange, handleEditToggle}) => {
+const ItemText = ({item, handleEdit, handleEditToggle}) => {
     const {booleanLabel} = useContext(GlobalsContext);
 
     return (
@@ -112,8 +89,11 @@ const getFormValues = (defaultLocales, item) => {
     return {...values, ...itemValues};
 }
 
-const ItemForm = ({item, handleClose, handleSave, handleEditToggle, handleStatusChange}) => {
+const ItemForm = ({item, handleClose, handleEditToggle}) => {
     const {booleanLabel, domains, locales: defaultLocales} = useContext(GlobalsContext);
+
+    const {save: saveItem, isLoading} = useMutateItem()
+
     const [formData, setFormData] = useState(() => ({
         code: item.code,
         domain: item.domain,
@@ -141,13 +121,16 @@ const ItemForm = ({item, handleClose, handleSave, handleEditToggle, handleStatus
         setFormData({...formData, values: newValues});
     };
 
-    const handleDeactivateClick = () => handleStatusChange(false);
-    const handleActivateClick = () => handleStatusChange(true);
+    const save = (formData) => {
+        saveItem({...item, ...formData}).then(() => handleClose())
+    }
+
+    const handleDeactivateClick = () => save({active: false});
+    const handleActivateClick = () => save({active: true});
 
     const handleSaveClick = () => {
         if (valid) {
-            handleSave({...item, ...formData});
-            handleClose();
+            save(formData)
         } else {
             setShowErrors(true);
         }
@@ -157,7 +140,7 @@ const ItemForm = ({item, handleClose, handleSave, handleEditToggle, handleStatus
         <Card>
             <Card.Header onClick={isNew ? null : handleEditToggle} role="button">
                 <div className="row align-items-center">
-                    <div className="col-sm-7 m-0">
+                    <div className="col-sm-7 m-0 d-flex">
                         {isNew
                             ?
                             <Form.Control
@@ -168,8 +151,8 @@ const ItemForm = ({item, handleClose, handleSave, handleEditToggle, handleStatus
                             />
                             : formData.code
                         }
+                        {isLoading && <span className="ms-3">Loading...!</span>}
                     </div>
-
                     <div className="col-sm-3 text-muted text-end">
                         {isNew
                             ? (

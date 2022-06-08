@@ -1,9 +1,7 @@
-import {useCallback, useContext, useMemo, useState} from "react";
-import GlobalsContext from "../context/GlobalsContext";
+import {useCallback, useMemo, useState} from "react";
 import useTranslationsQuery from "./useTranslationsQuery";
 
 const useTranslations = () => {
-    const {addDomain} = useContext(GlobalsContext);
     const [filters, setFilters] = useState(() => ({
         search: '',
         domains: [],
@@ -22,14 +20,11 @@ const useTranslations = () => {
     }, [])
 
     const translationActions = useMemo(() => {
-        const saveItem = (item) => persistItem(item).then(({data}) => {
-            data?.domain && addDomain(data.domain)
-        })
         const addEmptyItem = () => addEmpty();
         const removeEmptyItem = (item) => removeEmpty(item);
 
-        return {saveItem, addEmptyItem, removeEmptyItem};
-    }, [addDomain, addEmpty, removeEmpty, persistItem]);
+        return {addEmptyItem, removeEmptyItem};
+    }, [addEmpty, removeEmpty, persistItem]);
 
     return {
         isLoading: translationsQuery.isLoading,

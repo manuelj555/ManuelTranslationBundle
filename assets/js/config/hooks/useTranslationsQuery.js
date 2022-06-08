@@ -23,19 +23,9 @@ const getTranslations = (apiUrl, page, itemsPerPage, filters) => {
         }
     }).then(({data, headers}) => {
         return {
-            items: data.map(item => ({...item, uuid: uuid()})),
+            items: data.map(item => ({...item, uuid: item.id})),
             totalCount: headers['x-count'],
         };
-    })
-}
-
-const persistTranslation = (apiUrl, item) => {
-    const method = item.id ? axios.put : axios.post
-    const url = item.id ? apiUrl + "/" + item.id : apiUrl
-
-    return method(url, {
-        ...item,
-        lastChanged: 'local',
     })
 }
 
@@ -55,23 +45,6 @@ const useTranslationsQuery = (filters, page) => {
 
     const {isLoading, isFetching, data: {items: translations, totalCount}} = translationsQuery
 
-    const saveItemMutation = useMutation((item) => persistTranslation(apiUrl, item), {
-        onSuccess({data}) {
-            queryClient.setQueryData(queryKey, ({items, totalCount}) => {
-                const newItems = [...items]
-                const index = newItems.findIndex(item => item.id === data.id)
-
-                if (-1 !== index) {
-                    // actualizamos la data al momento
-                    newItems[index] = {...newItems[index], ...data}
-                }
-
-                return {items: newItems, totalCount}
-            })
-            queryClient.invalidateQueries(["translations", "list"])
-        }
-    })
-
     const addEmpty = useCallback(() => {
         queryClient.setQueryData(queryKey, ({items, totalCount}) => {
             return {
@@ -90,10 +63,6 @@ const useTranslationsQuery = (filters, page) => {
         })
     }, [queryClient, queryKey])
 
-    const saveItem = useCallback((item) => {
-        return saveItemMutation.mutateAsync(item)
-    }, [saveItemMutation])
-
 
     return {
         isLoading,
@@ -101,8 +70,7 @@ const useTranslationsQuery = (filters, page) => {
         translations,
         totalCount,
         addEmpty,
-        removeEmpty,
-        saveItem,
+        removeEmpty
     };
 }
 
