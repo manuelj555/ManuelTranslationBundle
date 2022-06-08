@@ -2,13 +2,13 @@ import React from "react";
 import {Pagination, Placeholder} from "react-bootstrap";
 import {calculatePagesCount, itemsPerPage} from "../../context/GlobalsContext";
 
-const Paginator = React.memo(({paginationData, onChange}) => {
+const Paginator = React.memo(({paginationData, onChange, loading}) => {
     const {page: currentPage, totalCount} = paginationData;
     const pagesCount = calculatePagesCount(totalCount);
     const itemsCount = itemsPerPage > totalCount ? totalCount : itemsPerPage;
 
     const prev = currentPage > 1 ? currentPage - 1 : null;
-    const next = currentPage + 1 < pagesCount ? currentPage + 1 : null;
+    const next = currentPage < pagesCount ? currentPage + 1 : null;
 
     const goToPage = onChange;
 
@@ -19,6 +19,7 @@ const Paginator = React.memo(({paginationData, onChange}) => {
                 <Pagination.Item active>{currentPage}</Pagination.Item>
                 <Pagination.Next disabled={!next} onClick={() => goToPage(next)}>Next</Pagination.Next>
             </Pagination>
+            {loading && <span className="ms-2">Loading...</span>}
             <div className="ms-auto">
                 <b>Items:</b> {itemsCount} <b>of</b> {totalCount}
             </div>

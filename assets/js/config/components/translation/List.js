@@ -6,37 +6,25 @@ export default function List(props) {
     const {
         paginationData,
         changePage,
-        addEmptyItem,
         children,
+        loading = false
     } = props;
-
-    useEffect(() => {
-        const addBtn = document.getElementById('add-translation');
-
-        addBtn.addEventListener('click', handleAddClick);
-
-        return () => addBtn.removeEventListener('click', handleAddClick);
-    }, []);
-
-    const handleAddClick = (e) => {
-        e?.preventDefault();
-        addEmptyItem();
-    };
-
-    const paginationContent = (
-        <Paginator
-            paginationData={paginationData}
-            onChange={changePage}
-        />
-    );
 
     return (
         <div>
-            {paginationContent}
+            <Paginator
+                paginationData={paginationData}
+                onChange={changePage}
+                loading={loading}
+            />
 
             {children}
 
-            {paginationContent}
+            <Paginator
+                paginationData={paginationData}
+                onChange={changePage}
+                loading={loading}
+            />
         </div>
     );
 }

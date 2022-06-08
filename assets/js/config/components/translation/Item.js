@@ -210,14 +210,15 @@ const ItemForm = ({item, handleClose, handleSave, handleEditToggle, handleStatus
 
                         <hr/>
 
-                        {item.active
-                            ? <Button size="sm" variant="warning" onClick={handleDeactivateClick}>
-                                <Icon icon="trash"/>Deactivate
-                            </Button>
-                            : <Button size="sm" variant="success" onClick={handleActivateClick}>
-                                <Icon icon="check-circle"/>Activate
-                            </Button>
-                        }
+                        {!isNew && (
+                            item.active
+                                ? <Button size="sm" variant="warning" onClick={handleDeactivateClick}>
+                                    <Icon icon="trash"/>Deactivate
+                                </Button>
+                                : <Button size="sm" variant="success" onClick={handleActivateClick}>
+                                    <Icon icon="check-circle"/>Activate
+                                </Button>
+                        )}
                     </div>
                 </div>
                 {showErrors ? <ItemFormErrors errors={errors}/> : null}

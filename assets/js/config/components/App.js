@@ -1,4 +1,4 @@
-import React, {useMemo} from "react";
+import React, {useEffect} from "react";
 import Filter from "./translation/Filter";
 import List, {LoadingList} from "./translation/List";
 import Item from "./translation/Item";
@@ -8,17 +8,28 @@ export default function App() {
     const {
         translations,
         isLoading,
+        isFetching,
         config,
         setConfig,
         translationActions,
-    } = useTranslations();
+    } = useTranslations()
 
-    const [applyFilters, changePage] = useMemo(() => {
-        const applyFilters = (filters) => setConfig({filters});
-        const changePage = (page) => setConfig({page});
 
-        return [applyFilters, changePage];
-    }, [setConfig]);
+    useEffect(() => {
+        const addBtn = document.getElementById('add-translation')
+
+        const handleAddClick = (e) => {
+            e?.preventDefault()
+            translationActions.addEmptyItem()
+        }
+
+        addBtn.addEventListener('click', handleAddClick)
+
+        return () => addBtn.removeEventListener('click', handleAddClick)
+    }, [translationActions.addEmptyItem])
+
+    const applyFilters = (filters) => setConfig({filters})
+    const changePage = (page) => setConfig({page})
 
     return (
         <div>
@@ -28,9 +39,9 @@ export default function App() {
 
                 : (
                     <List
-                        addEmptyItem={translationActions.addEmptyItem}
                         paginationData={config.pagination}
                         changePage={changePage}
+                        loading={isFetching}
                     >
                         {translations.map(translation => (
                             <Item
