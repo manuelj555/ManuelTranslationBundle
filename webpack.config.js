@@ -17,10 +17,8 @@ Encore
     .addStyleEntry('profiler_css', './assets/css/profiler.scss')
     .addStyleEntry('styles', './assets/css/app.scss')
     .disableSingleRuntimeChunk()
-    // .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
-    .enableVersioning(Encore.isProduction())
     .configureBabel((config) => {
         config.plugins.push('@babel/plugin-proposal-class-properties');
     })
@@ -32,5 +30,9 @@ Encore
     .enableSassLoader()
     .enableReactPreset()
 ;
+
+if (Encore.isProduction()) {
+    Encore.cleanupOutputBeforeBuild()
+}
 
 module.exports = Encore.getWebpackConfig();

@@ -39,11 +39,10 @@ const useTranslationsQuery = (filters, page) => {
         queryKey,
         () => getTranslations(apiUrl, page, itemsPerPage, filters),
         {
-            initialData: () => ({items: [], totalCount: 0}),
-            keepPreviousData: true,
+            keepPreviousData: true
         })
 
-    const {isLoading, isFetching, data: {items: translations, totalCount}} = translationsQuery
+    const {isLoading, isFetching, data: {items: translations = [], totalCount = 0} = {}} = translationsQuery
 
     const addEmpty = useCallback(() => {
         queryClient.setQueryData(queryKey, ({items, totalCount}) => {
