@@ -1,8 +1,8 @@
-import {useCallback, useContext} from "react";
+import {useCallback, useContext, useEffect} from "react";
 import GlobalsContext, {itemsPerPage} from "../context/GlobalsContext";
 import axios from "axios";
 import {v4 as uuid} from "uuid";
-import {useMutation, useQuery, useQueryClient} from "react-query";
+import {useQuery, useQueryClient} from "react-query";
 
 const createNewItem = () => ({
     id: null,
@@ -39,10 +39,14 @@ const useTranslationsQuery = (filters, page) => {
         queryKey,
         () => getTranslations(apiUrl, page, itemsPerPage, filters),
         {
-            keepPreviousData: true
+            keepPreviousData: true,
         })
 
     const {isLoading, isFetching, data: {items: translations = [], totalCount = 0} = {}} = translationsQuery
+
+    useEffect(() => {
+        queryClient.removeQueries(["translations", "list"], {active: false})
+    }, [filters])
 
     const addEmpty = useCallback(() => {
         queryClient.setQueryData(queryKey, ({items, totalCount}) => {
